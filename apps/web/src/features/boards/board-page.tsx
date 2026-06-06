@@ -27,6 +27,8 @@ import {
   Loader2,
   MessageSquare,
   Plus,
+  Search,
+  SlidersHorizontal,
   Sparkles,
   Tag,
   UserRound,
@@ -73,7 +75,30 @@ type TaskFormState = {
   blockedReason: string;
 };
 
+type BoardBlockedFilter = "all" | "blocked" | "open";
+type BoardDueFilter = "all" | "overdue" | "today" | "week" | "none";
+
+type BoardFiltersState = {
+  q: string;
+  priority: "all" | TaskPriority;
+  blocked: BoardBlockedFilter;
+  assigneeId: string;
+  labelId: string;
+  due: BoardDueFilter;
+};
+
 const priorityValues: TaskPriority[] = ["low", "medium", "high", "urgent"];
+const blockedFilterValues: BoardBlockedFilter[] = ["all", "blocked", "open"];
+const dueFilterValues: BoardDueFilter[] = ["all", "overdue", "today", "week", "none"];
+
+const defaultBoardFilters: BoardFiltersState = {
+  q: "",
+  priority: "all",
+  blocked: "all",
+  assigneeId: "all",
+  labelId: "all",
+  due: "all"
+};
 
 const taskPriorityTone: Record<TaskPriority, string> = {
   low: "border-border bg-muted/40 text-muted-foreground",
@@ -165,6 +190,192 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
+function isTextEntryTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return (
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT" ||
+    target.isContentEditable
+  );
+}
+
+function isTaskPriority(value: string | null): value is TaskPriority {
+  return priorityValues.includes(value as TaskPriority);
+}
+
+function isBlockedFilter(value: string | null): value is BoardBlockedFilter {
+  return blockedFilterValues.includes(value as BoardBlockedFilter);
+}
+
+function isDueFilter(value: string | null): value is BoardDueFilter {
+  return dueFilterValues.includes(value as BoardDueFilter);
+}
+
+function readBoardFiltersFromUrl(): BoardFiltersState {
+  if (typeof window === "undefined") {
+    return defaultBoardFilters;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const priority = params.get("priority");
+  const blocked = params.get("blocked");
+  const due = params.get("due");
+
+  return {
+    q: params.get("q") ?? "",
+    priority: isTaskPriority(priority) ? priority : "all",
+    blocked: isBlockedFilter(blocked) ? blocked : "all",
+    assigneeId: params.get("assignee") ?? "all",
+    labelId: params.get("label") ?? "all",
+    due: isDueFilter(due) ? due : "all"
+  };
+}
+
+function writeBoardFiltersToUrl(filters: BoardFiltersState) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const entries: Array<[keyof BoardFiltersState, string]> = [
+    ["q", "q"],
+    ["priority", "priority"],
+    ["blocked", "blocked"],
+    ["assigneeId", "assignee"],
+    ["labelId", "label"],
+    ["due", "due"]
+  ];
+
+  entries.forEach(([key, param]) => {
+    const value = filters[key].trim();
+
+    if (value && value !== "all") {
+      params.set(param, value);
+    } else {
+      params.delete(param);
+    }
+  });
+
+  const query = params.toString();
+  const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}`;
+  window.history.replaceState(null, "", nextUrl);
+}
+
+function hasActiveBoardFilters(filters: BoardFiltersState) {
+  return (
+    filters.q.trim() !== "" ||
+    filters.priority !== "all" ||
+    filters.blocked !== "all" ||
+    filters.assigneeId !== "all" ||
+    filters.labelId !== "all" ||
+    filters.due !== "all"
+  );
+}
+
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function toDateKey(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function matchesDueFilter(task: BoardTaskCard, due: BoardDueFilter) {
+  if (due === "all") {
+    return true;
+  }
+
+  if (due === "none") {
+    return task.dueDate === null;
+  }
+
+  if (!task.dueDate) {
+    return false;
+  }
+
+  const today = toDateKey(new Date());
+  const weekEnd = toDateKey(addDays(new Date(), 7));
+
+  if (due === "overdue") {
+    return task.completedAt === null && task.dueDate < today;
+  }
+
+  if (due === "today") {
+    return task.dueDate === today;
+  }
+
+  return task.dueDate >= today && task.dueDate <= weekEnd;
+}
+
+function filterBoardTask(task: BoardTaskCard, filters: BoardFiltersState) {
+  const query = filters.q.trim().toLowerCase();
+
+  if (query && !`${task.title} ${task.descriptionPreview ?? ""}`.toLowerCase().includes(query)) {
+    return false;
+  }
+
+  if (filters.priority !== "all" && task.priority !== filters.priority) {
+    return false;
+  }
+
+  if (filters.blocked === "blocked" && !task.isBlocked) {
+    return false;
+  }
+
+  if (filters.blocked === "open" && task.isBlocked) {
+    return false;
+  }
+
+  if (
+    filters.assigneeId !== "all" &&
+    !task.assignees.some((assignee) => assignee.id === filters.assigneeId)
+  ) {
+    return false;
+  }
+
+  if (filters.labelId !== "all" && !task.labels.some((label) => label.id === filters.labelId)) {
+    return false;
+  }
+
+  return matchesDueFilter(task, filters.due);
+}
+
+function getFilteredTasksByColumn(board: BoardSnapshot, filters: BoardFiltersState) {
+  return Object.fromEntries(
+    board.columns.map((column) => [
+      column.id,
+      (board.tasksByColumn[column.id] ?? []).filter((task) => filterBoardTask(task, filters))
+    ])
+  ) as BoardSnapshot["tasksByColumn"];
+}
+
+function useDismissedTip(tipId: string) {
+  const storageKey = `agentboard.tip.${tipId}`;
+  const [dismissed, setDismissed] = React.useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.localStorage.getItem(storageKey) === "dismissed";
+  });
+
+  const dismiss = React.useCallback(() => {
+    setDismissed(true);
+
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(storageKey, "dismissed");
+    }
+  }, [storageKey]);
+
+  return { dismissed, dismiss };
+}
+
 function DetailSection({
   title,
   children,
@@ -190,6 +401,212 @@ function EmptyDetailState({ children }: { children: React.ReactNode }) {
     <div className="rounded-md border border-dashed border-border bg-muted/20 p-3 text-sm text-muted-foreground">
       {children}
     </div>
+  );
+}
+
+function BoardFilterBar({
+  board,
+  filters,
+  onChange,
+  onReset,
+  resultCount,
+  totalCount,
+  searchInputRef
+}: {
+  board: BoardSnapshot;
+  filters: BoardFiltersState;
+  onChange: (filters: BoardFiltersState) => void;
+  onReset: () => void;
+  resultCount: number;
+  totalCount: number;
+  searchInputRef: React.RefObject<HTMLInputElement>;
+}) {
+  const { t } = useTranslation();
+  const hasFilters = hasActiveBoardFilters(filters);
+
+  return (
+    <section
+      aria-label={t("board.filters.title")}
+      className="space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm"
+    >
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+        <div className="min-w-0 flex-1 space-y-2">
+          <Label htmlFor="board-search">{t("board.filters.search")}</Label>
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <Input
+              className="pl-9"
+              id="board-search"
+              onChange={(event) => onChange({ ...filters, q: event.target.value })}
+              placeholder={t("board.filters.searchPlaceholder")}
+              ref={searchInputRef}
+              value={filters.q}
+            />
+          </div>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="space-y-2">
+            <Label htmlFor="board-priority-filter">{t("board.filters.priority")}</Label>
+            <Select
+              id="board-priority-filter"
+              onChange={(event) =>
+                onChange({
+                  ...filters,
+                  priority:
+                    event.target.value === "all" ? "all" : (event.target.value as TaskPriority)
+                })
+              }
+              value={filters.priority}
+            >
+              <option value="all">{t("board.filters.allPriorities")}</option>
+              {priorityValues.map((priority) => (
+                <option key={priority} value={priority}>
+                  {t(`board.priority.${priority}`)}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="board-blocked-filter">{t("board.filters.blocked")}</Label>
+            <Select
+              id="board-blocked-filter"
+              onChange={(event) =>
+                onChange({ ...filters, blocked: event.target.value as BoardBlockedFilter })
+              }
+              value={filters.blocked}
+            >
+              {blockedFilterValues.map((blocked) => (
+                <option key={blocked} value={blocked}>
+                  {t(`board.filters.blockedOptions.${blocked}`)}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="board-assignee-filter">{t("board.filters.assignee")}</Label>
+            <Select
+              id="board-assignee-filter"
+              onChange={(event) => onChange({ ...filters, assigneeId: event.target.value })}
+              value={filters.assigneeId}
+            >
+              <option value="all">{t("board.filters.allAssignees")}</option>
+              {board.availableMembers.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="board-label-filter">{t("board.filters.label")}</Label>
+            <Select
+              id="board-label-filter"
+              onChange={(event) => onChange({ ...filters, labelId: event.target.value })}
+              value={filters.labelId}
+            >
+              <option value="all">{t("board.filters.allLabels")}</option>
+              {board.availableLabels.map((label) => (
+                <option key={label.id} value={label.id}>
+                  {label.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="board-due-filter">{t("board.filters.due")}</Label>
+            <Select
+              id="board-due-filter"
+              onChange={(event) =>
+                onChange({ ...filters, due: event.target.value as BoardDueFilter })
+              }
+              value={filters.due}
+            >
+              {dueFilterValues.map((due) => (
+                <option key={due} value={due}>
+                  {t(`board.filters.dueOptions.${due}`)}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 border-t border-border pt-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <p aria-live="polite" className="inline-flex items-center gap-2">
+          <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
+          {t("board.filters.resultCount", { count: resultCount, total: totalCount })}
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <span>{t("board.shortcuts.search")}</span>
+          <span>{t("board.shortcuts.newTask")}</span>
+          {hasFilters ? (
+            <Button onClick={onReset} size="sm" type="button" variant="ghost">
+              {t("board.filters.reset")}
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BoardTip({
+  id,
+  title,
+  children
+}: {
+  id: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  const { t } = useTranslation();
+  const { dismissed, dismiss } = useDismissedTip(id);
+
+  if (dismissed) {
+    return null;
+  }
+
+  return (
+    <article className="rounded-md border border-border bg-background p-3 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1">
+          <h2 className="text-sm font-semibold">{title}</h2>
+          <p className="text-sm leading-6 text-muted-foreground">{children}</p>
+        </div>
+        <Button
+          aria-label={t("common.dismiss")}
+          onClick={dismiss}
+          size="icon"
+          type="button"
+          variant="ghost"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </Button>
+      </div>
+    </article>
+  );
+}
+
+function BoardTips({ board }: { board: BoardSnapshot }) {
+  const { t } = useTranslation();
+  const hasWipLimit = board.columns.some((column) => column.wip.limit !== null);
+
+  return (
+    <section aria-label={t("board.tips.title")} className="grid gap-3 md:grid-cols-3">
+      <BoardTip id={`${board.id}.welcome`} title={t("board.tips.welcome.title")}>
+        {t("board.tips.welcome.body")}
+      </BoardTip>
+      {hasWipLimit ? (
+        <BoardTip id={`${board.id}.wip`} title={t("board.tips.wip.title")}>
+          {t("board.tips.wip.body")}
+        </BoardTip>
+      ) : null}
+      <BoardTip id={`${board.id}.ai`} title={t("board.tips.ai.title")}>
+        {t("board.tips.ai.body")}
+      </BoardTip>
+    </section>
   );
 }
 
@@ -1478,10 +1895,43 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const { t } = useTranslation();
   const board = useBoard(boardId);
   const moveTask = useMoveTaskMutation(boardId);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [createColumn, setCreateColumn] = React.useState<BoardColumn | null>(null);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
+  const [filters, setFilters] = React.useState<BoardFiltersState>(() => readBoardFiltersFromUrl());
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const hasFilters = hasActiveBoardFilters(filters);
+
+  React.useEffect(() => {
+    writeBoardFiltersToUrl(filters);
+  }, [filters]);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+
+      if (event.key === "/" && !isTextEntryTarget(event.target)) {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+
+      if (event.key.toLowerCase() === "n" && !isTextEntryTarget(event.target)) {
+        if (createColumn || selectedTaskId || !board.data?.columns[0]) {
+          return;
+        }
+
+        event.preventDefault();
+        setCreateColumn(board.data.columns[0]);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [board.data, createColumn, selectedTaskId]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveTaskId(String(event.active.id));
@@ -1495,7 +1945,13 @@ export function BoardPage({ boardId }: BoardPageProps) {
     }
 
     const activeId = String(event.active.id);
-    const target = getTargetFromDrag(board.data, activeId, String(event.over.id));
+    const dragBoard = hasFilters
+      ? {
+          ...board.data,
+          tasksByColumn: getFilteredTasksByColumn(board.data, filters)
+        }
+      : board.data;
+    const target = getTargetFromDrag(dragBoard, activeId, String(event.over.id));
     const current = getTaskLocation(board.data, activeId);
 
     if (!target || !current) {
@@ -1539,6 +1995,15 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }
 
   const activeTask = activeTaskId ? findTaskInBoard(board.data, activeTaskId) : null;
+  const filteredTasksByColumn = getFilteredTasksByColumn(board.data, filters);
+  const totalTaskCount = board.data.columns.reduce(
+    (count, column) => count + (board.data.tasksByColumn[column.id]?.length ?? 0),
+    0
+  );
+  const filteredTaskCount = board.data.columns.reduce(
+    (count, column) => count + (filteredTasksByColumn[column.id]?.length ?? 0),
+    0
+  );
 
   return (
     <div className="space-y-5">
@@ -1556,6 +2021,21 @@ export function BoardPage({ boardId }: BoardPageProps) {
       {moveTask.error ? (
         <InlineAlert>{getUserFacingApiError(moveTask.error, t)}</InlineAlert>
       ) : null}
+      <BoardTips board={board.data} />
+      <BoardFilterBar
+        board={board.data}
+        filters={filters}
+        onChange={setFilters}
+        onReset={() => setFilters(defaultBoardFilters)}
+        resultCount={filteredTaskCount}
+        searchInputRef={searchInputRef}
+        totalCount={totalTaskCount}
+      />
+      {hasFilters && filteredTaskCount === 0 ? (
+        <div className="rounded-md border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+          {t("board.filters.empty")}
+        </div>
+      ) : null}
       <DndContext
         collisionDetection={closestCorners}
         onDragEnd={handleDragEnd}
@@ -1569,7 +2049,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
               key={column.id}
               onCreateTask={setCreateColumn}
               onOpenTask={setSelectedTaskId}
-              tasks={board.data.tasksByColumn[column.id] ?? []}
+              tasks={filteredTasksByColumn[column.id] ?? []}
             />
           ))}
         </div>

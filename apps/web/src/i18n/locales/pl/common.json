@@ -113,6 +113,7 @@
   "common": {
     "cancel": "Anuluj",
     "close": "Zamknij",
+    "dismiss": "Zamknij wskazowke",
     "save": "Zapisz"
   },
   "board": {
@@ -125,6 +126,53 @@
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
       "warning": "Limit przekroczony"
+    },
+    "filters": {
+      "title": "Filtry tablicy",
+      "search": "Szukaj",
+      "searchPlaceholder": "Szukaj po tytule lub opisie",
+      "priority": "Priorytet",
+      "allPriorities": "Wszystkie priorytety",
+      "blocked": "Blokada",
+      "blockedOptions": {
+        "all": "Cala praca",
+        "blocked": "Tylko zablokowane",
+        "open": "Tylko otwarte"
+      },
+      "assignee": "Przypisany",
+      "allAssignees": "Wszyscy przypisani",
+      "label": "Etykieta",
+      "allLabels": "Wszystkie etykiety",
+      "due": "Termin",
+      "dueOptions": {
+        "all": "Dowolny termin",
+        "overdue": "Po terminie",
+        "today": "Termin dzisiaj",
+        "week": "Termin w tym tygodniu",
+        "none": "Bez terminu"
+      },
+      "resultCount": "Pokazano {{count}} z {{total}} zadan",
+      "reset": "Resetuj filtry",
+      "empty": "Zadne zadania nie pasuja do aktualnych filtrow."
+    },
+    "tips": {
+      "title": "Wskazowki tablicy",
+      "welcome": {
+        "title": "Zacznij od prawdziwej tablicy dostaw",
+        "body": "Uzyj filtrow, aby sprawdzac aktywna prace bez opuszczania stanu tablicy z API."
+      },
+      "wip": {
+        "title": "Limity WIP pokazuja presje dostaw",
+        "body": "Gdy kolumna przekracza limit, ogranicz aktywna prace przed pobraniem kolejnych zadan."
+      },
+      "ai": {
+        "title": "AI Improve zostaje review-first",
+        "body": "Panel szczegolow moze przygotowac jasniejszy brief, ale zmiany sa stosowane dopiero po sprawdzeniu."
+      }
+    },
+    "shortcuts": {
+      "search": "Skrot: / ustawia fokus w wyszukiwarce",
+      "newTask": "Skrot: N tworzy zadanie"
     },
     "create": {
       "button": "Utworz zadanie",
@@ -251,6 +299,35 @@
       "comments": "Komentarze: {{count}}",
       "openTask": "Otworz zadanie {{title}}",
       "dragHint": "Przeciagnij, aby przeniesc zadanie"
+    }
+  },
+  "settings": {
+    "eyebrow": "Kontrolki workspace'u",
+    "title": "Ustawienia",
+    "subtitle": "Dostosuj lokalne preferencje oraz sprawdz aktualny workspace i status wdrozenia.",
+    "preferences": {
+      "title": "Preferencje",
+      "description": "Ustawienia przegladarki dla tej sesji AgentBoard.",
+      "theme": "Motyw",
+      "themeHelp": "Zapisywany lokalnie i stosowany od razu.",
+      "language": "Jezyk",
+      "languageHelp": "Aktualizuje widoczna tresc produktu w aplikacji."
+    },
+    "workspace": {
+      "title": "Workspace",
+      "description": "Kontekst aktualnej sesji z uwierzytelnionego API.",
+      "name": "Workspace",
+      "mode": "Tryb",
+      "none": "Nie wybrano workspace'u",
+      "demo": "Workspace demo",
+      "standard": "Standardowy workspace",
+      "demoNote": "Tryb demo uzywa prawdziwych utrwalonych danych w odizolowanym workspace demo."
+    },
+    "deployment": {
+      "title": "Status wdrozenia",
+      "description": "Zasady operacyjne dla tego trybu dostarczania produktu.",
+      "status": "Wdrozenie produkcyjne pozostaje zaparkowane.",
+      "note": "W tym trybie nie wolno zmieniac live servera. Znany blocker Coolify/Traefik pozostaje opisany do pozniejszego passu deployment-readiness."
     }
   },
   "dashboard": {

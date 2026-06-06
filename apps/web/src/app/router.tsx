@@ -7,6 +7,7 @@ import { ProtectedRoute } from "../features/auth/protected-route";
 import { BoardPage } from "../features/boards/board-page";
 import { DashboardPage } from "../features/dashboard/dashboard-page";
 import { PlaceholderPage } from "../features/placeholders/placeholder-page";
+import { SettingsPage } from "../features/settings/settings-page";
 import { HomePage } from "../routes/home-page";
 
 function RootRouteComponent() {
@@ -87,9 +88,7 @@ const projectsRoute = createRoute({
 const settingsRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "settings",
-  component: () => (
-    <PlaceholderPage titleKey="pages.settings.title" descriptionKey="pages.settings.description" />
-  )
+  component: SettingsPage
 });
 
 const dashboardRoute = createRoute({

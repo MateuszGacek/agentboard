@@ -113,6 +113,7 @@
   "common": {
     "cancel": "Cancel",
     "close": "Close",
+    "dismiss": "Dismiss",
     "save": "Save"
   },
   "board": {
@@ -125,6 +126,53 @@
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
       "warning": "Limit exceeded"
+    },
+    "filters": {
+      "title": "Board filters",
+      "search": "Search",
+      "searchPlaceholder": "Search title or description",
+      "priority": "Priority",
+      "allPriorities": "All priorities",
+      "blocked": "Blocked",
+      "blockedOptions": {
+        "all": "All work",
+        "blocked": "Blocked only",
+        "open": "Open only"
+      },
+      "assignee": "Assignee",
+      "allAssignees": "All assignees",
+      "label": "Label",
+      "allLabels": "All labels",
+      "due": "Due date",
+      "dueOptions": {
+        "all": "Any due date",
+        "overdue": "Overdue",
+        "today": "Due today",
+        "week": "Due this week",
+        "none": "No due date"
+      },
+      "resultCount": "Showing {{count}} of {{total}} tasks",
+      "reset": "Reset filters",
+      "empty": "No tasks match the current filters."
+    },
+    "tips": {
+      "title": "Board guidance",
+      "welcome": {
+        "title": "Start from the real delivery board",
+        "body": "Use filters to review active work without leaving the API-backed board state."
+      },
+      "wip": {
+        "title": "WIP limits flag delivery pressure",
+        "body": "When a column exceeds its limit, reduce active work before pulling more tasks forward."
+      },
+      "ai": {
+        "title": "AI Improve stays review-first",
+        "body": "The task detail panel can draft clearer briefs, but changes are only applied after review."
+      }
+    },
+    "shortcuts": {
+      "search": "Shortcut: / focuses search",
+      "newTask": "Shortcut: N creates a task"
     },
     "create": {
       "button": "Create task",
@@ -251,6 +299,35 @@
       "comments": "{{count}} comments",
       "openTask": "Open task {{title}}",
       "dragHint": "Drag to move task"
+    }
+  },
+  "settings": {
+    "eyebrow": "Workspace controls",
+    "title": "Settings",
+    "subtitle": "Adjust local preferences and confirm the current workspace and deployment posture.",
+    "preferences": {
+      "title": "Preferences",
+      "description": "Browser-level settings for this AgentBoard session.",
+      "theme": "Theme",
+      "themeHelp": "Stored locally and applied immediately.",
+      "language": "Language",
+      "languageHelp": "Updates visible product copy across the app."
+    },
+    "workspace": {
+      "title": "Workspace",
+      "description": "Current session context from the authenticated API.",
+      "name": "Workspace",
+      "mode": "Mode",
+      "none": "No workspace selected",
+      "demo": "Demo workspace",
+      "standard": "Standard workspace",
+      "demoNote": "Demo mode uses real persisted data in an isolated demo workspace."
+    },
+    "deployment": {
+      "title": "Deployment status",
+      "description": "Operational guardrails for this product delivery mode.",
+      "status": "Production deployment remains parked.",
+      "note": "No live server changes are allowed in this mode. The known Coolify/Traefik blocker stays documented for a later deployment-readiness pass."
     }
   },
   "dashboard": {

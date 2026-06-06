@@ -113,6 +113,7 @@
   "common": {
     "cancel": "Zrusit",
     "close": "Zavrit",
+    "dismiss": "Zavrit tip",
     "save": "Ulozit"
   },
   "board": {
@@ -125,6 +126,53 @@
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
       "warning": "Limit prekrocen"
+    },
+    "filters": {
+      "title": "Filtry boardu",
+      "search": "Hledat",
+      "searchPlaceholder": "Hledat podle nazvu nebo popisu",
+      "priority": "Priorita",
+      "allPriorities": "Vsechny priority",
+      "blocked": "Blokace",
+      "blockedOptions": {
+        "all": "Vsechna prace",
+        "blocked": "Jen blokovane",
+        "open": "Jen otevrene"
+      },
+      "assignee": "Resitel",
+      "allAssignees": "Vsichni resitele",
+      "label": "Stitek",
+      "allLabels": "Vsechny stitky",
+      "due": "Termin",
+      "dueOptions": {
+        "all": "Libovolny termin",
+        "overdue": "Po terminu",
+        "today": "Termin dnes",
+        "week": "Termin tento tyden",
+        "none": "Bez terminu"
+      },
+      "resultCount": "Zobrazeno {{count}} z {{total}} ukolu",
+      "reset": "Resetovat filtry",
+      "empty": "Aktualnim filtrum neodpovidaji zadne ukoly."
+    },
+    "tips": {
+      "title": "Napoveda boardu",
+      "welcome": {
+        "title": "Zacnete na skutecnem delivery boardu",
+        "body": "Pouzijte filtry ke kontrole aktivni prace, aniz opustite stav boardu z API."
+      },
+      "wip": {
+        "title": "WIP limity ukazuji delivery tlak",
+        "body": "Kdyz sloupec prekroci limit, omezte aktivni praci pred nabrnim dalsich ukolu."
+      },
+      "ai": {
+        "title": "AI Improve zustava review-first",
+        "body": "Panel detailu muze navrhnout jasnejsi zadani, ale zmeny se pouziji az po kontrole."
+      }
+    },
+    "shortcuts": {
+      "search": "Zkratka: / zameri hledani",
+      "newTask": "Zkratka: N vytvori ukol"
     },
     "create": {
       "button": "Vytvorit ukol",
@@ -251,6 +299,35 @@
       "comments": "Komentare: {{count}}",
       "openTask": "Otevrit ukol {{title}}",
       "dragHint": "Pretahnutim presunete ukol"
+    }
+  },
+  "settings": {
+    "eyebrow": "Ovladace workspace",
+    "title": "Nastaveni",
+    "subtitle": "Upravte lokalni preference a zkontrolujte aktualni workspace i stav nasazeni.",
+    "preferences": {
+      "title": "Preference",
+      "description": "Nastaveni prohlizece pro tuto relaci AgentBoard.",
+      "theme": "Motiv",
+      "themeHelp": "Uklada se lokalne a plati okamzite.",
+      "language": "Jazyk",
+      "languageHelp": "Aktualizuje viditelny text produktu v aplikaci."
+    },
+    "workspace": {
+      "title": "Workspace",
+      "description": "Kontext aktualni relace z autentizovaneho API.",
+      "name": "Workspace",
+      "mode": "Rezim",
+      "none": "Neni vybran workspace",
+      "demo": "Demo workspace",
+      "standard": "Standardni workspace",
+      "demoNote": "Demo rezim pouziva skutecna ulozena data v izolovanem demo workspace."
+    },
+    "deployment": {
+      "title": "Stav nasazeni",
+      "description": "Operacni pravidla pro tento rezim dodavky produktu.",
+      "status": "Produkci nasazeni zustava pozastavene.",
+      "note": "V tomto rezimu nejsou povolene zmeny live serveru. Znamy blocker Coolify/Traefik zustava popsany pro pozdejsi deployment-readiness pass."
     }
   },
   "dashboard": {
