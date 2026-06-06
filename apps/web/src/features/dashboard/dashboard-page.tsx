@@ -87,10 +87,17 @@ function MetricCards({ dashboard }: { dashboard: DashboardMetrics }) {
         const Icon = metricIcons[card.key];
 
         return (
-          <Card className="shadow-none" key={card.key}>
+          <Card
+            className="border-border/80 shadow-sm transition hover:-translate-y-0.5 hover:shadow-shell"
+            key={card.key}
+          >
             <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4 pb-2">
-              <CardDescription>{t(`dashboard.cards.${card.key}`)}</CardDescription>
-              <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <CardDescription className="font-medium">
+                {t(`dashboard.cards.${card.key}`)}
+              </CardDescription>
+              <span className="rounded-md bg-muted p-2">
+                <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              </span>
             </CardHeader>
             <CardContent className="p-4 pt-0">
               <p className="text-3xl font-semibold tracking-normal">{card.displayValue}</p>
@@ -109,7 +116,7 @@ function WipWarnings({ dashboard }: { dashboard: DashboardMetrics }) {
   const { t } = useTranslation();
 
   return (
-    <Card className="shadow-none">
+    <Card className="shadow-sm">
       <CardHeader>
         <CardTitle className="text-base">{t("dashboard.wip.title")}</CardTitle>
         <CardDescription>{t("dashboard.wip.description")}</CardDescription>
@@ -142,7 +149,9 @@ function WipWarnings({ dashboard }: { dashboard: DashboardMetrics }) {
             ))}
           </ul>
         ) : (
-          <p className="text-sm leading-6 text-muted-foreground">{t("dashboard.wip.empty")}</p>
+          <div className="rounded-md border border-dashed border-border bg-muted/20 p-3 text-sm leading-6 text-muted-foreground">
+            {t("dashboard.wip.empty")}
+          </div>
         )}
       </CardContent>
     </Card>
@@ -154,7 +163,7 @@ function PriorityBreakdown({ dashboard }: { dashboard: DashboardMetrics }) {
   const max = Math.max(...dashboard.tasksByPriority.map((item) => item.count), 1);
 
   return (
-    <Card className="shadow-none">
+    <Card className="shadow-sm">
       <CardHeader>
         <CardTitle className="text-base">{t("dashboard.priority.title")}</CardTitle>
         <CardDescription>{t("dashboard.priority.description")}</CardDescription>
@@ -188,7 +197,7 @@ function ColumnBreakdown({ dashboard }: { dashboard: DashboardMetrics }) {
   const max = Math.max(...dashboard.tasksByColumn.map((column) => column.activeCount), 1);
 
   return (
-    <Card className="shadow-none">
+    <Card className="shadow-sm">
       <CardHeader>
         <CardTitle className="text-base">{t("dashboard.columns.title")}</CardTitle>
         <CardDescription>{t("dashboard.columns.description")}</CardDescription>
@@ -219,7 +228,9 @@ function ColumnBreakdown({ dashboard }: { dashboard: DashboardMetrics }) {
             ))}
           </ul>
         ) : (
-          <p className="text-sm leading-6 text-muted-foreground">{t("dashboard.columns.empty")}</p>
+          <div className="rounded-md border border-dashed border-border bg-muted/20 p-3 text-sm leading-6 text-muted-foreground">
+            {t("dashboard.columns.empty")}
+          </div>
         )}
       </CardContent>
     </Card>
@@ -230,7 +241,7 @@ function DueSoon({ dashboard }: { dashboard: DashboardMetrics }) {
   const { i18n, t } = useTranslation();
 
   return (
-    <Card className="shadow-none">
+    <Card className="shadow-sm">
       <CardHeader>
         <CardTitle className="text-base">{t("dashboard.dueSoon.title")}</CardTitle>
         <CardDescription>{t("dashboard.dueSoon.description")}</CardDescription>
@@ -260,7 +271,9 @@ function DueSoon({ dashboard }: { dashboard: DashboardMetrics }) {
             ))}
           </ul>
         ) : (
-          <p className="text-sm leading-6 text-muted-foreground">{t("dashboard.dueSoon.empty")}</p>
+          <div className="rounded-md border border-dashed border-border bg-muted/20 p-3 text-sm leading-6 text-muted-foreground">
+            {t("dashboard.dueSoon.empty")}
+          </div>
         )}
       </CardContent>
     </Card>
@@ -271,7 +284,7 @@ function RecentActivity({ dashboard }: { dashboard: DashboardMetrics }) {
   const { i18n, t } = useTranslation();
 
   return (
-    <Card className="shadow-none">
+    <Card className="shadow-sm">
       <CardHeader>
         <div className="flex items-center gap-2">
           <Activity className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
@@ -283,7 +296,7 @@ function RecentActivity({ dashboard }: { dashboard: DashboardMetrics }) {
         {dashboard.recentActivity.length > 0 ? (
           <ul className="space-y-3">
             {dashboard.recentActivity.map((event) => (
-              <li className="rounded-md border border-border p-3" key={event.id}>
+              <li className="rounded-md border border-border bg-background p-3" key={event.id}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-medium">{event.taskTitle}</p>
                   <span className="text-xs text-muted-foreground">
@@ -303,7 +316,9 @@ function RecentActivity({ dashboard }: { dashboard: DashboardMetrics }) {
             ))}
           </ul>
         ) : (
-          <p className="text-sm leading-6 text-muted-foreground">{t("dashboard.activity.empty")}</p>
+          <div className="rounded-md border border-dashed border-border bg-muted/20 p-3 text-sm leading-6 text-muted-foreground">
+            {t("dashboard.activity.empty")}
+          </div>
         )}
       </CardContent>
     </Card>

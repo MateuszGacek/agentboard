@@ -46,21 +46,36 @@
   },
   "shell": {
     "workspaceFallback": "Neni vybran workspace",
-    "topbarTitle": "Aplikacni shell",
+    "workspaceLabel": "Workspace",
+    "demoWorkspace": "Demo workspace",
+    "topbarTitle": "Delivery workspace",
     "mobileMenu": "Navigace",
     "sessionLabel": "Relace",
     "demoUser": "Demo"
   },
   "pages": {
     "home": {
+      "kicker": "AI delivery workspace pripraveny pro recruiter review",
       "title": "AgentBoard",
-      "description": "Produkci pripraveny zaklad pro AI Kanban platformu.",
+      "description": "Planujte AI software praci, sledujte rizika dodavky a mente hrube poznamky k ukolum na jasnejsi implementacni zadani v jednom databazovem workflow.",
       "primaryAction": "Prihlasit se",
-      "secondaryAction": "Vytvorit ucet"
+      "secondaryAction": "Vytvorit ucet",
+      "proofBoard": {
+        "title": "Kanban z databaze",
+        "description": "Vytvarejte, upravujte, presouvejte a archivujte ukoly s ulozenym stavem boardu."
+      },
+      "proofDashboard": {
+        "title": "Viditelnost dodavky",
+        "description": "Sledujte aktivni praci, WIP tlak, blokovane ukoly, blizka rizika a posledni aktivitu."
+      },
+      "proofAi": {
+        "title": "Backend-only AI cesta",
+        "description": "Vylepsujte hrube ukoly pres API bez vystaveni OpenAI klicu ve frontendu."
+      }
     },
     "app": {
-      "title": "Aplikacni shell",
-      "description": "Faze 3 prinasi chranene rozvrzeni, navigaci, stav relace, motiv a volbu jazyka. Produktove moduly zacinaji az po auditu Faze 3."
+      "title": "Prehled workspace",
+      "description": "Pouzijte board a dashboard pro kontrolu realneho stavu dodavky v tomto workspace."
     },
     "workspaces": {
       "title": "Workspaces",
@@ -104,7 +119,8 @@
     "empty": "Data boardu nejsou dostupna.",
     "version": "Verze {{version}}",
     "column": {
-      "empty": "V tomto sloupci nejsou zadne ukoly."
+      "empty": "V tomto sloupci nejsou zadne ukoly.",
+      "taskCount": "{{count}} ukolu"
     },
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
@@ -232,7 +248,9 @@
     "card": {
       "blocked": "Blokace",
       "checklist": "Checklist {{completed}} / {{total}}",
-      "comments": "Komentare: {{count}}"
+      "comments": "Komentare: {{count}}",
+      "openTask": "Otevrit ukol {{title}}",
+      "dragHint": "Pretahnutim presunete ukol"
     }
   },
   "dashboard": {

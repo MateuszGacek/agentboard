@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 
 import { LanguageSwitch } from "../components/layout/language-switch";
 import { ThemeSwitch } from "../components/layout/theme-switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Skeleton } from "../components/ui/skeleton";
 import { useSession } from "../features/auth/auth-queries";
 import { cn } from "../lib/utils";
@@ -37,13 +36,18 @@ export function HomePage() {
             <ThemeSwitch />
           </div>
         </header>
-        <section className="flex flex-1 items-center py-10">
-          <Card className="w-full max-w-xl">
-            <CardHeader>
-              <CardTitle className="text-3xl">{t("pages.home.title")}</CardTitle>
-              <CardDescription>{t("pages.home.description")}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 sm:flex-row">
+        <section className="grid flex-1 items-center gap-8 py-10 lg:grid-cols-[1fr_0.8fr]">
+          <div className="max-w-2xl space-y-6">
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-accent">{t("pages.home.kicker")}</p>
+              <h1 className="text-4xl font-semibold tracking-normal sm:text-5xl">
+                {t("pages.home.title")}
+              </h1>
+              <p className="max-w-xl text-base leading-7 text-muted-foreground">
+                {t("pages.home.description")}
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 className={cn(
                   actionLinkClassName,
@@ -62,8 +66,20 @@ export function HomePage() {
               >
                 {t("pages.home.secondaryAction")}
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4 shadow-shell">
+            <div className="space-y-3">
+              {["proofBoard", "proofDashboard", "proofAi"].map((key) => (
+                <div className="rounded-md border border-border bg-background p-3" key={key}>
+                  <p className="text-sm font-medium">{t(`pages.home.${key}.title`)}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    {t(`pages.home.${key}.description`)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
       </div>
     </main>

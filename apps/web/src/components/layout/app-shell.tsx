@@ -1,6 +1,14 @@
 import type { SessionResponse } from "@agentboard/shared";
 import { Link, Outlet } from "@tanstack/react-router";
-import { FolderKanban, LayoutDashboard, Menu, Settings, X } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  FolderKanban,
+  KanbanSquare,
+  LayoutDashboard,
+  Menu,
+  Settings,
+  X
+} from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -14,9 +22,9 @@ type AppShellProps = {
 };
 
 const navItems = [
-  { to: "/app", labelKey: "nav.app", Icon: FolderKanban },
+  { to: "/app", labelKey: "nav.app", Icon: KanbanSquare },
   { to: "/app/dashboard", labelKey: "nav.dashboard", Icon: LayoutDashboard },
-  { to: "/app/workspaces", labelKey: "nav.workspaces", Icon: FolderKanban },
+  { to: "/app/workspaces", labelKey: "nav.workspaces", Icon: BriefcaseBusiness },
   { to: "/app/projects", labelKey: "nav.projects", Icon: FolderKanban },
   { to: "/app/settings", labelKey: "nav.settings", Icon: Settings }
 ] as const;
@@ -29,9 +37,9 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       {navItems.map(({ to, labelKey, Icon }) => (
         <Link
           activeProps={{
-            className: "bg-secondary text-foreground"
+            className: "bg-secondary text-foreground shadow-sm"
           }}
-          className="flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
           key={to}
           onClick={onNavigate}
           to={to}
@@ -53,13 +61,26 @@ export function AppShell({ session }: AppShellProps) {
     null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/20">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-border bg-card px-4 py-5 lg:block">
-        <div className="mb-8">
-          <p className="text-base font-semibold">{t("app.name")}</p>
-          <p className="mt-1 truncate text-xs text-muted-foreground">
-            {activeWorkspace?.name ?? t("shell.workspaceFallback")}
-          </p>
+        <div className="mb-7 space-y-4">
+          <div>
+            <p className="text-base font-semibold">{t("app.name")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("app.tagline")}</p>
+          </div>
+          <div className="rounded-md border border-border bg-background p-3">
+            <p className="text-xs font-medium uppercase text-muted-foreground">
+              {t("shell.workspaceLabel")}
+            </p>
+            <p className="mt-1 truncate text-sm font-semibold">
+              {activeWorkspace?.name ?? t("shell.workspaceFallback")}
+            </p>
+            {activeWorkspace?.isDemo ? (
+              <span className="mt-2 inline-flex rounded-full bg-accent/10 px-2 py-1 text-xs font-medium text-accent">
+                {t("shell.demoWorkspace")}
+              </span>
+            ) : null}
+          </div>
         </div>
         <SidebarNav />
       </aside>
@@ -72,11 +93,17 @@ export function AppShell({ session }: AppShellProps) {
             onClick={() => setMobileOpen(false)}
             type="button"
           />
-          <div className="relative flex h-full w-[min(21rem,calc(100vw-2rem))] flex-col border-r border-border bg-card p-4 shadow-shell">
+          <div
+            aria-label={t("shell.mobileMenu")}
+            className="relative flex h-full w-[min(21rem,calc(100vw-2rem))] flex-col border-r border-border bg-card p-4 shadow-shell"
+            role="dialog"
+          >
             <div className="mb-6 flex items-center justify-between gap-3">
               <div>
                 <p className="font-semibold">{t("app.name")}</p>
-                <p className="text-xs text-muted-foreground">{t("shell.mobileMenu")}</p>
+                <p className="text-xs text-muted-foreground">
+                  {activeWorkspace?.name ?? t("shell.workspaceFallback")}
+                </p>
               </div>
               <Button
                 aria-label={t("nav.closeMenu")}
@@ -127,7 +154,7 @@ export function AppShell({ session }: AppShellProps) {
             <UserSession session={session} />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">
+        <main className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6">
           <Outlet />
         </main>
       </div>

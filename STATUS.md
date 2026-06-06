@@ -27,6 +27,12 @@ nested-resource validation in board snapshot, task detail, task move, and AI
 apply/reject paths, verified seed idempotency against local Postgres, and passed minimal
 local API smoke. Deployment remains parked. See `DB_API_HARDENING_REPORT.md`.
 
+Product UX/UI polish status: PASS. Polished existing frontend surfaces only: home first
+impression, app shell, dashboard cards/states, board columns/cards, task detail sheet
+spacing, dialog/sheet accessibility labels, responsive spacing, and EN/PL/CS i18n. No
+deployment, SSH, AI model calls, architecture rewrite, or fake product data were added.
+See `UX_UI_POLISH_REPORT.md`.
+
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
 recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
@@ -121,9 +127,25 @@ Dashboard audit was intentionally skipped by prior instruction to move faster. D
 rewrite dashboard. Local DB-backed runtime smoke passes, but live Coolify verification
 is blocked by proxy/certificate/service availability outside the repository code.
 
-Exact next recommended action in nightly mode: Product UX/UI polish. Deployment remains
-parked until nightly local product quality work is complete and live server changes are
-explicitly allowed again.
+Latest command results after Product UX/UI polish:
+
+| Command                                   | Result | Notes                                                      |
+| ----------------------------------------- | ------ | ---------------------------------------------------------- |
+| `pnpm typecheck`                          | PASS   | Workspace TypeScript checks passed.                        |
+| `pnpm lint`                               | PASS   | ESLint passed with zero warnings.                          |
+| `pnpm build`                              | PASS   | Workspace build passed; Vite production build passed.      |
+| `pnpm format`                             | PASS   | Formatted changed frontend/docs files.                     |
+| `pnpm format:check`                       | PASS   | Prettier check passed.                                     |
+| `pnpm --filter @agentboard/web typecheck` | PASS   | Web package typecheck passed.                              |
+| `pnpm --filter @agentboard/web build`     | PASS   | Web package production build passed.                       |
+| Local frontend HTTP smoke                 | PASS   | Vite served `http://localhost:5173/` with `200 text/html`. |
+| Local API health smoke                    | PASS   | `GET /api/health` returned `ok: true`.                     |
+
+Browser automation note: Browser plugin navigation/screenshot tools were not exposed in
+this session, and Playwright was not installed in the available `node_repl` runtime, so
+visual browser automation was not completed.
+
+Exact next recommended action in nightly mode: Product feature completion pass.
 
 ## Completed Phases
 

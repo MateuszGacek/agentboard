@@ -75,6 +75,13 @@ type TaskFormState = {
 
 const priorityValues: TaskPriority[] = ["low", "medium", "high", "urgent"];
 
+const taskPriorityTone: Record<TaskPriority, string> = {
+  low: "border-border bg-muted/40 text-muted-foreground",
+  medium: "border-border bg-secondary text-secondary-foreground",
+  high: "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+  urgent: "border-destructive/25 bg-destructive/10 text-destructive"
+};
+
 const initialTaskForm: TaskFormState = {
   title: "",
   description: "",
@@ -195,6 +202,9 @@ function DialogFrame({
   children: React.ReactNode;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
+  const titleId = React.useId();
+
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -209,13 +219,22 @@ function DialogFrame({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/35 p-4">
       <section
+        aria-labelledby={titleId}
         aria-modal="true"
         className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-auto rounded-lg border border-border bg-card shadow-shell"
         role="dialog"
       >
         <header className="flex items-center justify-between gap-3 border-b border-border p-4">
-          <h2 className="text-base font-semibold">{title}</h2>
-          <Button aria-label={title} onClick={onClose} size="icon" type="button" variant="ghost">
+          <h2 className="text-base font-semibold" id={titleId}>
+            {title}
+          </h2>
+          <Button
+            aria-label={t("common.close")}
+            onClick={onClose}
+            size="icon"
+            type="button"
+            variant="ghost"
+          >
             <X className="h-4 w-4" aria-hidden="true" />
           </Button>
         </header>
@@ -234,6 +253,9 @@ function SheetFrame({
   children: React.ReactNode;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
+  const titleId = React.useId();
+
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -248,13 +270,22 @@ function SheetFrame({
   return (
     <div className="fixed inset-0 z-50 bg-foreground/35">
       <section
+        aria-labelledby={titleId}
         aria-modal="true"
         className="ml-auto flex h-full w-full flex-col overflow-hidden border-l border-border bg-card shadow-shell sm:max-w-2xl"
         role="dialog"
       >
         <header className="flex items-center justify-between gap-3 border-b border-border p-4">
-          <h2 className="text-base font-semibold">{title}</h2>
-          <Button aria-label={title} onClick={onClose} size="icon" type="button" variant="ghost">
+          <h2 className="text-base font-semibold" id={titleId}>
+            {title}
+          </h2>
+          <Button
+            aria-label={t("common.close")}
+            onClick={onClose}
+            size="icon"
+            type="button"
+            variant="ghost"
+          >
             <X className="h-4 w-4" aria-hidden="true" />
           </Button>
         </header>
@@ -540,7 +571,7 @@ function TaskDetailSheet({
 
   return (
     <SheetFrame onClose={onClose} title={t("board.detail.title")}>
-      <div className="flex-1 overflow-auto bg-muted/20 p-4">
+      <div className="flex-1 overflow-auto bg-muted/20 p-3 sm:p-4">
         {task.isLoading ? (
           <div aria-live="polite" className="space-y-4">
             <p className="text-sm text-muted-foreground">{t("board.detail.loading")}</p>
@@ -559,7 +590,7 @@ function TaskDetailSheet({
         ) : null}
         {task.data ? (
           <div className="space-y-4">
-            <div className="rounded-md border border-border bg-background p-4">
+            <div className="rounded-md border border-border bg-background p-3 shadow-sm sm:p-4">
               <form className="space-y-5" onSubmit={handleSubmit}>
                 <TaskFields form={form} setForm={setForm} showBlocked />
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -796,7 +827,7 @@ function TaskDetailSheet({
             {deleteTask.error ? (
               <InlineAlert>{getUserFacingApiError(deleteTask.error, t)}</InlineAlert>
             ) : null}
-            <div className="flex flex-wrap justify-between gap-2 rounded-md border border-border bg-background p-3">
+            <div className="flex flex-wrap justify-between gap-2 rounded-md border border-border bg-background p-3 shadow-sm">
               <Button onClick={() => setConfirmDelete(true)} type="button" variant="destructive">
                 {t("board.delete.button")}
               </Button>
@@ -1269,6 +1300,10 @@ function TaskCard({
 }) {
   const { i18n, t } = useTranslation();
   const dueDate = formatDueDate(task.dueDate, i18n.language);
+  const isOverdue =
+    task.dueDate !== null &&
+    task.completedAt === null &&
+    new Date(`${task.dueDate}T00:00:00Z`) < new Date(new Date().toISOString().slice(0, 10));
   const assignee = task.assignees[0];
   const initials = assignee?.name
     .split(" ")
@@ -1279,8 +1314,9 @@ function TaskCard({
 
   return (
     <button
+      aria-label={t("board.card.openTask", { title: task.title })}
       className={cn(
-        "w-full rounded-md border border-border bg-card p-3 text-left shadow-sm transition hover:border-foreground/25 hover:bg-muted/20",
+        "w-full rounded-md border border-border bg-card p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-foreground/25 hover:bg-muted/20 hover:shadow-shell focus-visible:ring-2 focus-visible:ring-ring",
         task.isBlocked ? "border-destructive/40 bg-destructive/5" : null,
         dragging ? "opacity-60" : null
       )}
@@ -1288,8 +1324,11 @@ function TaskCard({
       type="button"
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm font-medium leading-5">{task.title}</h3>
-        <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        <h3 className="text-sm font-semibold leading-5">{task.title}</h3>
+        <GripVertical
+          className="h-4 w-4 shrink-0 text-muted-foreground"
+          aria-label={t("board.card.dragHint")}
+        />
       </div>
       {task.descriptionPreview ? (
         <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">
@@ -1297,13 +1336,30 @@ function TaskCard({
         </p>
       ) : null}
       <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <span className="rounded border border-border px-1.5 py-0.5">
+        <span className={cn("rounded border px-1.5 py-0.5", taskPriorityTone[task.priority])}>
           {t(`board.priority.${task.priority}`)}
         </span>
         {dueDate ? (
-          <span className="inline-flex items-center gap-1">
+          <span
+            className={cn(
+              "inline-flex items-center gap-1",
+              isOverdue ? "font-medium text-destructive" : null
+            )}
+          >
             <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
             {dueDate}
+          </span>
+        ) : null}
+        {task.checklist.total > 0 ? (
+          <span className="inline-flex items-center gap-1">
+            <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+            {task.checklist.completed}/{task.checklist.total}
+          </span>
+        ) : null}
+        {task.commentsCount > 0 ? (
+          <span className="inline-flex items-center gap-1">
+            <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
+            {task.commentsCount}
           </span>
         ) : null}
         {task.isBlocked ? (
@@ -1315,12 +1371,17 @@ function TaskCard({
       </div>
       {task.labels.length > 0 || assignee ? (
         <div className="mt-3 flex items-center justify-between gap-2">
-          <div className="flex flex-wrap gap-1">
-            {task.labels.map((label) => (
+          <div className="flex min-w-0 flex-wrap gap-1">
+            {task.labels.slice(0, 3).map((label) => (
               <span className="rounded bg-secondary px-1.5 py-0.5 text-xs" key={label.id}>
                 {label.name}
               </span>
             ))}
+            {task.labels.length > 3 ? (
+              <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                +{task.labels.length - 3}
+              </span>
+            ) : null}
           </div>
           {assignee ? (
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-muted text-[0.65rem] font-semibold">
@@ -1364,20 +1425,20 @@ function BoardColumnView({
 
   return (
     <section
-      className="flex min-h-52 flex-col rounded-lg border border-border bg-muted/25 p-3 lg:w-80 lg:shrink-0"
+      className="flex min-h-52 flex-col rounded-lg border border-border bg-card/80 p-3 shadow-sm lg:w-80 lg:shrink-0"
       ref={setNodeRef}
     >
       <header className="mb-3 space-y-2">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold">{column.name}</h2>
           <span className="rounded bg-secondary px-2 py-1 text-xs text-muted-foreground">
-            {tasks.length}
+            {t("board.column.taskCount", { count: tasks.length })}
           </span>
         </div>
         {column.wip.limit !== null ? (
           <div
             className={cn(
-              "rounded-md border px-2 py-1 text-xs",
+              "rounded-md border px-2 py-1 text-xs font-medium",
               column.wip.exceeded
                 ? "border-destructive/40 bg-destructive/10 text-destructive"
                 : "border-border text-muted-foreground"
@@ -1391,7 +1452,7 @@ function BoardColumnView({
       <SortableContext items={tasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
         <div className="flex flex-1 flex-col gap-2">
           {tasks.length === 0 ? (
-            <div className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
+            <div className="rounded-md border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
               {t("board.column.empty")}
             </div>
           ) : null}
@@ -1481,14 +1542,14 @@ export function BoardPage({ boardId }: BoardPageProps) {
 
   return (
     <div className="space-y-5">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <header className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm font-medium text-muted-foreground">
             {board.data.workspace.name} / {board.data.project.name}
           </p>
-          <h1 className="text-2xl font-semibold">{board.data.name}</h1>
+          <h1 className="mt-1 text-2xl font-semibold">{board.data.name}</h1>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
           {t("board.version", { version: board.data.version })}
         </p>
       </header>

@@ -46,21 +46,36 @@
   },
   "shell": {
     "workspaceFallback": "Nie wybrano workspace'u",
-    "topbarTitle": "Powłoka workspace'u",
+    "workspaceLabel": "Workspace",
+    "demoWorkspace": "Workspace demo",
+    "topbarTitle": "Workspace dostaw",
     "mobileMenu": "Nawigacja",
     "sessionLabel": "Sesja",
     "demoUser": "Demo"
   },
   "pages": {
     "home": {
+      "kicker": "Workspace dostaw AI gotowy do rekrutacyjnego przegladu",
       "title": "AgentBoard",
-      "description": "Produkcyjny fundament dla kanbana wspieranego AI.",
+      "description": "Planuj prace AI software, wykrywaj ryzyka dostaw i zmieniaj surowe notatki zadan w jasniejsze briefy wdrozeniowe w jednym workflow z baza danych.",
       "primaryAction": "Zaloguj",
-      "secondaryAction": "Utworz konto"
+      "secondaryAction": "Utworz konto",
+      "proofBoard": {
+        "title": "Kanban z bazy danych",
+        "description": "Tworz, edytuj, przenos i archiwizuj zadania z utrwalonym stanem tablicy."
+      },
+      "proofDashboard": {
+        "title": "Widocznosc dostaw",
+        "description": "Sledz aktywna prace, presje WIP, blokady, najblizsze terminy i ostatnia aktywnosc."
+      },
+      "proofAi": {
+        "title": "Backendowa sciezka AI",
+        "description": "Ulepszaj surowe zadania przez API bez wystawiania kluczy OpenAI we frontendzie."
+      }
     },
     "app": {
-      "title": "Powłoka aplikacji",
-      "description": "Faza 3 dostarcza chroniony uklad, nawigacje, stan sesji, motyw i wybor jezyka. Moduly produktowe startuja po audycie Fazy 3."
+      "title": "Przeglad workspace'u",
+      "description": "Uzyj tablicy i dashboardu, aby sprawdzic realny stan dostaw w tym workspace."
     },
     "workspaces": {
       "title": "Workspace'y",
@@ -104,7 +119,8 @@
     "empty": "Brak danych tablicy.",
     "version": "Wersja {{version}}",
     "column": {
-      "empty": "Brak zadan w tej kolumnie."
+      "empty": "Brak zadan w tej kolumnie.",
+      "taskCount": "{{count}} zadan"
     },
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
@@ -232,7 +248,9 @@
     "card": {
       "blocked": "Blokada",
       "checklist": "Checklista {{completed}} / {{total}}",
-      "comments": "Komentarze: {{count}}"
+      "comments": "Komentarze: {{count}}",
+      "openTask": "Otworz zadanie {{title}}",
+      "dragHint": "Przeciagnij, aby przeniesc zadanie"
     }
   },
   "dashboard": {

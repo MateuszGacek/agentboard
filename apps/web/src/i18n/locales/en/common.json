@@ -46,21 +46,36 @@
   },
   "shell": {
     "workspaceFallback": "No workspace selected",
-    "topbarTitle": "Workspace shell",
+    "workspaceLabel": "Workspace",
+    "demoWorkspace": "Demo workspace",
+    "topbarTitle": "Delivery workspace",
     "mobileMenu": "Navigation",
     "sessionLabel": "Session",
     "demoUser": "Demo"
   },
   "pages": {
     "home": {
+      "kicker": "Recruiter-ready AI delivery workspace",
       "title": "AgentBoard",
-      "description": "A production-minded foundation for an AI-assisted Kanban platform.",
+      "description": "Plan AI software work, spot delivery risk, and turn rough task notes into clearer implementation briefs from one DB-backed workflow.",
       "primaryAction": "Sign in",
-      "secondaryAction": "Create account"
+      "secondaryAction": "Create account",
+      "proofBoard": {
+        "title": "DB-backed Kanban",
+        "description": "Create, edit, move, and archive tasks with persisted board state."
+      },
+      "proofDashboard": {
+        "title": "Delivery visibility",
+        "description": "Track active work, WIP pressure, blocked tasks, due-soon risk, and recent activity."
+      },
+      "proofAi": {
+        "title": "Backend-only AI path",
+        "description": "Improve rough tasks through the API while keeping OpenAI keys out of the frontend."
+      }
     },
     "app": {
-      "title": "App shell",
-      "description": "Phase 3 provides the protected layout, navigation, session state, theme, and language controls. Product modules start after the Phase 3 audit."
+      "title": "Workspace overview",
+      "description": "Use the board and dashboard to review real delivery state for this workspace."
     },
     "workspaces": {
       "title": "Workspaces",
@@ -104,7 +119,8 @@
     "empty": "No board data is available.",
     "version": "Version {{version}}",
     "column": {
-      "empty": "No tasks in this column."
+      "empty": "No tasks in this column.",
+      "taskCount": "{{count}} tasks"
     },
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
@@ -232,7 +248,9 @@
     "card": {
       "blocked": "Blocked",
       "checklist": "Checklist {{completed}} / {{total}}",
-      "comments": "{{count}} comments"
+      "comments": "{{count}} comments",
+      "openTask": "Open task {{title}}",
+      "dragHint": "Drag to move task"
     }
   },
   "dashboard": {
