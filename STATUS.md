@@ -59,6 +59,12 @@ include concrete Cloudflare/Coolify/Traefik troubleshooting, Docker build passes
 non-DB Docker smoke passes. Live server changes remain parked. See
 `COOLIFY_DEPLOYMENT_BLOCKER_REPORT.md`.
 
+Final overnight summary and deploy readiness status: PASS. Morning handoff created with
+overnight changes, validation results, local smoke result, deployment blocker status,
+manual Coolify checklist, UX review checklist, remaining blockers, and the next exact
+action. Production is still not verified live; do not claim deployment is complete until
+the Coolify checklist and live smoke pass. See `MORNING_HANDOFF.md`.
+
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
 recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
@@ -238,6 +244,23 @@ Latest command results after Coolify deployment blocker local repair:
 
 Exact next recommended action in nightly mode: Final overnight summary and deploy
 readiness.
+
+Latest command results after final overnight summary and deploy readiness:
+
+| Command                              | Result | Notes                                                |
+| ------------------------------------ | ------ | ---------------------------------------------------- |
+| `pnpm typecheck`                     | PASS   | Workspace TypeScript checks passed.                  |
+| `pnpm lint`                          | PASS   | ESLint passed with zero warnings.                    |
+| `pnpm build`                         | PASS   | Workspace build and Vite production build passed.    |
+| `pnpm format:check`                  | PASS   | Prettier check passed.                               |
+| `pnpm predeploy:check`               | PASS   | Static predeploy checks and i18n parity passed.      |
+| `docker build -t agentboard-local .` | PASS   | Production image built locally.                      |
+| `pnpm smoke:local`                   | PASS   | Local API/DB smoke passed with AI unavailable state. |
+
+Exact next recommended action: push the final documentation commit, then run the manual
+Coolify deployment checklist in `MORNING_HANDOFF.md`. Do not mark production live until
+`/api/health`, `/login`, demo login, board, dashboard, and AI unavailable/working state
+are verified on the public domain.
 
 ## Completed Phases
 

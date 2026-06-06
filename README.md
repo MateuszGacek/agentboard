@@ -273,6 +273,7 @@ More detail: [docs/03-deployment/deployment-notes.md](docs/03-deployment/deploym
 ## Documentation
 
 - Current state: [STATUS.md](STATUS.md)
+- Morning handoff: [MORNING_HANDOFF.md](MORNING_HANDOFF.md)
 - Final recruiter audit: [FINAL_RECRUITER_AUDIT.md](FINAL_RECRUITER_AUDIT.md)
 - Documentation map: [docs/index.md](docs/index.md)
 - API contracts: [docs/01-architecture/api-contracts.md](docs/01-architecture/api-contracts.md)
