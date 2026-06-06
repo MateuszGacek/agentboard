@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Local Runtime Smoke Complete + Coolify Deploy Gate.
+Local Runtime Smoke Complete + Coolify Deploy Blocked.
 
 Implementation date: June 6, 2026
 
@@ -12,11 +12,14 @@ Delivery state check date: June 6, 2026
 
 Local runtime smoke date: June 6, 2026
 
+Coolify deploy verification date: June 6, 2026
+
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
 recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
 static validation, and now pass local DB-backed runtime smoke. Production deployment
-verification remains pending.
+verification is blocked because the live domain currently serves Traefik's default
+self-signed certificate and returns `503 no available server`.
 
 Task detail polish status: PASS as code. The task detail sheet now renders deeper
 API-backed task data and supports narrow DB-backed checklist/comment mutations plus
@@ -77,15 +80,15 @@ Runtime command results:
 | API + web dev servers                      | PASS            | API on `3000`, Vite on `5173`.                                                          |
 | Local browser smoke                        | PASS            | Demo, board, task detail, WIP, dashboard, AI unavailable, and responsive widths passed. |
 
-Current decision: `READY_FOR_COOLIFY_DEPLOY`.
+Current decision: `COOLIFY_DEPLOY_BLOCKED`.
 
 Dashboard audit was intentionally skipped by prior instruction to move faster. Do not
-rewrite dashboard. The next repository action is Coolify deployment and live smoke,
-because local DB-backed runtime smoke now passes.
+rewrite dashboard. Local DB-backed runtime smoke passes, but live Coolify verification
+is blocked by proxy/certificate/service availability outside the repository code.
 
-Exact next recommended action: run the required static checks after this documentation
-update, commit the local smoke results, push `main` to `origin`, and verify the live
-Coolify deployment at `https://scalesoftware.matgac.pl`.
+Exact next recommended action: open Coolify/Traefik, confirm the app service deployed
+from `main`, assign `scalesoftware.matgac.pl` to the app service on port `3000`, ensure
+the app container is healthy, issue a real certificate, then rerun live smoke.
 
 ## Completed Phases
 
@@ -164,14 +167,14 @@ not add dashboard, AI, or new product UI scope and must remain parked.
 
 ## Incomplete
 
-- Production deployment at `https://scalesoftware.matgac.pl` has not been verified
-  after the local runtime smoke pass.
+- Production deployment at `https://scalesoftware.matgac.pl` is blocked: the domain
+  presents `TRAEFIK DEFAULT CERT` and `/api/health` returns `503 no available server`.
 - Checklist deletion/reordering and comment edit/delete remain future task-detail
   refinements.
 - Real AI endpoint smoke test still requires a backend-only `OPENAI_API_KEY`; the
   missing-key unavailable path passes locally.
 - Search/filter, realtime, file uploads, and billing remain future product phases.
-- Deployment execution and live verification are the next operational step.
+- Coolify/Traefik service routing and certificate setup are the next operational step.
 - Public recruiter sharing remains pending until Coolify deployment and live smoke pass.
 
 ## Files Changed In Dashboard Implementation
@@ -404,22 +407,24 @@ Final recruiter polish validation completed on June 6, 2026.
 
 ## Next Recommended Action
 
-Deploy to Coolify and run live smoke:
+Fix Coolify routing and rerun live smoke:
 
 ```txt
 Continue the AgentBoard project from the current repository state.
 
-Decision from STATUS.md and LOCAL_RUNTIME_SMOKE.md: READY_FOR_COOLIFY_DEPLOY.
+Decision from STATUS.md and LOCAL_RUNTIME_SMOKE.md: COOLIFY_DEPLOY_BLOCKED.
 
-Local DB-backed runtime smoke passed on June 6, 2026. Do not add new features. Do not rewrite dashboard. Keep OPENAI_API_KEY backend-only.
+Local DB-backed runtime smoke passed on June 6, 2026. main was pushed to origin. Live verification is blocked because https://scalesoftware.matgac.pl presents TRAEFIK DEFAULT CERT and /api/health returns 503 no available server. Do not add new features. Do not rewrite dashboard. Keep OPENAI_API_KEY backend-only.
 
 First read AGENTS.md, STATUS.md, LOCAL_RUNTIME_SMOKE.md, README.md, docs/index.md, docs/03-deployment/deployment-notes.md, docs/03-deployment/coolify-deployment.md, and docs/03-deployment/ovh-cloudflare-coolify-prep.md.
 
-Deploy through the documented Coolify/GitHub path:
-- Commit the local smoke documentation.
-- Push main to origin.
-- Confirm Coolify redeploys from GitHub.
-- Verify https://scalesoftware.matgac.pl/api/health.
+Fix the Coolify deployment path:
+- Confirm Coolify pulled commit 6f01958 from main.
+- Confirm the app service is built, running, and healthy.
+- Assign scalesoftware.matgac.pl to the app service, not postgres.
+- Confirm the app service target port is 3000.
+- Ensure Traefik/Coolify issues a real certificate for scalesoftware.matgac.pl.
+- Verify https://scalesoftware.matgac.pl/api/health returns the AgentBoard health JSON.
 - Verify app root, demo login, board load, task create/edit/move, task detail checklist/comment, dashboard metrics, and AI unavailable or backend-only AI behavior.
 
 Validation:

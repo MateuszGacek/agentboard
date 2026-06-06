@@ -84,8 +84,18 @@ Board and dashboard were checked at `360`, `768`, `1024`, and `1440` widths.
 
 ## Next Decision
 
-`READY_FOR_COOLIFY_DEPLOY`
+`COOLIFY_DEPLOY_BLOCKED`
 
-Push `main` to `origin` to trigger the Coolify deployment path, then verify
-`https://scalesoftware.matgac.pl/api/health`, the app root, demo login, board/task
-mutations, dashboard metrics, and AI unavailable or backend-only AI behavior.
+`main` was pushed to `origin` after local smoke passed. Live verification did not pass:
+
+- `https://scalesoftware.matgac.pl/api/health` fails normal TLS verification because
+  the server presents `TRAEFIK DEFAULT CERT`.
+- `curl -k https://scalesoftware.matgac.pl/api/health` returns `HTTP 503` with
+  `no available server`.
+- A 12-attempt poll from 23:25 to 23:27 CEST stayed on `HTTP 503`.
+
+Next required action is in Coolify/Traefik: confirm the app service is deployed and
+healthy, the domain is assigned to the `app` service on port `3000`, and certificate
+issuance/proxy routing are configured for `scalesoftware.matgac.pl`. After that, rerun
+live smoke for `/api/health`, app root, demo login, board/task mutations, dashboard
+metrics, and AI unavailable or backend-only AI behavior.
