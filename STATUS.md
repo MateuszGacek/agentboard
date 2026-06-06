@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Delivery State Check + Local Runtime Smoke Planning.
+Local Runtime Smoke Complete + Coolify Deploy Gate.
 
 Implementation date: June 6, 2026
 
@@ -10,11 +10,13 @@ Local product audit date: June 6, 2026
 
 Delivery state check date: June 6, 2026
 
+Local runtime smoke date: June 6, 2026
+
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
-recruiter-facing README, and Docker/Coolify baseline are implemented as code and pass
-static validation. They are `DONE_STATIC`, not `DONE_RUNTIME_VERIFIED`, because this
-shell has no configured `DATABASE_URL` or `OPENAI_API_KEY`.
+recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
+static validation, and now pass local DB-backed runtime smoke. Production deployment
+verification remains pending.
 
 Task detail polish status: PASS as code. The task detail sheet now renders deeper
 API-backed task data and supports narrow DB-backed checklist/comment mutations plus
@@ -28,10 +30,12 @@ contracts and EN/PL/CS translations.
 
 AI feature status: PASS as code. The task detail sheet includes Improve with AI, calls
 backend-only OpenAI integration, stores suggestions, supports apply/reject, and has an
-`AI_UNAVAILABLE` path when AI is disabled or `OPENAI_API_KEY` is missing. Runtime smoke
-of that unavailable state is still pending.
+`AI_UNAVAILABLE` path when AI is disabled or `OPENAI_API_KEY` is missing. Local runtime
+smoke verified the unavailable state with `OPENAI_API_KEY` unset.
 
 Delivery plan: see `DELIVERY_PLAN.md`.
+
+Local runtime smoke: PASS. See `LOCAL_RUNTIME_SMOKE.md`.
 
 Latest command results from the delivery state check:
 
@@ -51,24 +55,37 @@ Latest command results from the delivery state check:
 | `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                              |
 | `docker build -t agentboard-local .`         | PASS   | Non-destructive local Docker image build completed.   |
 
+Latest command results after local runtime smoke documentation updates:
+
+| Command             | Result | Notes                                                 |
+| ------------------- | ------ | ----------------------------------------------------- |
+| `pnpm typecheck`    | PASS   | Workspace TypeScript checks passed.                   |
+| `pnpm lint`         | PASS   | ESLint passed with zero warnings.                     |
+| `pnpm build`        | PASS   | Workspace build passed; Vite production build passed. |
+| `pnpm format`       | PASS   | Formatted updated markdown files.                     |
+| `pnpm format:check` | PASS   | Prettier check passed after formatting.               |
+
 Runtime command results:
 
-| Command           | Result  | Notes                                    |
-| ----------------- | ------- | ---------------------------------------- |
-| `pnpm db:migrate` | NOT_RUN | `DATABASE_URL` is unset in this shell.   |
-| `pnpm db:seed`    | NOT_RUN | `DATABASE_URL` is unset in this shell.   |
-| OpenAI smoke      | NOT_RUN | `OPENAI_API_KEY` is unset in this shell. |
+| Command                                    | Result          | Notes                                                                                   |
+| ------------------------------------------ | --------------- | --------------------------------------------------------------------------------------- |
+| `docker compose up -d postgres`            | FAIL_THEN_FIXED | Initial run needed local env interpolation for `SESSION_SECRET`.                        |
+| Postgres with temporary host-port override | PASS            | Published only `127.0.0.1:5432` for local pnpm commands.                                |
+| `pnpm db:migrate`                          | PASS            | Ran against verified local `DATABASE_URL`.                                              |
+| `pnpm db:seed`                             | PASS            | Demo seed completed.                                                                    |
+| `pnpm db:seed` second pass                 | PASS            | Re-ran without command failure.                                                         |
+| API + web dev servers                      | PASS            | API on `3000`, Vite on `5173`.                                                          |
+| Local browser smoke                        | PASS            | Demo, board, task detail, WIP, dashboard, AI unavailable, and responsive widths passed. |
 
-Current decision: `START_LOCAL_RUNTIME_SMOKE`.
+Current decision: `READY_FOR_COOLIFY_DEPLOY`.
 
 Dashboard audit was intentionally skipped by prior instruction to move faster. Do not
-rewrite dashboard. The next repository action is local DB-backed runtime smoke, not
-deployment. Deployment to Coolify remains parked until local runtime smoke passes.
+rewrite dashboard. The next repository action is Coolify deployment and live smoke,
+because local DB-backed runtime smoke now passes.
 
-Exact next recommended action: configure or confirm a safe local PostgreSQL
-`DATABASE_URL`, run migrations/seed, start the app locally, and smoke the full
-auth/demo -> board -> task detail -> dashboard -> AI unavailable flow described in
-`DELIVERY_PLAN.md`.
+Exact next recommended action: run the required static checks after this documentation
+update, commit the local smoke results, push `main` to `origin`, and verify the live
+Coolify deployment at `https://scalesoftware.matgac.pl`.
 
 ## Completed Phases
 
@@ -147,18 +164,14 @@ not add dashboard, AI, or new product UI scope and must remain parked.
 
 ## Incomplete
 
-- Production deployment at `https://scalesoftware.matgac.pl` has not been verified in
-  this repository state.
-- DB-backed smoke tests still require a safe local or staging `DATABASE_URL`.
+- Production deployment at `https://scalesoftware.matgac.pl` has not been verified
+  after the local runtime smoke pass.
 - Checklist deletion/reordering and comment edit/delete remain future task-detail
   refinements.
-- Dashboard runtime smoke test still requires a safe local or staging `DATABASE_URL`.
-- Real AI endpoint smoke test still requires a safe local/staging `DATABASE_URL` and
-  backend-only `OPENAI_API_KEY`.
+- Real AI endpoint smoke test still requires a backend-only `OPENAI_API_KEY`; the
+  missing-key unavailable path passes locally.
 - Search/filter, realtime, file uploads, and billing remain future product phases.
-- Local DB-backed runtime smoke remains the next operational step.
-- Deployment execution and live verification remain parked until local runtime smoke
-  passes.
+- Deployment execution and live verification are the next operational step.
 - Public recruiter sharing remains pending until Coolify deployment and live smoke pass.
 
 ## Files Changed In Dashboard Implementation
@@ -391,37 +404,23 @@ Final recruiter polish validation completed on June 6, 2026.
 
 ## Next Recommended Action
 
-Start local runtime smoke:
+Deploy to Coolify and run live smoke:
 
 ```txt
 Continue the AgentBoard project from the current repository state.
 
-Decision from DELIVERY_PLAN.md: START_LOCAL_RUNTIME_SMOKE.
+Decision from STATUS.md and LOCAL_RUNTIME_SMOKE.md: READY_FOR_COOLIFY_DEPLOY.
 
-Run only a local DB-backed runtime smoke. Do not implement new features. Do not deploy. Do not change Docker/Coolify setup unless documenting smoke results.
+Local DB-backed runtime smoke passed on June 6, 2026. Do not add new features. Do not rewrite dashboard. Keep OPENAI_API_KEY backend-only.
 
-First read AGENTS.md, STATUS.md, DELIVERY_PLAN.md, README.md, docs/index.md, docs/02-implementation/acceptance-criteria.md, docs/01-architecture/api-contracts.md, docs/01-architecture/database.md, and docs/01-architecture/ai-feature.md.
+First read AGENTS.md, STATUS.md, LOCAL_RUNTIME_SMOKE.md, README.md, docs/index.md, docs/03-deployment/deployment-notes.md, docs/03-deployment/coolify-deployment.md, and docs/03-deployment/ovh-cloudflare-coolify-prep.md.
 
-Before running migrations or seed, verify DATABASE_URL is explicitly configured and points to a safe local database. If DATABASE_URL is missing or not clearly local/safe, stop and document the exact setup commands needed.
-
-If safe local DB is available:
-- Run pnpm db:migrate
-- Run pnpm db:seed
-- Start the API and web app locally
-- Browser-smoke the full product flow:
-  1. Open app.
-  2. Register/login or use demo login.
-  3. Reach app shell.
-  4. Open board.
-  5. Create task.
-  6. Edit task.
-  7. Open task detail.
-  8. Add/toggle checklist, add comment, inspect activity/metadata.
-  9. Move task across columns.
-  10. Confirm WIP warning.
-  11. Use mobile fallback move action.
-  12. Open dashboard.
-  13. Use AI Improve or verify clear unavailable state if OPENAI_API_KEY is unset.
+Deploy through the documented Coolify/GitHub path:
+- Commit the local smoke documentation.
+- Push main to origin.
+- Confirm Coolify redeploys from GitHub.
+- Verify https://scalesoftware.matgac.pl/api/health.
+- Verify app root, demo login, board load, task create/edit/move, task detail checklist/comment, dashboard metrics, and AI unavailable or backend-only AI behavior.
 
 Validation:
 - Run pnpm typecheck
@@ -429,5 +428,5 @@ Validation:
 - Run pnpm build
 - Run pnpm format:check
 
-Update STATUS.md with runtime smoke results, exact command results, remaining blockers, and the next decision.
+Update STATUS.md and LOCAL_RUNTIME_SMOKE.md with live deployment results before public recruiter sharing.
 ```

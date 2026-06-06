@@ -41,6 +41,7 @@ start with [../STATUS.md](../STATUS.md).
 - [Phase 3-4 audit](04-reviews/phase-3-4-audit.md)
 - [Recruiter readiness](04-reviews/recruiter-readiness.md)
 - [Final recruiter audit](../FINAL_RECRUITER_AUDIT.md)
+- [Local runtime smoke](../LOCAL_RUNTIME_SMOKE.md)
 
 ## Agent Prompts
 
