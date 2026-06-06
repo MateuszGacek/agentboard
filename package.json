@@ -1,0 +1,28 @@
+{
+  "name": "agentboard",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "db:generate": "pnpm --filter @agentboard/db db:generate",
+    "db:migrate": "pnpm --filter @agentboard/db db:migrate",
+    "db:seed": "pnpm --filter @agentboard/db db:seed",
+    "start": "pnpm --filter @agentboard/api start"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}
