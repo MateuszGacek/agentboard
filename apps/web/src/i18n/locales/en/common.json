@@ -182,6 +182,7 @@
     },
     "detail": {
       "title": "Task detail",
+      "description": "Review and edit task fields, ownership, comments, checklist, activity, and AI suggestions.",
       "loading": "Loading task detail",
       "retry": "Retry",
       "saving": "Saving changes...",

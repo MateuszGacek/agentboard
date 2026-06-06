@@ -55,10 +55,26 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 export function AppShell({ session }: AppShellProps) {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const mobileTitleId = React.useId();
   const activeWorkspace =
     session.workspaces.find((workspace) => workspace.id === session.activeWorkspaceId) ??
     session.workspaces[0] ??
     null;
+
+  React.useEffect(() => {
+    if (!mobileOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen]);
 
   return (
     <div className="min-h-screen bg-muted/20">
@@ -94,13 +110,16 @@ export function AppShell({ session }: AppShellProps) {
             type="button"
           />
           <div
-            aria-label={t("shell.mobileMenu")}
+            aria-labelledby={mobileTitleId}
+            aria-modal="true"
             className="relative flex h-full w-[min(21rem,calc(100vw-2rem))] flex-col border-r border-border bg-card p-4 shadow-shell"
             role="dialog"
           >
             <div className="mb-6 flex items-center justify-between gap-3">
-              <div>
-                <p className="font-semibold">{t("app.name")}</p>
+              <div className="min-w-0">
+                <p className="truncate font-semibold" id={mobileTitleId}>
+                  {t("shell.mobileMenu")}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {activeWorkspace?.name ?? t("shell.workspaceFallback")}
                 </p>
@@ -125,7 +144,7 @@ export function AppShell({ session }: AppShellProps) {
       ) : null}
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur md:px-6">
+        <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 py-2 backdrop-blur md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               aria-label={t("nav.openMenu")}
@@ -144,7 +163,7 @@ export function AppShell({ session }: AppShellProps) {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <div className="hidden md:block">
               <LanguageSwitch />
             </div>

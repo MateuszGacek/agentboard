@@ -39,6 +39,13 @@ for theme, language, workspace/demo context, and deployment guardrails. No DB/AP
 changes, backend endpoints, fake frontend data, deployment, SSH, or live server changes
 were added. See `FEATURE_COMPLETION_REPORT.md`.
 
+Accessibility responsive i18n QA status: PASS. Verified EN/PL/CS key parity, added
+accessible overlay descriptions, improved mobile nav dialog semantics and Escape
+handling, tightened narrow-width wrapping on auth/home/app shell/board surfaces, and
+passed local route smoke. Automated viewport screenshots remain pending because Browser
+screenshot tooling and Playwright were unavailable in this session. See
+`A11Y_RESPONSIVE_I18N_REPORT.md`.
+
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
 recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
@@ -174,7 +181,19 @@ Latest command results after Product feature completion pass:
 | Focused local runtime smoke                  | PASS   | Health, demo auth, board snapshot/filter logic, task    |
 |                                              |        | create, task move, dashboard, and web board route pass. |
 
-Exact next recommended action in nightly mode: Accessibility responsive i18n QA pass.
+Previous recommended action in nightly mode: Accessibility responsive i18n QA pass.
+
+Latest command results after Accessibility responsive i18n QA pass:
+
+| Command                                   | Result | Notes                                                 |
+| ----------------------------------------- | ------ | ----------------------------------------------------- |
+| i18n key parity script                    | PASS   | EN/PL/CS share 287 keys.                              |
+| React visible literal scan                | PASS   | No obvious visible hardcoded English component text.  |
+| `pnpm --filter @agentboard/web typecheck` | PASS   | Focused web check passed after accessibility changes. |
+| Local API health smoke                    | PASS   | `GET /api/health` returned `ok: true`.                |
+| Local SPA route smoke                     | PASS   | Key routes served `200 text/html` with root element.  |
+
+Exact next recommended action in nightly mode: Automated QA and local smoke scripts.
 
 ## Completed Phases
 

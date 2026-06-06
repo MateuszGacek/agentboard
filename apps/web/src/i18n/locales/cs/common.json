@@ -182,6 +182,7 @@
     },
     "detail": {
       "title": "Detail ukolu",
+      "description": "Kontrolujte a upravujte pole ukolu, vlastniky, komentare, checklist, aktivitu a AI navrhy.",
       "loading": "Nacitani detailu ukolu",
       "retry": "Zkusit znovu",
       "saving": "Ukladani zmen...",

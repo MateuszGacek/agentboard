@@ -29,9 +29,9 @@ export function HomePage() {
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-5">
-        <header className="flex items-center justify-between gap-3">
+        <header className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-semibold">{t("app.name")}</p>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <LanguageSwitch />
             <ThemeSwitch />
           </div>

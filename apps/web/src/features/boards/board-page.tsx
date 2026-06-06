@@ -429,7 +429,7 @@ function BoardFilterBar({
       aria-label={t("board.filters.title")}
       className="space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm"
     >
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-end">
         <div className="min-w-0 flex-1 space-y-2">
           <Label htmlFor="board-search">{t("board.filters.search")}</Label>
           <div className="relative">
@@ -447,7 +447,7 @@ function BoardFilterBar({
             />
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <div className="space-y-2">
             <Label htmlFor="board-priority-filter">{t("board.filters.priority")}</Label>
             <Select
@@ -534,8 +534,8 @@ function BoardFilterBar({
         </div>
       </div>
       <div className="flex flex-col gap-2 border-t border-border pt-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p aria-live="polite" className="inline-flex items-center gap-2">
-          <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
+        <p aria-live="polite" className="inline-flex min-w-0 items-center gap-2">
+          <SlidersHorizontal className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           {t("board.filters.resultCount", { count: resultCount, total: totalCount })}
         </p>
         <div className="flex flex-wrap items-center gap-3">
@@ -612,15 +612,18 @@ function BoardTips({ board }: { board: BoardSnapshot }) {
 
 function DialogFrame({
   title,
+  description,
   children,
   onClose
 }: {
   title: string;
+  description?: string;
   children: React.ReactNode;
   onClose: () => void;
 }) {
   const { t } = useTranslation();
   const titleId = React.useId();
+  const descriptionId = React.useId();
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -636,6 +639,7 @@ function DialogFrame({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/35 p-4">
       <section
+        aria-describedby={description ? descriptionId : undefined}
         aria-labelledby={titleId}
         aria-modal="true"
         className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-auto rounded-lg border border-border bg-card shadow-shell"
@@ -645,6 +649,11 @@ function DialogFrame({
           <h2 className="text-base font-semibold" id={titleId}>
             {title}
           </h2>
+          {description ? (
+            <p className="sr-only" id={descriptionId}>
+              {description}
+            </p>
+          ) : null}
           <Button
             aria-label={t("common.close")}
             onClick={onClose}
@@ -663,15 +672,18 @@ function DialogFrame({
 
 function SheetFrame({
   title,
+  description,
   children,
   onClose
 }: {
   title: string;
+  description?: string;
   children: React.ReactNode;
   onClose: () => void;
 }) {
   const { t } = useTranslation();
   const titleId = React.useId();
+  const descriptionId = React.useId();
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -687,6 +699,7 @@ function SheetFrame({
   return (
     <div className="fixed inset-0 z-50 bg-foreground/35">
       <section
+        aria-describedby={description ? descriptionId : undefined}
         aria-labelledby={titleId}
         aria-modal="true"
         className="ml-auto flex h-full w-full flex-col overflow-hidden border-l border-border bg-card shadow-shell sm:max-w-2xl"
@@ -696,6 +709,11 @@ function SheetFrame({
           <h2 className="text-base font-semibold" id={titleId}>
             {title}
           </h2>
+          {description ? (
+            <p className="sr-only" id={descriptionId}>
+              {description}
+            </p>
+          ) : null}
           <Button
             aria-label={t("common.close")}
             onClick={onClose}
@@ -843,12 +861,12 @@ function CreateTaskDialog({
     );
   };
 
+  const description = t("board.create.column", { column: column.name });
+
   return (
-    <DialogFrame onClose={onClose} title={t("board.create.title")}>
+    <DialogFrame description={description} onClose={onClose} title={t("board.create.title")}>
       <form className="space-y-4 p-4" onSubmit={handleSubmit}>
-        <p className="text-sm text-muted-foreground">
-          {t("board.create.column", { column: column.name })}
-        </p>
+        <p className="text-sm text-muted-foreground">{description}</p>
         <TaskFields form={form} setForm={setForm} showBlocked={false} />
         {error ? <InlineAlert>{error}</InlineAlert> : null}
         {createTask.error ? (
@@ -987,7 +1005,11 @@ function TaskDetailSheet({
     createComment.isPending;
 
   return (
-    <SheetFrame onClose={onClose} title={t("board.detail.title")}>
+    <SheetFrame
+      description={t("board.detail.description")}
+      onClose={onClose}
+      title={t("board.detail.title")}
+    >
       <div className="flex-1 overflow-auto bg-muted/20 p-3 sm:p-4">
         {task.isLoading ? (
           <div aria-live="polite" className="space-y-4">
@@ -1258,7 +1280,11 @@ function TaskDetailSheet({
         ) : null}
       </div>
       {confirmDelete ? (
-        <DialogFrame onClose={() => setConfirmDelete(false)} title={t("board.delete.title")}>
+        <DialogFrame
+          description={t("board.delete.description")}
+          onClose={() => setConfirmDelete(false)}
+          title={t("board.delete.title")}
+        >
           <div className="space-y-4 p-4">
             <p className="text-sm text-muted-foreground">{t("board.delete.description")}</p>
             <div className="flex justify-end gap-2">
@@ -1741,11 +1767,8 @@ function TaskCard({
       type="button"
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm font-semibold leading-5">{task.title}</h3>
-        <GripVertical
-          className="h-4 w-4 shrink-0 text-muted-foreground"
-          aria-label={t("board.card.dragHint")}
-        />
+        <h3 className="min-w-0 break-words text-sm font-semibold leading-5">{task.title}</h3>
+        <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
       </div>
       {task.descriptionPreview ? (
         <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">
@@ -1790,7 +1813,10 @@ function TaskCard({
         <div className="mt-3 flex items-center justify-between gap-2">
           <div className="flex min-w-0 flex-wrap gap-1">
             {task.labels.slice(0, 3).map((label) => (
-              <span className="rounded bg-secondary px-1.5 py-0.5 text-xs" key={label.id}>
+              <span
+                className="max-w-full rounded bg-secondary px-1.5 py-0.5 text-xs"
+                key={label.id}
+              >
                 {label.name}
               </span>
             ))}
@@ -1846,9 +1872,9 @@ function BoardColumnView({
       ref={setNodeRef}
     >
       <header className="mb-3 space-y-2">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold">{column.name}</h2>
-          <span className="rounded bg-secondary px-2 py-1 text-xs text-muted-foreground">
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="min-w-0 break-words text-sm font-semibold">{column.name}</h2>
+          <span className="shrink-0 rounded bg-secondary px-2 py-1 text-xs text-muted-foreground">
             {t("board.column.taskCount", { count: tasks.length })}
           </span>
         </div>
@@ -2008,13 +2034,13 @@ export function BoardPage({ boardId }: BoardPageProps) {
   return (
     <div className="space-y-5">
       <header className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground">
+        <div className="min-w-0">
+          <p className="break-words text-sm font-medium text-muted-foreground">
             {board.data.workspace.name} / {board.data.project.name}
           </p>
-          <h1 className="mt-1 text-2xl font-semibold">{board.data.name}</h1>
+          <h1 className="mt-1 break-words text-2xl font-semibold">{board.data.name}</h1>
         </div>
-        <p className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
+        <p className="w-fit shrink-0 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
           {t("board.version", { version: board.data.version })}
         </p>
       </header>

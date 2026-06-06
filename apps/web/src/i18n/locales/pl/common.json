@@ -182,6 +182,7 @@
     },
     "detail": {
       "title": "Szczegoly zadania",
+      "description": "Sprawdzaj i edytuj pola zadania, wlascicieli, komentarze, checkliste, aktywnosc i sugestie AI.",
       "loading": "Ladowanie szczegolow zadania",
       "retry": "Ponow",
       "saving": "Zapisywanie zmian...",
