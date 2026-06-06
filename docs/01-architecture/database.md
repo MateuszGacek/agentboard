@@ -375,13 +375,21 @@ create index idx_tasks_priority on tasks(workspace_id, priority);
 create index idx_tasks_blocked on tasks(workspace_id, is_blocked);
 
 -- Relations
+create index idx_task_assignees_task on task_assignees(task_id);
 create index idx_task_assignees_user on task_assignees(user_id);
+create index idx_task_labels_task on task_labels(task_id);
 create index idx_task_labels_label on task_labels(label_id);
 create index idx_labels_workspace on labels(workspace_id);
 create index idx_comments_task_created on task_comments(task_id, created_at);
+create index idx_comments_workspace_task_created on task_comments(workspace_id, task_id, created_at);
 create index idx_checklist_task_position on task_checklist_items(task_id, position);
+create index idx_checklist_workspace_task_position on task_checklist_items(workspace_id, task_id, position);
 create index idx_activity_task_created on task_activity_events(task_id, created_at desc);
+create index idx_activity_workspace_created on task_activity_events(workspace_id, created_at desc);
+create index idx_activity_workspace_task_created on task_activity_events(workspace_id, task_id, created_at desc);
 create index idx_ai_suggestions_task_created on ai_suggestions(task_id, created_at desc);
+create index idx_ai_suggestions_workspace_task_created on ai_suggestions(workspace_id, task_id, created_at desc);
+create index idx_ai_suggestions_workspace_status on ai_suggestions(workspace_id, status);
 ```
 
 Optional search index:

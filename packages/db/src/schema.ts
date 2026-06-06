@@ -268,6 +268,7 @@ export const taskAssignees = pgTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.taskId, table.userId] }),
+    taskIdx: index("idx_task_assignees_task").on(table.taskId),
     userIdx: index("idx_task_assignees_user").on(table.userId)
   })
 );
@@ -305,6 +306,7 @@ export const taskLabels = pgTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.taskId, table.labelId] }),
+    taskIdx: index("idx_task_labels_task").on(table.taskId),
     labelIdx: index("idx_task_labels_label").on(table.labelId)
   })
 );
@@ -326,7 +328,12 @@ export const taskComments = pgTable(
     deletedAt: timestamp("deleted_at", { withTimezone: true })
   },
   (table) => ({
-    taskCreatedIdx: index("idx_comments_task_created").on(table.taskId, table.createdAt)
+    taskCreatedIdx: index("idx_comments_task_created").on(table.taskId, table.createdAt),
+    workspaceTaskCreatedIdx: index("idx_comments_workspace_task_created").on(
+      table.workspaceId,
+      table.taskId,
+      table.createdAt
+    )
   })
 );
 
@@ -348,7 +355,12 @@ export const taskChecklistItems = pgTable(
     completedAt: timestamp("completed_at", { withTimezone: true })
   },
   (table) => ({
-    taskPositionIdx: index("idx_checklist_task_position").on(table.taskId, table.position)
+    taskPositionIdx: index("idx_checklist_task_position").on(table.taskId, table.position),
+    workspaceTaskPositionIdx: index("idx_checklist_workspace_task_position").on(
+      table.workspaceId,
+      table.taskId,
+      table.position
+    )
   })
 );
 
@@ -370,6 +382,15 @@ export const taskActivityEvents = pgTable(
   },
   (table) => ({
     taskCreatedIdx: index("idx_activity_task_created").on(
+      table.taskId,
+      sql`${table.createdAt} desc`
+    ),
+    workspaceCreatedIdx: index("idx_activity_workspace_created").on(
+      table.workspaceId,
+      sql`${table.createdAt} desc`
+    ),
+    workspaceTaskCreatedIdx: index("idx_activity_workspace_task_created").on(
+      table.workspaceId,
       table.taskId,
       sql`${table.createdAt} desc`
     )
@@ -400,6 +421,15 @@ export const aiSuggestions = pgTable(
     taskCreatedIdx: index("idx_ai_suggestions_task_created").on(
       table.taskId,
       sql`${table.createdAt} desc`
+    ),
+    workspaceTaskCreatedIdx: index("idx_ai_suggestions_workspace_task_created").on(
+      table.workspaceId,
+      table.taskId,
+      sql`${table.createdAt} desc`
+    ),
+    workspaceStatusIdx: index("idx_ai_suggestions_workspace_status").on(
+      table.workspaceId,
+      table.status
     )
   })
 );

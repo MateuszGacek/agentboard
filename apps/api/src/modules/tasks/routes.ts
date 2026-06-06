@@ -182,7 +182,14 @@ async function moveTaskTransaction(input: {
     const [sourceColumn] = await tx
       .select()
       .from(boardColumns)
-      .where(eq(boardColumns.id, task.columnId))
+      .where(
+        and(
+          eq(boardColumns.id, task.columnId),
+          eq(boardColumns.boardId, task.boardId),
+          eq(boardColumns.workspaceId, task.workspaceId),
+          eq(boardColumns.isArchived, false)
+        )
+      )
       .limit(1);
     const [targetColumn] = await tx
       .select()

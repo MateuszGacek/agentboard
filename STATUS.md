@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Local Runtime Smoke Complete + Coolify Deploy Blocked.
+Nightly Product Delivery Mode Started + Coolify Deploy Blocked.
 
 Implementation date: June 6, 2026
 
@@ -13,6 +13,19 @@ Delivery state check date: June 6, 2026
 Local runtime smoke date: June 6, 2026
 
 Coolify deploy verification date: June 6, 2026
+
+Nightly product delivery mode start date: June 6, 2026
+
+Nightly product delivery mode status: STARTED. Deployment remains parked. Live server
+changes are not allowed in this mode: do not deploy to production, SSH into the server,
+edit Coolify/Traefik/Cloudflare/OVH settings, or mutate production services. Overnight
+work is limited to local product quality, DB/API correctness, UX/UI polish, QA,
+documentation, and deployment readiness documentation. See `NIGHTLY_PLAN.md`.
+
+DB/API hardening status: PASS. Added index-only DB migration, tightened workspace and
+nested-resource validation in board snapshot, task detail, task move, and AI
+apply/reject paths, verified seed idempotency against local Postgres, and passed minimal
+local API smoke. Deployment remains parked. See `DB_API_HARDENING_REPORT.md`.
 
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
@@ -82,13 +95,35 @@ Runtime command results:
 
 Current decision: `COOLIFY_DEPLOY_BLOCKED`.
 
+Latest command results after DB/API hardening:
+
+| Command                                      | Result | Notes                                                                          |
+| -------------------------------------------- | ------ | ------------------------------------------------------------------------------ |
+| `pnpm db:generate`                           | PASS   | Generated index-only migration `0001_skinny_war_machine.sql`.                  |
+| `pnpm typecheck`                             | PASS   | Workspace TypeScript checks passed.                                            |
+| `pnpm lint`                                  | PASS   | ESLint passed with zero warnings.                                              |
+| `pnpm build`                                 | PASS   | Workspace build passed; Vite production build passed.                          |
+| `pnpm format`                                | PASS   | Formatted updated code/docs/Drizzle metadata.                                  |
+| `pnpm format:check`                          | PASS   | Prettier check passed.                                                         |
+| `pnpm --filter @agentboard/db typecheck`     | PASS   | DB package typecheck passed.                                                   |
+| `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                                                       |
+| `pnpm --filter @agentboard/shared typecheck` | PASS   | Shared package typecheck passed.                                               |
+| `pnpm --filter @agentboard/shared build`     | PASS   | Shared package build passed.                                                   |
+| `pnpm --filter @agentboard/api typecheck`    | PASS   | API package typecheck passed.                                                  |
+| `pnpm --filter @agentboard/api build`        | PASS   | API package build passed.                                                      |
+| `pnpm db:migrate`                            | PASS   | Ran against explicit local `.env.local` database.                              |
+| `pnpm db:seed`                               | PASS   | Demo seed completed.                                                           |
+| `pnpm db:seed` second pass                   | PASS   | Demo seed completed again.                                                     |
+| Seed idempotency count check                 | PASS   | Shared demo seed retained 1 workspace, 1 project, 1 board, 13 tasks, 5 labels. |
+| Minimal local API smoke                      | PASS   | Health, demo auth, board snapshot, and dashboard passed.                       |
+
 Dashboard audit was intentionally skipped by prior instruction to move faster. Do not
 rewrite dashboard. Local DB-backed runtime smoke passes, but live Coolify verification
 is blocked by proxy/certificate/service availability outside the repository code.
 
-Exact next recommended action: open Coolify/Traefik, confirm the app service deployed
-from `main`, assign `scalesoftware.matgac.pl` to the app service on port `3000`, ensure
-the app container is healthy, issue a real certificate, then rerun live smoke.
+Exact next recommended action in nightly mode: Product UX/UI polish. Deployment remains
+parked until nightly local product quality work is complete and live server changes are
+explicitly allowed again.
 
 ## Completed Phases
 

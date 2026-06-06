@@ -52,7 +52,10 @@ export async function getBoardSnapshot(
       workspace: workspaces
     })
     .from(boards)
-    .innerJoin(projects, eq(boards.projectId, projects.id))
+    .innerJoin(
+      projects,
+      and(eq(boards.projectId, projects.id), eq(projects.workspaceId, boards.workspaceId))
+    )
     .innerJoin(workspaces, eq(boards.workspaceId, workspaces.id))
     .where(eq(boards.id, boardId))
     .limit(1);
@@ -66,13 +69,26 @@ export async function getBoardSnapshot(
   const columnRows = await db
     .select()
     .from(boardColumns)
-    .where(and(eq(boardColumns.boardId, boardId), eq(boardColumns.isArchived, false)))
+    .where(
+      and(
+        eq(boardColumns.boardId, boardId),
+        eq(boardColumns.workspaceId, boardRow.workspace.id),
+        eq(boardColumns.isArchived, false)
+      )
+    )
     .orderBy(asc(boardColumns.position));
 
   const taskRows = await db
     .select()
     .from(tasks)
-    .where(and(eq(tasks.boardId, boardId), isNull(tasks.archivedAt)))
+    .where(
+      and(
+        eq(tasks.boardId, boardId),
+        eq(tasks.workspaceId, boardRow.workspace.id),
+        eq(tasks.projectId, boardRow.project.id),
+        isNull(tasks.archivedAt)
+      )
+    )
     .orderBy(asc(tasks.columnId), asc(tasks.position));
 
   const taskIds = taskRows.map((task) => task.id);

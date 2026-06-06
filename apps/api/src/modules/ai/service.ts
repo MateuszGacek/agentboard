@@ -449,6 +449,22 @@ export async function applyAiSuggestion(input: {
       throw notFound("Task was not found.");
     }
 
+    const [board] = await tx
+      .select()
+      .from(boards)
+      .where(
+        and(
+          eq(boards.id, task.boardId),
+          eq(boards.projectId, task.projectId),
+          eq(boards.workspaceId, suggestion.workspaceId)
+        )
+      )
+      .limit(1);
+
+    if (!board) {
+      throw notFound("Task board was not found.");
+    }
+
     const suggestedPayload = mergeSuggestedPayload(
       aiTaskImprovementSchema.parse(suggestion.suggestedPayload),
       input.body
@@ -562,6 +578,22 @@ export async function rejectAiSuggestion(input: {
     }
 
     await assertWorkspaceMember(tx, input.userId, suggestion.workspaceId);
+
+    const [task] = await tx
+      .select()
+      .from(tasks)
+      .where(
+        and(
+          eq(tasks.id, suggestion.taskId),
+          eq(tasks.workspaceId, suggestion.workspaceId),
+          isNull(tasks.archivedAt)
+        )
+      )
+      .limit(1);
+
+    if (!task) {
+      throw notFound("Task was not found.");
+    }
 
     const [updatedSuggestion] = await tx
       .update(aiSuggestions)

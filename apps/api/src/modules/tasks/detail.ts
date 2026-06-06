@@ -73,7 +73,12 @@ export async function getTaskDetail(
       completedAt: taskChecklistItems.completedAt
     })
     .from(taskChecklistItems)
-    .where(eq(taskChecklistItems.taskId, task.id))
+    .where(
+      and(
+        eq(taskChecklistItems.taskId, task.id),
+        eq(taskChecklistItems.workspaceId, task.workspaceId)
+      )
+    )
     .orderBy(asc(taskChecklistItems.position));
 
   const comments = await db
@@ -90,7 +95,13 @@ export async function getTaskDetail(
     })
     .from(taskComments)
     .innerJoin(users, eq(taskComments.authorId, users.id))
-    .where(and(eq(taskComments.taskId, task.id), isNull(taskComments.deletedAt)))
+    .where(
+      and(
+        eq(taskComments.taskId, task.id),
+        eq(taskComments.workspaceId, task.workspaceId),
+        isNull(taskComments.deletedAt)
+      )
+    )
     .orderBy(asc(taskComments.createdAt));
 
   const activity = await db
@@ -108,7 +119,12 @@ export async function getTaskDetail(
     })
     .from(taskActivityEvents)
     .leftJoin(users, eq(taskActivityEvents.actorId, users.id))
-    .where(eq(taskActivityEvents.taskId, task.id))
+    .where(
+      and(
+        eq(taskActivityEvents.taskId, task.id),
+        eq(taskActivityEvents.workspaceId, task.workspaceId)
+      )
+    )
     .orderBy(desc(taskActivityEvents.createdAt));
 
   return taskDetailFromCard({
