@@ -2,17 +2,19 @@
 
 ## Current Phase
 
-Final Local Product Smoke + Recruiter Polish.
+Delivery State Check + Local Runtime Smoke Planning.
 
 Implementation date: June 6, 2026
 
 Local product audit date: June 6, 2026
 
+Delivery state check date: June 6, 2026
+
 Current product status: the local foundation, API, frontend shell, DB-backed board
-vertical slice, task detail polish, DB-backed dashboard, real backend-only AI Improve
-flow, recruiter-facing README, and final recruiter audit are implemented as code and
-pass static validation. Deployment baseline is ready for the next Coolify deployment
-attempt, but the public URL has not been verified yet.
+vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
+recruiter-facing README, and Docker/Coolify baseline are implemented as code and pass
+static validation. They are `DONE_STATIC`, not `DONE_RUNTIME_VERIFIED`, because this
+shell has no configured `DATABASE_URL` or `OPENAI_API_KEY`.
 
 Task detail polish status: PASS as code. The task detail sheet now renders deeper
 API-backed task data and supports narrow DB-backed checklist/comment mutations plus
@@ -24,15 +26,49 @@ Dashboard status: PASS as code. The dashboard API and `/app/dashboard` UI are
 DB-backed, workspace-scoped, authenticated, responsive, and covered by shared Zod
 contracts and EN/PL/CS translations.
 
-AI feature status: PASS as code. The task detail sheet now includes Improve with AI,
-calls backend-only OpenAI integration, stores suggestions, supports apply/reject, and
-degrades gracefully when AI or DB configuration is unavailable.
+AI feature status: PASS as code. The task detail sheet includes Improve with AI, calls
+backend-only OpenAI integration, stores suggestions, supports apply/reject, and has an
+`AI_UNAVAILABLE` path when AI is disabled or `OPENAI_API_KEY` is missing. Runtime smoke
+of that unavailable state is still pending.
 
-Current decision: `READY_FOR_DEPLOYMENT`.
+Delivery plan: see `DELIVERY_PLAN.md`.
+
+Latest command results from the delivery state check:
+
+| Command                                      | Result | Notes                                                 |
+| -------------------------------------------- | ------ | ----------------------------------------------------- |
+| `pnpm typecheck`                             | PASS   | Workspace TypeScript checks passed.                   |
+| `pnpm lint`                                  | PASS   | ESLint passed with zero warnings.                     |
+| `pnpm build`                                 | PASS   | Workspace build passed; Vite production build passed. |
+| `pnpm format:check`                          | PASS   | Prettier check passed.                                |
+| `pnpm --filter @agentboard/web typecheck`    | PASS   | Web package typecheck passed.                         |
+| `pnpm --filter @agentboard/web build`        | PASS   | Web package build passed.                             |
+| `pnpm --filter @agentboard/api typecheck`    | PASS   | API package typecheck passed.                         |
+| `pnpm --filter @agentboard/api build`        | PASS   | API package build passed.                             |
+| `pnpm --filter @agentboard/shared typecheck` | PASS   | Shared package typecheck passed.                      |
+| `pnpm --filter @agentboard/shared build`     | PASS   | Shared package build passed.                          |
+| `pnpm --filter @agentboard/db typecheck`     | PASS   | DB package typecheck passed.                          |
+| `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                              |
+| `docker build -t agentboard-local .`         | PASS   | Non-destructive local Docker image build completed.   |
+
+Runtime command results:
+
+| Command           | Result  | Notes                                    |
+| ----------------- | ------- | ---------------------------------------- |
+| `pnpm db:migrate` | NOT_RUN | `DATABASE_URL` is unset in this shell.   |
+| `pnpm db:seed`    | NOT_RUN | `DATABASE_URL` is unset in this shell.   |
+| OpenAI smoke      | NOT_RUN | `OPENAI_API_KEY` is unset in this shell. |
+
+Current decision: `START_LOCAL_RUNTIME_SMOKE`.
 
 Dashboard audit was intentionally skipped by prior instruction to move faster. Do not
-rewrite dashboard. The next repository action is deployment to Coolify followed by live
-runtime smoke.
+rewrite dashboard. The next repository action is local DB-backed runtime smoke, not
+deployment. Deployment to Coolify remains parked until local runtime smoke passes.
+
+Exact next recommended action: configure or confirm a safe local PostgreSQL
+`DATABASE_URL`, run migrations/seed, start the app locally, and smoke the full
+auth/demo -> board -> task detail -> dashboard -> AI unavailable flow described in
+`DELIVERY_PLAN.md`.
 
 ## Completed Phases
 
@@ -120,7 +156,9 @@ not add dashboard, AI, or new product UI scope and must remain parked.
 - Real AI endpoint smoke test still requires a safe local/staging `DATABASE_URL` and
   backend-only `OPENAI_API_KEY`.
 - Search/filter, realtime, file uploads, and billing remain future product phases.
-- Deployment execution and live verification remain the next operational step.
+- Local DB-backed runtime smoke remains the next operational step.
+- Deployment execution and live verification remain parked until local runtime smoke
+  passes.
 - Public recruiter sharing remains pending until Coolify deployment and live smoke pass.
 
 ## Files Changed In Dashboard Implementation
@@ -353,40 +391,43 @@ Final recruiter polish validation completed on June 6, 2026.
 
 ## Next Recommended Action
 
-Deploy to Coolify:
+Start local runtime smoke:
 
 ```txt
 Continue the AgentBoard project from the current repository state.
 
-Read AGENTS.md, STATUS.md, README.md, FINAL_RECRUITER_AUDIT.md, docs/index.md, docs/03-deployment/deployment-notes.md, docs/03-deployment/coolify-deployment.md, docs/01-architecture/api-contracts.md, docs/01-architecture/database.md, and docs/01-architecture/ai-feature.md.
+Decision from DELIVERY_PLAN.md: START_LOCAL_RUNTIME_SMOKE.
 
-Decision from final recruiter polish: READY_FOR_DEPLOYMENT.
+Run only a local DB-backed runtime smoke. Do not implement new features. Do not deploy. Do not change Docker/Coolify setup unless documenting smoke results.
 
-Deploy AgentBoard to Coolify at https://scalesoftware.matgac.pl and run live smoke tests.
+First read AGENTS.md, STATUS.md, DELIVERY_PLAN.md, README.md, docs/index.md, docs/02-implementation/acceptance-criteria.md, docs/01-architecture/api-contracts.md, docs/01-architecture/database.md, and docs/01-architecture/ai-feature.md.
 
-Scope:
-- Deploy only through the documented Coolify/Docker Compose path.
-- Do not rewrite dashboard.
-- Do not add unrelated product features.
-- Keep OPENAI_API_KEY backend-only; never expose it to frontend code.
-- Use strong production secrets in Coolify; do not commit them.
-- Keep postgres internal-only.
+Before running migrations or seed, verify DATABASE_URL is explicitly configured and points to a safe local database. If DATABASE_URL is missing or not clearly local/safe, stop and document the exact setup commands needed.
 
-Deployment goals:
-- Configure APP_URL, DATABASE_URL, SESSION_SECRET, Postgres env vars, SEED_DEMO_DATA, and optional OPENAI_API_KEY in Coolify.
-- Deploy the Docker Compose app service.
-- Verify https://scalesoftware.matgac.pl/api/health.
-- Verify SPA route refreshes.
-- Smoke demo login, board load, task create/edit/move/archive, task detail checklist/comment, dashboard metrics, language/theme switches, and responsive widths.
-- If OPENAI_API_KEY is configured backend-only, smoke Improve with AI generate/apply/reject; otherwise verify graceful AI unavailable state.
+If safe local DB is available:
+- Run pnpm db:migrate
+- Run pnpm db:seed
+- Start the API and web app locally
+- Browser-smoke the full product flow:
+  1. Open app.
+  2. Register/login or use demo login.
+  3. Reach app shell.
+  4. Open board.
+  5. Create task.
+  6. Edit task.
+  7. Open task detail.
+  8. Add/toggle checklist, add comment, inspect activity/metadata.
+  9. Move task across columns.
+  10. Confirm WIP warning.
+  11. Use mobile fallback move action.
+  12. Open dashboard.
+  13. Use AI Improve or verify clear unavailable state if OPENAI_API_KEY is unset.
 
 Validation:
 - Run pnpm typecheck
 - Run pnpm lint
 - Run pnpm build
 - Run pnpm format:check
-- Run docker build -t agentboard-local .
-- Run live deployment smoke checks.
 
-Update STATUS.md with deployment results, live smoke results, remaining gaps, and the exact next recommended action before sharing with recruiters.
+Update STATUS.md with runtime smoke results, exact command results, remaining blockers, and the next decision.
 ```
