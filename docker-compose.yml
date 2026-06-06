@@ -12,7 +12,7 @@ services:
       APP_URL: https://scalesoftware.matgac.pl
       WEB_DIST_DIR: /app/apps/web/dist
       DATABASE_URL: postgres://${POSTGRES_USER:-agentboard}:${POSTGRES_PASSWORD:-agentboard}@postgres:5432/${POSTGRES_DB:-agentboard}
-      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET to at least 32 characters}
+      SESSION_SECRET: ${SESSION_SECRET:-}
       SESSION_TTL_DAYS: ${SESSION_TTL_DAYS:-7}
       DEMO_SESSION_TTL_HOURS: ${DEMO_SESSION_TTL_HOURS:-24}
       DEMO_CLEANUP_DAYS: ${DEMO_CLEANUP_DAYS:-7}
@@ -30,7 +30,7 @@ services:
           "CMD",
           "node",
           "-e",
-          "fetch('http://127.0.0.1:3000/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+          "fetch('http://127.0.0.1:' + (process.env.PORT || 3000) + '/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
         ]
       interval: 30s
       timeout: 5s

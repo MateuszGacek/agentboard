@@ -51,6 +51,14 @@ internal markdown links, local API/DB smoke, and static predeploy checks. Local 
 passed against explicit localhost API/DB with `OPENAI_API_KEY` unset and verified the
 graceful AI unavailable path. See `QA_AUTOMATION_REPORT.md`.
 
+Coolify deployment blocker local repair status: PASS. Repository-side deployment config
+was hardened without deploying: API binding is explicit on `0.0.0.0`, Compose
+healthcheck follows `PORT`, missing production `SESSION_SECRET` now fails in app
+validation instead of Compose interpolation, entrypoint is executable, deployment docs
+include concrete Cloudflare/Coolify/Traefik troubleshooting, Docker build passes, and
+non-DB Docker smoke passes. Live server changes remain parked. See
+`COOLIFY_DEPLOYMENT_BLOCKER_REPORT.md`.
+
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
 recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
@@ -213,7 +221,23 @@ Latest command results after Automated QA and smoke scripts:
 | `pnpm format:check`    | PASS   | Prettier check passed.                               |
 | `pnpm predeploy:check` | PASS   | Static deploy-readiness command passed.              |
 
-Exact next recommended action in nightly mode: Coolify deployment blocker local repair.
+Previous recommended action in nightly mode: Coolify deployment blocker local repair.
+
+Latest command results after Coolify deployment blocker local repair:
+
+| Command                                  | Result | Notes                                               |
+| ---------------------------------------- | ------ | --------------------------------------------------- |
+| `pnpm typecheck`                         | PASS   | Workspace TypeScript checks passed.                 |
+| `pnpm lint`                              | PASS   | ESLint passed with zero warnings.                   |
+| `pnpm build`                             | PASS   | Workspace build passed.                             |
+| `pnpm format:check`                      | PASS   | Prettier check passed before report/status updates. |
+| `docker build -t agentboard-local .`     | PASS   | Production image built locally.                     |
+| Non-DB Docker smoke: `/api/health`       | PASS   | Returned `200` JSON from production image.          |
+| Non-DB Docker smoke: `/login`            | PASS   | Returned SPA HTML from production image.            |
+| Non-DB Docker smoke: DB-backed API route | PASS   | Returned structured `503 SERVICE_UNAVAILABLE` JSON. |
+
+Exact next recommended action in nightly mode: Final overnight summary and deploy
+readiness.
 
 ## Completed Phases
 

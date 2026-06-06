@@ -228,11 +228,21 @@ Coolify deployment model:
 1. Create a Docker Compose resource from this repository.
 2. Assign `https://scalesoftware.matgac.pl` to the `app` service.
 3. Use container port `3000`.
+   - If the Coolify UI requires port in the domain value, use
+     `https://scalesoftware.matgac.pl:3000`.
+   - If the UI has a separate port field, use `https://scalesoftware.matgac.pl` and
+     port `3000`.
 4. Keep the `postgres` service internal.
 5. Set production env vars in Coolify, especially `DATABASE_URL`,
    `SESSION_SECRET`, `APP_URL`, and optional `OPENAI_API_KEY`.
 6. Deploy and verify `/api/health`, demo login, board, task detail, dashboard, and AI
    unavailable/working state.
+
+For first verification, Cloudflare should point `A scalesoftware` to `198.100.155.183`
+with DNS-only proxy status. If Coolify returns `503 no available server`, check app
+health, target service, target port `3000`, app logs, proxy logs, and whether the domain
+is attached to the `app` service. If the browser shows `TRAEFIK DEFAULT CERT`, verify
+DNS, domain assignment, proxy state, and certificate issuance after the app is healthy.
 
 The container entrypoint waits for the DB, runs migrations, optionally seeds demo data,
 then starts the API server.

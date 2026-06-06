@@ -12,10 +12,11 @@ const app = database ? createApp({ db: database.db, env }) : createApp({ env });
 const server = serve(
   {
     fetch: app.fetch,
+    hostname: "0.0.0.0",
     port: env.PORT
   },
   (info) => {
-    console.info(`agentboard-api listening on http://localhost:${info.port}/api`);
+    console.info(`agentboard-api listening on http://0.0.0.0:${info.port}/api`);
   }
 );
 
