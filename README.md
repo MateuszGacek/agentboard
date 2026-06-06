@@ -48,13 +48,14 @@ can turn that into a reviewable workflow:
 | Task detail             | Completed | Properties, labels, assignees, checklist, comments, activity.      |
 | Dashboard metrics       | Completed | Workspace metrics, WIP risk, due-soon, priority/status breakdowns. |
 | Improve with AI         | Completed | Backend-only OpenAI call, persisted suggestions, apply/reject UI.  |
+| Search/filter           | Completed | Board filters run over the authenticated API snapshot.             |
 | EN/PL/CS i18n           | Completed | Visible UI strings use translation keys.                           |
 | Light/dark/system theme | Completed | Stored client preference with system mode support.                 |
 | Responsive UI           | Completed | Shell, board, dashboard, and task sheet use responsive layouts.    |
 | Docker/Coolify baseline | Completed | Dockerfile, Compose, entrypoint, healthcheck, deployment notes.    |
 | Public deployment       | Pending   | Target URL is documented but not verified yet.                     |
 | Runtime DB/OpenAI smoke | Pending   | Requires safe `DATABASE_URL` and backend-only `OPENAI_API_KEY`.    |
-| Search/filter, realtime | Planned   | Out of scope for the current recruiter-ready slice.                |
+| Realtime collaboration  | Planned   | Out of scope for the current recruiter-ready slice.                |
 | File uploads, billing   | Planned   | Future product work, intentionally not implemented.                |
 
 ## Tech Stack
@@ -148,6 +149,9 @@ pnpm lint           # ESLint with zero warnings
 pnpm build          # package builds and Vite production build
 pnpm format:check   # Prettier check
 pnpm format         # apply Prettier formatting
+pnpm check:i18n     # verify EN/PL/CS translation key parity
+pnpm check:links    # verify internal markdown links
+pnpm predeploy:check # typecheck, lint, build, format check, i18n parity
 ```
 
 Useful package-level checks:
@@ -158,6 +162,58 @@ pnpm --filter @agentboard/api build
 pnpm --filter @agentboard/shared build
 pnpm --filter @agentboard/db build
 ```
+
+## Local QA and Smoke
+
+Pre-deploy local verification:
+
+```bash
+pnpm predeploy:check
+```
+
+This command does not require a database or OpenAI key. It runs static checks only:
+typecheck, lint, build, formatting check, and i18n key parity.
+
+Internal documentation links can be checked separately:
+
+```bash
+pnpm check:links
+```
+
+DB-backed local smoke expects the API to already be running against a safe local
+database URL:
+
+```bash
+# terminal 1
+set -a; source .env.local; set +a
+pnpm --filter @agentboard/api start
+
+# terminal 2
+pnpm smoke:local
+```
+
+`pnpm smoke:local` refuses non-local API URLs. By default it calls
+`http://localhost:3000/api` and checks:
+
+- `/api/health`
+- demo session creation
+- board snapshot
+- workspace dashboard
+- AI unavailable behavior when `OPENAI_API_KEY` is unset
+
+To point it at another local API port:
+
+```bash
+SMOKE_API_URL=http://127.0.0.1:3001/api pnpm smoke:local
+```
+
+Environment requirements:
+
+- `DATABASE_URL` is required for demo auth, board snapshot, dashboard, and task/AI
+  DB-backed routes. Use only a safe local or staging database.
+- `OPENAI_API_KEY` is optional. When unset, smoke expects the backend-only AI path to
+  return the graceful `AI_UNAVAILABLE` response. When explicitly set, smoke expects AI
+  Improve to succeed and may call OpenAI from the backend.
 
 ## Docker and Coolify Notes
 
@@ -190,8 +246,7 @@ More detail: [docs/03-deployment/deployment-notes.md](docs/03-deployment/deploym
 - Real AI smoke is pending until a backend-only `OPENAI_API_KEY` is configured.
 - Workspace/project/settings routes are shell placeholders; full management UI is planned.
 - Checklist deletion/reordering and comment edit/delete are future refinements.
-- Search/filter, realtime collaboration, file uploads, billing, and invites are planned
-  future work.
+- Realtime collaboration, file uploads, billing, and invites are planned future work.
 
 ## Recruiter Review Path
 

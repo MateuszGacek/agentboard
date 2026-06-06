@@ -24,6 +24,9 @@ export default [
     languageOptions: {
       globals: {
         console: "readonly",
+        AbortController: "readonly",
+        clearTimeout: "readonly",
+        fetch: "readonly",
         process: "readonly",
         setTimeout: "readonly",
         URL: "readonly",

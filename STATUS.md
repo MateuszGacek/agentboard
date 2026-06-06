@@ -46,6 +46,11 @@ passed local route smoke. Automated viewport screenshots remain pending because 
 screenshot tooling and Playwright were unavailable in this session. See
 `A11Y_RESPONSIVE_I18N_REPORT.md`.
 
+QA automation status: PASS. Added lightweight repeatable scripts for translation parity,
+internal markdown links, local API/DB smoke, and static predeploy checks. Local smoke
+passed against explicit localhost API/DB with `OPENAI_API_KEY` unset and verified the
+graceful AI unavailable path. See `QA_AUTOMATION_REPORT.md`.
+
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
 recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
@@ -193,7 +198,22 @@ Latest command results after Accessibility responsive i18n QA pass:
 | Local API health smoke                    | PASS   | `GET /api/health` returned `ok: true`.                |
 | Local SPA route smoke                     | PASS   | Key routes served `200 text/html` with root element.  |
 
-Exact next recommended action in nightly mode: Automated QA and local smoke scripts.
+Previous recommended action in nightly mode: Automated QA and local smoke scripts.
+
+Latest command results after Automated QA and smoke scripts:
+
+| Command                | Result | Notes                                                |
+| ---------------------- | ------ | ---------------------------------------------------- |
+| `pnpm check:i18n`      | PASS   | EN/PL/CS share 287 keys.                             |
+| `pnpm check:links`     | PASS   | 39 markdown files scanned.                           |
+| `pnpm smoke:local`     | PASS   | Local API/DB smoke passed with AI unavailable state. |
+| `pnpm typecheck`       | PASS   | Workspace TypeScript checks passed.                  |
+| `pnpm lint`            | PASS   | ESLint passed with zero warnings.                    |
+| `pnpm build`           | PASS   | Workspace build passed.                              |
+| `pnpm format:check`    | PASS   | Prettier check passed.                               |
+| `pnpm predeploy:check` | PASS   | Static deploy-readiness command passed.              |
+
+Exact next recommended action in nightly mode: Coolify deployment blocker local repair.
 
 ## Completed Phases
 
