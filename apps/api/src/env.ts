@@ -1,12 +1,41 @@
 import { z } from "zod";
 
-const baseEnvSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  PORT: z.coerce.number().int().min(1).max(65535).default(3000),
-  APP_URL: z.string().url().default("http://localhost:5173"),
-  SESSION_TTL_DAYS: z.coerce.number().int().positive().default(7),
-  DEMO_SESSION_TTL_HOURS: z.coerce.number().int().positive().default(24)
-});
+const booleanEnvSchema = z
+  .string()
+  .trim()
+  .transform((value) => value.toLowerCase())
+  .pipe(z.enum(["true", "false"]))
+  .transform((value) => value === "true");
+
+const baseEnvSchema = z
+  .object({
+    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+    APP_URL: z.string().url().default("http://localhost:5173"),
+    SESSION_SECRET: z.string().trim().min(1).optional(),
+    SESSION_TTL_DAYS: z.coerce.number().int().positive().default(7),
+    DEMO_SESSION_TTL_HOURS: z.coerce.number().int().positive().default(24),
+    WEB_DIST_DIR: z.string().trim().min(1).default("apps/web/dist"),
+    AI_FEATURE_ENABLED: booleanEnvSchema.default("true"),
+    OPENAI_API_KEY: z.string().trim().optional(),
+    OPENAI_MODEL: z.string().trim().min(1).default("gpt-5-nano"),
+    OPENAI_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
+    OPENAI_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().default(1200)
+  })
+  .superRefine((env, context) => {
+    if (
+      env.NODE_ENV === "production" &&
+      (!env.SESSION_SECRET ||
+        env.SESSION_SECRET === "change-me-in-local-env" ||
+        env.SESSION_SECRET.length < 32)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["SESSION_SECRET"],
+        message: "SESSION_SECRET must be set to at least 32 non-placeholder characters."
+      });
+    }
+  });
 
 const databaseEnvSchema = z.object({
   DATABASE_URL: z.string().trim().min(1)

@@ -1,0 +1,313 @@
+{
+  "app": {
+    "name": "AgentBoard",
+    "tagline": "Kanban wspierany AI dla agencji tworzących oprogramowanie AI",
+    "loading": "Ladowanie AgentBoard"
+  },
+  "auth": {
+    "login": {
+      "title": "Logowanie",
+      "description": "Uzyj konta AgentBoard albo rozpocznij odizolowana sesje demo.",
+      "submit": "Zaloguj",
+      "switchPrompt": "Nie masz jeszcze konta?",
+      "switchLink": "Utworz konto"
+    },
+    "register": {
+      "title": "Utworz konto",
+      "description": "Utworz workspace i zacznij od fundamentu podlaczonego do prawdziwego API.",
+      "submit": "Utworz konto",
+      "switchPrompt": "Masz juz konto?",
+      "switchLink": "Zaloguj"
+    },
+    "fields": {
+      "name": "Imie i nazwisko",
+      "email": "Email",
+      "password": "Haslo",
+      "namePlaceholder": "Ada Lovelace",
+      "emailPlaceholder": "ty@example.com",
+      "passwordPlaceholder": "Minimum 8 znakow"
+    },
+    "demo": {
+      "button": "Uruchom sesje demo",
+      "description": "Tworzy prawdziwa sesje demo, gdy baza danych jest dostepna."
+    },
+    "logout": "Wyloguj",
+    "protected": "Sprawdzanie sesji"
+  },
+  "nav": {
+    "home": "Start",
+    "app": "Aplikacja",
+    "dashboard": "Dashboard",
+    "workspaces": "Workspace'y",
+    "projects": "Projekty",
+    "settings": "Ustawienia",
+    "openMenu": "Otworz nawigacje",
+    "closeMenu": "Zamknij nawigacje"
+  },
+  "shell": {
+    "workspaceFallback": "Nie wybrano workspace'u",
+    "topbarTitle": "Powłoka workspace'u",
+    "mobileMenu": "Nawigacja",
+    "sessionLabel": "Sesja",
+    "demoUser": "Demo"
+  },
+  "pages": {
+    "home": {
+      "title": "AgentBoard",
+      "description": "Produkcyjny fundament dla kanbana wspieranego AI.",
+      "primaryAction": "Zaloguj",
+      "secondaryAction": "Utworz konto"
+    },
+    "app": {
+      "title": "Powłoka aplikacji",
+      "description": "Faza 3 dostarcza chroniony uklad, nawigacje, stan sesji, motyw i wybor jezyka. Moduly produktowe startuja po audycie Fazy 3."
+    },
+    "workspaces": {
+      "title": "Workspace'y",
+      "description": "Lista workspace'ow zacznie sie w pozniejszym pionowym wycinku. Ta trasa jest celowo tylko powloka."
+    },
+    "projects": {
+      "title": "Projekty",
+      "description": "Lista projektow zacznie sie w pozniejszym pionowym wycinku. Ta trasa jest celowo tylko powloka."
+    },
+    "settings": {
+      "title": "Ustawienia",
+      "description": "W Fazie 3 ustawienia ograniczaja sie do kontrolek powloki."
+    },
+    "boardPlaceholder": {
+      "title": "Tablica",
+      "description": "Modul tablicy zaczyna sie w Fazie 4."
+    },
+    "notFound": {
+      "title": "Nie znaleziono strony",
+      "description": "Ta trasa nie nalezy do aktualnej powloki."
+    }
+  },
+  "theme": {
+    "label": "Motyw",
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "system": "Systemowy"
+  },
+  "language": {
+    "label": "Jezyk",
+    "en": "English",
+    "pl": "Polski",
+    "cs": "Čeština"
+  },
+  "common": {
+    "cancel": "Anuluj",
+    "close": "Zamknij",
+    "save": "Zapisz"
+  },
+  "board": {
+    "empty": "Brak danych tablicy.",
+    "version": "Wersja {{version}}",
+    "column": {
+      "empty": "Brak zadan w tej kolumnie."
+    },
+    "wip": {
+      "count": "WIP {{count}} / {{limit}}",
+      "warning": "Limit przekroczony"
+    },
+    "create": {
+      "button": "Utworz zadanie",
+      "title": "Utworz zadanie",
+      "column": "Nowe zadanie w {{column}}",
+      "submit": "Utworz"
+    },
+    "detail": {
+      "title": "Szczegoly zadania",
+      "loading": "Ladowanie szczegolow zadania",
+      "retry": "Ponow",
+      "saving": "Zapisywanie zmian...",
+      "saveHint": "Zmiany zapisujesz z tego panelu szczegolow.",
+      "status": "Status",
+      "assignees": "Przypisani",
+      "labels": "Etykiety",
+      "checklist": "Checklista",
+      "comments": "Komentarze",
+      "activity": "Aktywnosc",
+      "metadata": "Metadane",
+      "created": "Utworzono {{date}}",
+      "createdBy": "Utworzone przez",
+      "createdAt": "Utworzono",
+      "startedAt": "Rozpoczeto",
+      "completedAt": "Ukonczono",
+      "notStarted": "Nie rozpoczeto",
+      "notCompleted": "Nie ukonczono",
+      "system": "System",
+      "unknown": "Nieznany",
+      "noDueDate": "Brak terminu",
+      "blockedYes": "Tak",
+      "blockedNo": "Nie",
+      "emptyAssignees": "Brak czlonkow workspace'u do przypisania.",
+      "emptyLabels": "Brak etykiet w tym workspace.",
+      "emptyDescription": "Brak opisu.",
+      "emptyChecklist": "Brak elementow checklisty.",
+      "emptyComments": "Brak komentarzy.",
+      "emptyActivity": "Brak aktywnosci.",
+      "addChecklist": "Dodaj element",
+      "addChecklistLabel": "Nowy element checklisty",
+      "addChecklistPlaceholder": "Dodaj element checklisty",
+      "markChecklistDone": "Oznacz element checklisty jako gotowy",
+      "markChecklistOpen": "Otworz ponownie element checklisty",
+      "commentCount": "{{count}} komentarzy",
+      "addComment": "Dodaj komentarz",
+      "addCommentLabel": "Nowy komentarz",
+      "addCommentPlaceholder": "Napisz komentarz"
+    },
+    "ai": {
+      "title": "Ulepsz z AI",
+      "powered": "Wspierane przez AI",
+      "description": "Zmien surowe zadanie w jasniejszy brief wdrozeniowy z kryteriami akceptacji i podzadaniami.",
+      "improve": "Ulepsz z AI",
+      "loading": "AI poprawia klarownosc zadania...",
+      "original": "Oryginal",
+      "improved": "Ulepszone przez AI",
+      "acceptanceCriteria": "Kryteria akceptacji",
+      "suggestedChecklist": "Sugerowana checklista",
+      "riskNotes": "Notatki o ryzykach",
+      "recommendedPriority": "Rekomendowany priorytet",
+      "apply": "Zastosuj sugestie",
+      "reject": "Odrzuc sugestie",
+      "titleRequired": "Zadanie potrzebuje co najmniej tytulu, zanim AI je ulepszy.",
+      "emptyAcceptanceCriteria": "AI nie zaproponowalo kryteriow akceptacji.",
+      "emptyChecklist": "AI nie zaproponowalo elementow checklisty.",
+      "emptyRiskNotes": "AI nie zaproponowalo notatek o ryzykach.",
+      "status": {
+        "pending": "Do sprawdzenia",
+        "accepted": "Zastosowana",
+        "rejected": "Odrzucona",
+        "partially_applied": "Czesciowo zastosowana",
+        "failed": "Nieudana"
+      },
+      "reviewed": {
+        "accepted": "Ta sugestia AI zostala zastosowana.",
+        "rejected": "Ta sugestia AI zostala odrzucona.",
+        "partially_applied": "Ta sugestia AI zostala czesciowo zastosowana.",
+        "failed": "Ta sugestia AI nie powiodla sie.",
+        "pending": "Ta sugestia AI czeka na sprawdzenie."
+      }
+    },
+    "activity": {
+      "task.created": "Zadanie utworzone przez",
+      "task.updated": "Zadanie zaktualizowane przez",
+      "task.moved": "Zadanie przeniesione przez",
+      "task.completed": "Zadanie ukonczone przez",
+      "task.reopened": "Zadanie otwarte ponownie przez",
+      "task.blocked": "Zadanie zablokowane przez",
+      "task.unblocked": "Zadanie odblokowane przez",
+      "comment.created": "Komentarz dodany przez",
+      "checklist.created": "Element checklisty dodany przez",
+      "checklist.completed": "Element checklisty ukonczony przez",
+      "ai.suggestion_created": "Sugestia AI utworzona przez",
+      "ai.suggestion_applied": "Sugestia AI zastosowana przez",
+      "ai.suggestion_rejected": "Sugestia AI odrzucona przez"
+    },
+    "delete": {
+      "button": "Usun zadanie",
+      "title": "Usun zadanie",
+      "description": "To archiwizuje zadanie i usuwa je z tablicy.",
+      "confirm": "Usun"
+    },
+    "move": {
+      "label": "Przenies do",
+      "mobileHint": "Na telefonie uzyj tej kontrolki zamiast przeciagania."
+    },
+    "task": {
+      "title": "Tytul",
+      "description": "Opis",
+      "priority": "Priorytet",
+      "dueDate": "Termin",
+      "blocked": "Zablokowane",
+      "blockedReason": "Powod blokady"
+    },
+    "priority": {
+      "low": "Niski",
+      "medium": "Sredni",
+      "high": "Wysoki",
+      "urgent": "Pilny"
+    },
+    "card": {
+      "blocked": "Blokada",
+      "checklist": "Checklista {{completed}} / {{total}}",
+      "comments": "Komentarze: {{count}}"
+    }
+  },
+  "dashboard": {
+    "eyebrow": "Widok operacyjny agencji",
+    "title": "Dashboard",
+    "subtitle": "Kompaktowy widok z bazy danych: obciazenie dostaw, presja WIP, najblizsze ryzyka i ostatnia praca w workspace.",
+    "metrics": "Metryki dashboardu",
+    "cards": {
+      "totalActiveTasks": "Aktywne zadania",
+      "totalActiveTasksHelper": "Otwarta praca poza kolumnami ukonczenia",
+      "completedTasks": "Ukonczone zadania",
+      "completedTasksHelper": "Zadania w kolumnach completes-work",
+      "overdueTasks": "Po terminie",
+      "overdueTasksHelper": "Otwarte zadania po terminie",
+      "blockedTasks": "Zablokowane",
+      "blockedTasksHelper": "Flaga blokady albo kolumna blokujaca",
+      "completionRate": "Stopien ukonczenia",
+      "completionRateHelper": "Ukonczone ze wszystkich sledzonych zadan"
+    },
+    "wip": {
+      "title": "Ostrzezenia WIP",
+      "description": "Kolumny, w ktorych liczba aktywnych zadan przekracza limit WIP.",
+      "count": "{{count}} / {{limit}} aktywne",
+      "context": "{{project}} / {{board}} przekracza limit o {{overBy}}.",
+      "empty": "Zaden limit WIP nie jest teraz przekroczony."
+    },
+    "priority": {
+      "title": "Zadania wedlug priorytetu",
+      "description": "Aktywna praca pogrupowana wedlug priorytetu."
+    },
+    "columns": {
+      "title": "Zadania wedlug statusu",
+      "description": "Rozklad aktywnych zadan po kolumnach tablic.",
+      "activeCount": "{{count}} aktywne",
+      "empty": "Brak dostepnych kolumn tablicy."
+    },
+    "dueSoon": {
+      "title": "Wkrotce termin",
+      "description": "Otwarte zadania z terminem w najblizszych 7 dniach.",
+      "blocked": "Zablokowane",
+      "empty": "Brak otwartych zadan z terminem w najblizszych 7 dniach."
+    },
+    "activity": {
+      "title": "Ostatnia aktywnosc",
+      "description": "Najnowsze zdarzenia zadan w tym workspace.",
+      "empty": "Brak ostatniej aktywnosci zadan."
+    },
+    "empty": {
+      "title": "Brak danych dashboardu",
+      "description": "Utworz prawdziwe zadania na tablicy w tym workspace, a dashboard wypelni sie danymi z bazy."
+    },
+    "errors": {
+      "dbUnavailable": "Metryki dashboardu wymagaja bazy danych. Skonfiguruj bezpieczny lokalny PostgreSQL DATABASE_URL i sprobuj ponownie. ID zadania: {{requestId}}.",
+      "emptyResponse": "Odpowiedz dashboardu byla pusta.",
+      "noWorkspace": "Wybierz albo utworz workspace, aby zobaczyc metryki dashboardu."
+    }
+  },
+  "states": {
+    "loading": "Ladowanie",
+    "empty": "Na razie nic tu nie ma",
+    "redirecting": "Przekierowanie"
+  },
+  "errors": {
+    "api": "API zwrocilo blad. ID zadania: {{requestId}}.",
+    "aiUnavailable": "AI jest niedostepne. Zadanie nie zostalo zmienione. ID zadania: {{requestId}}.",
+    "aiRateLimited": "Osiagnieto limit AI lub limit kosztow. Zadanie nie zostalo zmienione. ID zadania: {{requestId}}.",
+    "conflict": "Takie konto lub zasob juz istnieje.",
+    "serviceUnavailable": "Trasy wymagajace bazy danych sa teraz niedostepne. Skonfiguruj bezpieczny lokalny DATABASE_URL PostgreSQL dla auth i sesji demo. ID zadania: {{requestId}}.",
+    "unauthorized": "Zaloguj sie, aby kontynuowac.",
+    "unexpected": "Cos poszlo nie tak. Sprobuj ponownie.",
+    "validation": "Sprawdz pola formularza i sprobuj ponownie."
+  },
+  "validation": {
+    "required": "To pole jest wymagane.",
+    "email": "Podaj poprawny adres email.",
+    "passwordLength": "Haslo musi miec co najmniej 8 znakow."
+  }
+}

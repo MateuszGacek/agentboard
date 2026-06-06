@@ -46,6 +46,9 @@ importers:
       hono:
         specifier: ^4.0.0
         version: 4.12.23
+      tsx:
+        specifier: ^4.0.0
+        version: 4.22.4
       zod:
         specifier: ^3.0.0
         version: 3.25.76
@@ -56,15 +59,15 @@ importers:
       "@types/node":
         specifier: ^20.0.0
         version: 20.19.42
-      tsx:
-        specifier: ^4.0.0
-        version: 4.22.4
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
 
   apps/web:
     dependencies:
+      "@agentboard/shared":
+        specifier: workspace:*
+        version: link:../../packages/shared
       "@dnd-kit/core":
         specifier: ^6.0.0
         version: 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -135,6 +138,9 @@ importers:
       postgres:
         specifier: ^3.0.0
         version: 3.4.9
+      tsx:
+        specifier: ^4.0.0
+        version: 4.22.4
       zod:
         specifier: ^3.0.0
         version: 3.25.76
@@ -145,9 +151,6 @@ importers:
       drizzle-kit:
         specifier: ^0.27.0
         version: 0.27.2
-      tsx:
-        specifier: ^4.0.0
-        version: 4.22.4
       typescript:
         specifier: ^5.0.0
         version: 5.9.3

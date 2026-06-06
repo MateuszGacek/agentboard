@@ -20,9 +20,13 @@ export default [
   ...tseslint.configs.recommended,
   eslintConfigPrettier,
   {
-    files: ["**/*.cjs"],
+    files: ["**/*.{cjs,mjs}"],
     languageOptions: {
       globals: {
+        console: "readonly",
+        process: "readonly",
+        setTimeout: "readonly",
+        URL: "readonly",
         module: "readonly",
         require: "readonly"
       }

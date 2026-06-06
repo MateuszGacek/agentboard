@@ -301,3 +301,275 @@ export const taskDetailSchema = boardTaskCardSchema.extend({
 });
 
 export type TaskDetail = z.infer<typeof taskDetailSchema>;
+
+export const createTaskRequestSchema = z.object({
+  boardId: idSchema,
+  columnId: idSchema,
+  title: z.string().trim().min(1).max(160),
+  description: z.string().trim().max(5000).nullable().optional(),
+  priority: taskPrioritySchema.optional().default("medium"),
+  dueDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
+  assigneeIds: z.array(idSchema).optional().default([]),
+  labelIds: z.array(idSchema).optional().default([])
+});
+
+export type CreateTaskRequest = z.infer<typeof createTaskRequestSchema>;
+
+export const updateTaskRequestSchema = z
+  .object({
+    title: z.string().trim().min(1).max(160).optional(),
+    description: z.string().trim().max(5000).nullable().optional(),
+    priority: taskPrioritySchema.optional(),
+    dueDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullable()
+      .optional(),
+    isBlocked: z.boolean().optional(),
+    blockedReason: z.string().trim().max(1000).nullable().optional(),
+    assigneeIds: z.array(idSchema).optional(),
+    labelIds: z.array(idSchema).optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one task field must be provided."
+  });
+
+export type UpdateTaskRequest = z.infer<typeof updateTaskRequestSchema>;
+
+export const moveTaskRequestSchema = z.object({
+  targetColumnId: idSchema,
+  targetIndex: z.number().int().min(0),
+  boardVersion: z.number().int().positive().optional()
+});
+
+export type MoveTaskRequest = z.infer<typeof moveTaskRequestSchema>;
+
+export const createChecklistItemRequestSchema = z.object({
+  title: z.string().trim().min(1).max(240)
+});
+
+export type CreateChecklistItemRequest = z.infer<typeof createChecklistItemRequestSchema>;
+
+export const updateChecklistItemRequestSchema = z
+  .object({
+    title: z.string().trim().min(1).max(240).optional(),
+    isDone: z.boolean().optional(),
+    position: z.number().int().min(0).optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one checklist item field must be provided."
+  });
+
+export type UpdateChecklistItemRequest = z.infer<typeof updateChecklistItemRequestSchema>;
+
+export const createCommentRequestSchema = z.object({
+  body: z.string().trim().min(1).max(2000)
+});
+
+export type CreateCommentRequest = z.infer<typeof createCommentRequestSchema>;
+
+export const aiTaskImprovementSchema = z.object({
+  improvedTitle: z.string().trim().min(3).max(120),
+  improvedDescription: z.string().trim().min(20).max(5000),
+  acceptanceCriteria: z.array(z.string().trim().min(1).max(500)).min(1).max(8),
+  suggestedChecklistItems: z.array(z.string().trim().min(1).max(240)).max(8),
+  riskNotes: z.array(z.string().trim().min(1).max(500)).max(5),
+  recommendedPriority: taskPrioritySchema
+});
+
+export type AiTaskImprovement = z.infer<typeof aiTaskImprovementSchema>;
+
+export const aiSuggestionSchema = z.object({
+  id: idSchema,
+  workspaceId: idSchema,
+  taskId: idSchema,
+  model: z.string(),
+  status: aiSuggestionStatusSchema,
+  originalPayload: z.record(z.unknown()),
+  suggestedPayload: aiTaskImprovementSchema,
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  appliedAt: z.string().datetime().nullable()
+});
+
+export type AiSuggestion = z.infer<typeof aiSuggestionSchema>;
+
+export const applyAiSuggestionRequestSchema = z
+  .object({
+    improvedTitle: z.string().trim().min(3).max(120).optional(),
+    improvedDescription: z.string().trim().min(20).max(5000).optional(),
+    acceptanceCriteria: z.array(z.string().trim().min(1).max(500)).max(8).optional(),
+    suggestedChecklistItems: z.array(z.string().trim().min(1).max(240)).max(8).optional(),
+    riskNotes: z.array(z.string().trim().min(1).max(500)).max(5).optional(),
+    recommendedPriority: taskPrioritySchema.optional(),
+    applyTitle: z.boolean().optional().default(true),
+    applyDescription: z.boolean().optional().default(true),
+    applyPriority: z.boolean().optional().default(true),
+    applyAcceptanceCriteria: z.boolean().optional().default(true),
+    applyChecklistItems: z.boolean().optional().default(true)
+  })
+  .optional()
+  .default({});
+
+export type ApplyAiSuggestionRequest = z.infer<typeof applyAiSuggestionRequestSchema>;
+
+export type ImproveTaskWithAiResponseData = {
+  suggestion: AiSuggestion;
+};
+
+export type ApplyAiSuggestionResponseData = {
+  suggestion: AiSuggestion;
+  task: TaskDetail;
+  board: BoardSnapshot;
+};
+
+export type RejectAiSuggestionResponseData = {
+  suggestion: AiSuggestion;
+};
+
+export const dashboardQuerySchema = z.object({
+  projectId: idSchema.optional()
+});
+
+export type DashboardQuery = z.infer<typeof dashboardQuerySchema>;
+
+export const dashboardMetricCardSchema = z.object({
+  key: z.enum([
+    "totalActiveTasks",
+    "completedTasks",
+    "overdueTasks",
+    "blockedTasks",
+    "completionRate"
+  ]),
+  value: z.number().nonnegative(),
+  displayValue: z.string(),
+  helper: z.string().optional()
+});
+
+export type DashboardMetricCard = z.infer<typeof dashboardMetricCardSchema>;
+
+export const dashboardWipLimitWarningSchema = z.object({
+  boardId: idSchema,
+  boardName: z.string(),
+  projectId: idSchema,
+  projectName: z.string(),
+  columnId: idSchema,
+  columnName: z.string(),
+  systemKey: columnSystemKeySchema,
+  behavior: columnBehaviorSchema,
+  count: z.number().int().nonnegative(),
+  limit: z.number().int().nonnegative(),
+  overBy: z.number().int().nonnegative()
+});
+
+export type DashboardWipLimitWarning = z.infer<typeof dashboardWipLimitWarningSchema>;
+
+export const dashboardPriorityBreakdownSchema = z.object({
+  priority: taskPrioritySchema,
+  count: z.number().int().nonnegative()
+});
+
+export type DashboardPriorityBreakdown = z.infer<typeof dashboardPriorityBreakdownSchema>;
+
+export const dashboardColumnBreakdownSchema = z.object({
+  boardId: idSchema,
+  boardName: z.string(),
+  projectId: idSchema,
+  projectName: z.string(),
+  columnId: idSchema,
+  columnName: z.string(),
+  systemKey: columnSystemKeySchema,
+  behavior: columnBehaviorSchema,
+  position: z.number().int(),
+  count: z.number().int().nonnegative(),
+  activeCount: z.number().int().nonnegative(),
+  completedCount: z.number().int().nonnegative()
+});
+
+export type DashboardColumnBreakdown = z.infer<typeof dashboardColumnBreakdownSchema>;
+
+export const dashboardDueSoonTaskSchema = z.object({
+  id: idSchema,
+  title: z.string(),
+  projectId: idSchema,
+  projectName: z.string(),
+  boardId: idSchema,
+  boardName: z.string(),
+  columnId: idSchema,
+  columnName: z.string(),
+  priority: taskPrioritySchema,
+  dueDate: z.string(),
+  isBlocked: z.boolean()
+});
+
+export type DashboardDueSoonTask = z.infer<typeof dashboardDueSoonTaskSchema>;
+
+export const dashboardRecentActivitySchema = z.object({
+  id: idSchema,
+  taskId: idSchema,
+  taskTitle: z.string(),
+  type: activityEventTypeSchema,
+  message: z.string(),
+  actor: boardTaskAssigneeSchema.nullable(),
+  createdAt: z.string().datetime()
+});
+
+export type DashboardRecentActivity = z.infer<typeof dashboardRecentActivitySchema>;
+
+export const dashboardMetricsSchema = z.object({
+  workspaceId: idSchema,
+  projectId: idSchema.nullable(),
+  generatedAt: z.string().datetime(),
+  totalRelevantTasks: z.number().int().nonnegative(),
+  totalActiveTasks: z.number().int().nonnegative(),
+  completedTasks: z.number().int().nonnegative(),
+  overdueTasks: z.number().int().nonnegative(),
+  blockedTasks: z.number().int().nonnegative(),
+  completionRate: z.object({
+    value: z.number().min(0).max(100),
+    displayPercent: z.string(),
+    completed: z.number().int().nonnegative(),
+    total: z.number().int().nonnegative()
+  }),
+  metricCards: z.array(dashboardMetricCardSchema),
+  wipLimitWarnings: z.array(dashboardWipLimitWarningSchema),
+  tasksByPriority: z.array(dashboardPriorityBreakdownSchema),
+  tasksByColumn: z.array(dashboardColumnBreakdownSchema),
+  dueSoonTasks: z.array(dashboardDueSoonTaskSchema),
+  recentActivity: z.array(dashboardRecentActivitySchema)
+});
+
+export type DashboardMetrics = z.infer<typeof dashboardMetricsSchema>;
+
+export type CreateTaskResponseData = {
+  task: TaskDetail;
+  board: BoardSnapshot;
+};
+
+export type UpdateTaskResponseData = {
+  task: TaskDetail;
+  board?: BoardSnapshot;
+};
+
+export type DeleteTaskResponseData = {
+  ok: true;
+  board: BoardSnapshot;
+};
+
+export type MoveTaskResponseData = {
+  board: BoardSnapshot;
+};
+
+export type ChecklistResponseData = {
+  task: TaskDetail;
+  board: BoardSnapshot;
+};
+
+export type CommentResponseData = {
+  task: TaskDetail;
+  board: BoardSnapshot;
+};

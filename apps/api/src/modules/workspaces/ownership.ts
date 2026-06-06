@@ -12,8 +12,11 @@ import { and, eq } from "drizzle-orm";
 
 import { forbidden, notFound } from "../../lib/errors";
 
+type TransactionClient = Parameters<Parameters<DatabaseClient["transaction"]>[0]>[0];
+type WorkspaceQueryClient = DatabaseClient | TransactionClient;
+
 export async function assertWorkspaceMember(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   userId: string,
   workspaceId: string
 ) {
@@ -31,7 +34,7 @@ export async function assertWorkspaceMember(
 }
 
 export async function assertProjectInWorkspace(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   projectId: string,
   workspaceId: string
 ) {
@@ -49,7 +52,7 @@ export async function assertProjectInWorkspace(
 }
 
 export async function assertBoardInWorkspace(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   boardId: string,
   workspaceId: string
 ) {
@@ -67,7 +70,7 @@ export async function assertBoardInWorkspace(
 }
 
 export async function assertBoardInProjectWorkspace(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   boardId: string,
   projectId: string,
   workspaceId: string
@@ -92,7 +95,7 @@ export async function assertBoardInProjectWorkspace(
 }
 
 export async function assertColumnInBoardWorkspace(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   columnId: string,
   boardId: string,
   workspaceId: string
@@ -117,7 +120,7 @@ export async function assertColumnInBoardWorkspace(
 }
 
 export async function assertTaskInWorkspaceBoard(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   taskId: string,
   workspaceId: string,
   boardId: string
@@ -138,7 +141,7 @@ export async function assertTaskInWorkspaceBoard(
 }
 
 export async function assertLabelInWorkspace(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   labelId: string,
   workspaceId: string
 ) {
@@ -156,7 +159,7 @@ export async function assertLabelInWorkspace(
 }
 
 export async function assertAssigneeInWorkspace(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   userId: string,
   workspaceId: string
 ) {
@@ -164,7 +167,7 @@ export async function assertAssigneeInWorkspace(
 }
 
 export async function assertTaskAssigneeInWorkspace(
-  db: DatabaseClient,
+  db: WorkspaceQueryClient,
   taskId: string,
   userId: string,
   workspaceId: string

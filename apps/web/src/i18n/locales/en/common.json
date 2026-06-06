@@ -1,0 +1,313 @@
+{
+  "app": {
+    "name": "AgentBoard",
+    "tagline": "AI-assisted Kanban for AI software agencies",
+    "loading": "Loading AgentBoard"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "description": "Use your AgentBoard account or start an isolated demo session.",
+      "submit": "Sign in",
+      "switchPrompt": "No account yet?",
+      "switchLink": "Create one"
+    },
+    "register": {
+      "title": "Create account",
+      "description": "Create a workspace and start from the real API-backed foundation.",
+      "submit": "Create account",
+      "switchPrompt": "Already have an account?",
+      "switchLink": "Sign in"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "namePlaceholder": "Ada Lovelace",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "Minimum 8 characters"
+    },
+    "demo": {
+      "button": "Start demo session",
+      "description": "Creates a real demo session when the database is available."
+    },
+    "logout": "Log out",
+    "protected": "Checking session"
+  },
+  "nav": {
+    "home": "Home",
+    "app": "App",
+    "dashboard": "Dashboard",
+    "workspaces": "Workspaces",
+    "projects": "Projects",
+    "settings": "Settings",
+    "openMenu": "Open navigation",
+    "closeMenu": "Close navigation"
+  },
+  "shell": {
+    "workspaceFallback": "No workspace selected",
+    "topbarTitle": "Workspace shell",
+    "mobileMenu": "Navigation",
+    "sessionLabel": "Session",
+    "demoUser": "Demo"
+  },
+  "pages": {
+    "home": {
+      "title": "AgentBoard",
+      "description": "A production-minded foundation for an AI-assisted Kanban platform.",
+      "primaryAction": "Sign in",
+      "secondaryAction": "Create account"
+    },
+    "app": {
+      "title": "App shell",
+      "description": "Phase 3 provides the protected layout, navigation, session state, theme, and language controls. Product modules start after the Phase 3 audit."
+    },
+    "workspaces": {
+      "title": "Workspaces",
+      "description": "Workspace listing starts in a later vertical slice. This route is intentionally shell-only."
+    },
+    "projects": {
+      "title": "Projects",
+      "description": "Project listing starts in a later vertical slice. This route is intentionally shell-only."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Settings are limited to shell controls in Phase 3."
+    },
+    "boardPlaceholder": {
+      "title": "Board",
+      "description": "Board module starts in Phase 4."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The requested route is not part of the current shell."
+    }
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "pl": "Polski",
+    "cs": "Čeština"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save"
+  },
+  "board": {
+    "empty": "No board data is available.",
+    "version": "Version {{version}}",
+    "column": {
+      "empty": "No tasks in this column."
+    },
+    "wip": {
+      "count": "WIP {{count}} / {{limit}}",
+      "warning": "Limit exceeded"
+    },
+    "create": {
+      "button": "Create task",
+      "title": "Create task",
+      "column": "New task in {{column}}",
+      "submit": "Create"
+    },
+    "detail": {
+      "title": "Task detail",
+      "loading": "Loading task detail",
+      "retry": "Retry",
+      "saving": "Saving changes...",
+      "saveHint": "Changes are saved from this detail sheet.",
+      "status": "Status",
+      "assignees": "Assignees",
+      "labels": "Labels",
+      "checklist": "Checklist",
+      "comments": "Comments",
+      "activity": "Activity",
+      "metadata": "Metadata",
+      "created": "Created {{date}}",
+      "createdBy": "Created by",
+      "createdAt": "Created",
+      "startedAt": "Started",
+      "completedAt": "Completed",
+      "notStarted": "Not started",
+      "notCompleted": "Not completed",
+      "system": "System",
+      "unknown": "Unknown",
+      "noDueDate": "No due date",
+      "blockedYes": "Yes",
+      "blockedNo": "No",
+      "emptyAssignees": "No workspace members are available to assign.",
+      "emptyLabels": "No labels are available for this workspace.",
+      "emptyDescription": "No description yet.",
+      "emptyChecklist": "No checklist items yet.",
+      "emptyComments": "No comments yet.",
+      "emptyActivity": "No activity yet.",
+      "addChecklist": "Add item",
+      "addChecklistLabel": "New checklist item",
+      "addChecklistPlaceholder": "Add a checklist item",
+      "markChecklistDone": "Mark checklist item done",
+      "markChecklistOpen": "Reopen checklist item",
+      "commentCount": "{{count}} comments",
+      "addComment": "Add comment",
+      "addCommentLabel": "New comment",
+      "addCommentPlaceholder": "Write a comment"
+    },
+    "ai": {
+      "title": "Improve with AI",
+      "powered": "Powered by AI",
+      "description": "Turn a rough task into a clearer implementation brief with acceptance criteria and subtasks.",
+      "improve": "Improve with AI",
+      "loading": "Improving task clarity...",
+      "original": "Original",
+      "improved": "AI improved",
+      "acceptanceCriteria": "Acceptance criteria",
+      "suggestedChecklist": "Suggested checklist",
+      "riskNotes": "Risk notes",
+      "recommendedPriority": "Recommended priority",
+      "apply": "Apply suggestion",
+      "reject": "Reject suggestion",
+      "titleRequired": "This task needs at least a title before AI can improve it.",
+      "emptyAcceptanceCriteria": "No acceptance criteria were suggested.",
+      "emptyChecklist": "No checklist items were suggested.",
+      "emptyRiskNotes": "No risk notes were suggested.",
+      "status": {
+        "pending": "Pending review",
+        "accepted": "Applied",
+        "rejected": "Rejected",
+        "partially_applied": "Partially applied",
+        "failed": "Failed"
+      },
+      "reviewed": {
+        "accepted": "This AI suggestion has been applied.",
+        "rejected": "This AI suggestion has been rejected.",
+        "partially_applied": "This AI suggestion has been partially applied.",
+        "failed": "This AI suggestion failed.",
+        "pending": "This AI suggestion is pending review."
+      }
+    },
+    "activity": {
+      "task.created": "Task created by",
+      "task.updated": "Task updated by",
+      "task.moved": "Task moved by",
+      "task.completed": "Task completed by",
+      "task.reopened": "Task reopened by",
+      "task.blocked": "Task blocked by",
+      "task.unblocked": "Task unblocked by",
+      "comment.created": "Comment added by",
+      "checklist.created": "Checklist item added by",
+      "checklist.completed": "Checklist item completed by",
+      "ai.suggestion_created": "AI suggestion created by",
+      "ai.suggestion_applied": "AI suggestion applied by",
+      "ai.suggestion_rejected": "AI suggestion rejected by"
+    },
+    "delete": {
+      "button": "Delete task",
+      "title": "Delete task",
+      "description": "This archives the task and removes it from the board.",
+      "confirm": "Delete"
+    },
+    "move": {
+      "label": "Move to",
+      "mobileHint": "Use this control on mobile instead of dragging."
+    },
+    "task": {
+      "title": "Title",
+      "description": "Description",
+      "priority": "Priority",
+      "dueDate": "Due date",
+      "blocked": "Blocked",
+      "blockedReason": "Blocked reason"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "card": {
+      "blocked": "Blocked",
+      "checklist": "Checklist {{completed}} / {{total}}",
+      "comments": "{{count}} comments"
+    }
+  },
+  "dashboard": {
+    "eyebrow": "Agency operating view",
+    "title": "Dashboard",
+    "subtitle": "A compact DB-backed view of delivery load, WIP pressure, near-term risk, and recent work across the workspace.",
+    "metrics": "Dashboard metrics",
+    "cards": {
+      "totalActiveTasks": "Active tasks",
+      "totalActiveTasksHelper": "Open work outside completion columns",
+      "completedTasks": "Completed tasks",
+      "completedTasksHelper": "Tasks in completes-work columns",
+      "overdueTasks": "Overdue tasks",
+      "overdueTasksHelper": "Open tasks past due date",
+      "blockedTasks": "Blocked tasks",
+      "blockedTasksHelper": "Blocked flag or blocked column",
+      "completionRate": "Completion rate",
+      "completionRateHelper": "Completed from all tracked tasks"
+    },
+    "wip": {
+      "title": "WIP warnings",
+      "description": "Columns where active task count exceeds the configured WIP limit.",
+      "count": "{{count}} / {{limit}} active",
+      "context": "{{project}} / {{board}} is over limit by {{overBy}}.",
+      "empty": "No WIP limits are currently exceeded."
+    },
+    "priority": {
+      "title": "Tasks by priority",
+      "description": "Active work grouped by priority."
+    },
+    "columns": {
+      "title": "Tasks by status",
+      "description": "Active task distribution by board column.",
+      "activeCount": "{{count}} active",
+      "empty": "No board columns are available yet."
+    },
+    "dueSoon": {
+      "title": "Due soon",
+      "description": "Open tasks due in the next 7 days.",
+      "blocked": "Blocked",
+      "empty": "No open tasks are due in the next 7 days."
+    },
+    "activity": {
+      "title": "Recent activity",
+      "description": "Latest task events from this workspace.",
+      "empty": "No recent task activity yet."
+    },
+    "empty": {
+      "title": "No dashboard data yet",
+      "description": "Create real board tasks in this workspace and the dashboard will populate from the database."
+    },
+    "errors": {
+      "dbUnavailable": "Dashboard metrics require the database. Configure a safe local PostgreSQL DATABASE_URL and retry. Request ID: {{requestId}}.",
+      "emptyResponse": "The dashboard response was empty.",
+      "noWorkspace": "Select or create a workspace to view dashboard metrics."
+    }
+  },
+  "states": {
+    "loading": "Loading",
+    "empty": "Nothing to show yet",
+    "redirecting": "Redirecting"
+  },
+  "errors": {
+    "api": "The API returned an error. Request ID: {{requestId}}.",
+    "aiUnavailable": "AI unavailable. Your task was not changed. Request ID: {{requestId}}.",
+    "aiRateLimited": "AI rate or quota limit reached. Your task was not changed. Request ID: {{requestId}}.",
+    "conflict": "This account or resource already exists.",
+    "serviceUnavailable": "Database-backed routes are not available right now. Configure a safe local PostgreSQL DATABASE_URL for auth and demo sessions. Request ID: {{requestId}}.",
+    "unauthorized": "Sign in to continue.",
+    "unexpected": "Something went wrong. Try again.",
+    "validation": "Check the form fields and try again."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "email": "Enter a valid email address.",
+    "passwordLength": "Password must be at least 8 characters."
+  }
+}

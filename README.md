@@ -1,233 +1,219 @@
 # AgentBoard
 
-**AI Kanban for software teams shipping with agents.**
+**AI-assisted Kanban for AI software agencies.**
 
-AgentBoard is a full-stack recruitment portfolio project: a polished productivity SaaS for AI development agencies that need clearer tasks, better WIP control, and delivery visibility.
+Live URL placeholder: [https://scalesoftware.matgac.pl](https://scalesoftware.matgac.pl)
 
-Live URL target:
+Deployment is prepared but not yet verified at the public URL in this repository state.
+See [STATUS.md](STATUS.md) for the current source of truth.
 
-```txt
-https://scalesoftware.matgac.pl
-```
+## Product Summary
 
-> Current repository state: documentation-ready. Implementation should start from `CODEX_START_PROMPT.md`.
+AgentBoard is a full-stack recruitment portfolio product for AI/software teams that
+need clearer task briefs, healthier work-in-progress limits, and delivery visibility.
+It is intentionally built as a real vertical slice with PostgreSQL persistence, typed
+API contracts, authenticated workspace boundaries, responsive UI, and a backend-only
+OpenAI integration.
 
-## Why this project exists
-
-The assignment is to build a Kanban project, but a simple Trello clone is not enough for a strong full-stack recruitment review.
-
-AgentBoard is designed to show:
-
-- product/business thinking,
-- professional UI/UX,
-- reusable frontend architecture,
-- backend API ownership,
-- PostgreSQL data modeling,
-- AI workflow integration,
-- deployment readiness on a real server,
-- public GitHub quality.
-
-## Product positioning
-
-AgentBoard helps AI software agencies turn vague work into clear, prioritized, reviewable delivery items.
-
-Core idea:
+The core workflow is:
 
 ```txt
-Workspace → Project → Board → Column → Task
+Workspace -> Project -> Board -> Column -> Task -> Task detail -> AI improvement
 ```
 
-Differentiators:
+## Why This Exists
 
-- AI task improvement workflow,
-- WIP limit warnings,
-- delivery dashboard,
-- task detail sheet with comments/checklists/activity,
-- multilingual UI: English, Polish, Czech,
-- responsive mobile/tablet-first Kanban UX,
-- light/dark/system theme.
+AI delivery teams often start from vague task notes, unclear acceptance criteria, and
+too much work in progress. AgentBoard demonstrates how a production-minded SaaS product
+can turn that into a reviewable workflow:
 
-## Planned demo flow
+- boards show current delivery state,
+- task detail captures the implementation brief,
+- WIP warnings highlight delivery pressure,
+- dashboard metrics summarize risk,
+- Improve with AI converts rough tasks into clearer execution plans.
 
-A recruiter should be able to review the app in 2 minutes:
+## Feature Status
 
-1. Open live URL.
-2. Click **Open demo workspace**.
-3. See dashboard with delivery metrics.
-4. Open default AI agency project board.
-5. Move a task between columns.
-6. Open task detail sheet.
-7. Use **Improve with AI** to compare original vs improved task content.
-8. Switch language EN/PL/CS.
-9. Switch theme light/dark/system.
-10. Check mobile responsive behavior.
+| Area                    | Status    | Notes                                                              |
+| ----------------------- | --------- | ------------------------------------------------------------------ |
+| Auth/register/login     | Completed | Cookie sessions, password hashing, protected routes.               |
+| Demo session            | Completed | Creates isolated demo workspace/project/board data.                |
+| Workspace/project shell | Completed | Shell and placeholders exist; full management UI is planned.       |
+| DB-backed Kanban board  | Completed | Board snapshot comes from PostgreSQL through authenticated API.    |
+| Task create/edit/delete | Completed | Create, update, archive/delete, and detail APIs are DB-backed.     |
+| Drag/drop movement      | Completed | Desktop task movement persists across columns and ordering.        |
+| Mobile move fallback    | Completed | Native status selector avoids relying on mobile drag/drop.         |
+| WIP warnings            | Completed | Column WIP limit warnings use DB-backed counts.                    |
+| Task detail             | Completed | Properties, labels, assignees, checklist, comments, activity.      |
+| Dashboard metrics       | Completed | Workspace metrics, WIP risk, due-soon, priority/status breakdowns. |
+| Improve with AI         | Completed | Backend-only OpenAI call, persisted suggestions, apply/reject UI.  |
+| EN/PL/CS i18n           | Completed | Visible UI strings use translation keys.                           |
+| Light/dark/system theme | Completed | Stored client preference with system mode support.                 |
+| Responsive UI           | Completed | Shell, board, dashboard, and task sheet use responsive layouts.    |
+| Docker/Coolify baseline | Completed | Dockerfile, Compose, entrypoint, healthcheck, deployment notes.    |
+| Public deployment       | Pending   | Target URL is documented but not verified yet.                     |
+| Runtime DB/OpenAI smoke | Pending   | Requires safe `DATABASE_URL` and backend-only `OPENAI_API_KEY`.    |
+| Search/filter, realtime | Planned   | Out of scope for the current recruiter-ready slice.                |
+| File uploads, billing   | Planned   | Future product work, intentionally not implemented.                |
 
-## Core features
+## Tech Stack
 
-### Kanban
+| Layer      | Choices                                             |
+| ---------- | --------------------------------------------------- |
+| Frontend   | React, Vite, TypeScript, TanStack Router/Query      |
+| UI         | Tailwind CSS, shadcn/Radix-style primitives, lucide |
+| Backend    | Hono on Node.js, structured API envelopes           |
+| Database   | PostgreSQL, Drizzle ORM, migrations, seed data      |
+| Contracts  | Shared Zod schemas and TypeScript types             |
+| Auth       | HTTP-only session cookies, bcrypt password hashing  |
+| AI         | OpenAI Responses API from backend only              |
+| Deployment | Docker, Docker Compose, Coolify-oriented setup      |
 
-- Workspaces, projects, boards, columns, tasks.
-- Drag & drop on desktop.
-- Mobile “Move to...” fallback.
-- WIP limit warnings.
-- Stable status semantics independent of column names.
-- Task priority, labels, assignees, due dates, blocked state.
-- Search and filters.
-
-### Task detail
-
-- Sheet/drawer UI.
-- Editable title and description.
-- Metadata controls.
-- Checklist.
-- Comments.
-- Activity log.
-- AI improvement comparison.
-
-### Dashboard
-
-- Total active tasks.
-- Completed tasks this week.
-- Overdue tasks.
-- Blocked tasks.
-- WIP limit issues.
-- Completion rate.
-- Tasks by status and priority.
-
-### AI Improve
-
-The AI feature is not a generic chatbot. It improves task quality:
-
-- clearer title,
-- better description,
-- acceptance criteria,
-- suggested subtasks,
-- risk notes,
-- side-by-side original vs improved review,
-- accept/reject/apply partial workflow.
-
-## Tech stack
-
-### Frontend
-
-- React + Vite + TypeScript
-- TanStack Router
-- TanStack Query
-- Tailwind CSS
-- shadcn/ui + Radix primitives
-- dnd-kit
-- react-hook-form + Zod
-- Motion
-- i18next
-
-### Backend
-
-- Hono on Node
-- PostgreSQL
-- Drizzle ORM
-- Zod contracts
-- Cookie-based sessions
-- OpenAI API backend integration
-
-### Deployment
-
-- Docker Compose
-- Coolify
-- One production domain:
+## Architecture Summary
 
 ```txt
-/api/* -> API
-/*      -> SPA fallback
+apps/web        React + Vite SPA
+apps/api        Hono API and production SPA static serving
+packages/db     Drizzle schema, migrations, seed, DB client
+packages/shared Shared domain constants, Zod API contracts, types
+docs/           Product, architecture, implementation, deployment, audits
 ```
 
-## Repository structure
-
-Planned structure:
+Production is designed around one public domain:
 
 ```txt
-agentboard/
-  apps/
-    web/
-    api/
-  packages/
-    db/
-    shared/
-    ui/
-  docs/
-  AGENTS.md
-  CODEX_START_PROMPT.md
-  STATUS.md
-  README.md
-  .env.example
-  docker-compose.yml
-  Dockerfile
+/api/* -> Hono API
+/*      -> Vite SPA fallback served by the API container
 ```
 
-## Local setup
+Security and boundary notes:
 
-After implementation, the expected workflow should be:
+- `OPENAI_API_KEY` is backend-only and must never be exposed in frontend code.
+- DB-backed routes require authentication and workspace membership checks.
+- Migration and seed scripts require an explicit `DATABASE_URL`; there is no fallback DB URL.
+- API responses use standard success/error envelopes.
+
+## Local Setup
+
+Prerequisites:
+
+- Node.js 22+
+- pnpm 9+
+- PostgreSQL 16+ for DB-backed runtime smoke
+
+Install and configure:
 
 ```bash
 pnpm install
 cp .env.example .env
-pnpm db:migrate
-pnpm db:seed
-pnpm dev
 ```
 
-Useful checks:
-
-```bash
-pnpm typecheck
-pnpm lint
-pnpm test
-pnpm build
-```
-
-## Environment variables
-
-See `.env.example`.
-
-Important production variables:
+Edit `.env` for your local machine. At minimum, DB-backed routes need:
 
 ```txt
-DATABASE_URL=
-SESSION_SECRET=
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-5-nano
-APP_URL=https://scalesoftware.matgac.pl
-NODE_ENV=production
-SEED_DEMO_DATA=true
+DATABASE_URL=postgres://agentboard:agentboard@localhost:5432/agentboard
+SESSION_SECRET=change-me-in-local-env
 ```
 
-## Deployment target
+AI Improve is optional for local review:
 
-Target production setup:
+```txt
+AI_FEATURE_ENABLED=true
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5-nano
+```
 
-- OVH VPS,
-- Coolify connected to GitHub,
-- Docker Compose build pack,
-- PostgreSQL service,
-- app service exposed on `https://scalesoftware.matgac.pl`,
-- health check at `/api/health`.
+Without `OPENAI_API_KEY`, the app should show a graceful AI unavailable/error state and
+normal task editing remains usable.
 
-## What to review first
+## Database Migrate and Seed
 
-For recruiters/technical reviewers:
+Run these only when `DATABASE_URL` points to a safe local or staging database:
 
-1. Live demo flow.
-2. `README.md` for project overview.
-3. `docs/01_PRD.md` for product thinking.
-4. `docs/05_DATABASE.md` for data modeling.
-5. `docs/06_API_CONTRACTS.md` for backend design.
-6. Board and task detail frontend code.
-7. AI integration in backend.
-8. Docker/Coolify deployment files.
+```bash
+pnpm db:migrate
+pnpm db:seed
+```
 
-## Current status
+The seed is designed to be idempotent and creates demo workspace/project/board/task
+data for review.
 
-See `STATUS.md`.
+## Development Scripts
+
+```bash
+pnpm dev            # run web and API in development
+pnpm typecheck      # TypeScript checks across packages
+pnpm lint           # ESLint with zero warnings
+pnpm build          # package builds and Vite production build
+pnpm format:check   # Prettier check
+pnpm format         # apply Prettier formatting
+```
+
+Useful package-level checks:
+
+```bash
+pnpm --filter @agentboard/web build
+pnpm --filter @agentboard/api build
+pnpm --filter @agentboard/shared build
+pnpm --filter @agentboard/db build
+```
+
+## Docker and Coolify Notes
+
+Non-destructive local image build:
+
+```bash
+docker build -t agentboard-local .
+```
+
+Coolify deployment model:
+
+1. Create a Docker Compose resource from this repository.
+2. Assign `https://scalesoftware.matgac.pl` to the `app` service.
+3. Use container port `3000`.
+4. Keep the `postgres` service internal.
+5. Set production env vars in Coolify, especially `DATABASE_URL`,
+   `SESSION_SECRET`, `APP_URL`, and optional `OPENAI_API_KEY`.
+6. Deploy and verify `/api/health`, demo login, board, task detail, dashboard, and AI
+   unavailable/working state.
+
+The container entrypoint waits for the DB, runs migrations, optionally seeds demo data,
+then starts the API server.
+
+More detail: [docs/03-deployment/deployment-notes.md](docs/03-deployment/deployment-notes.md).
+
+## Known Limitations
+
+- The target public URL is documented but not yet verified as deployed.
+- Runtime DB smoke is pending until a safe `DATABASE_URL` is configured.
+- Real AI smoke is pending until a backend-only `OPENAI_API_KEY` is configured.
+- Workspace/project/settings routes are shell placeholders; full management UI is planned.
+- Checklist deletion/reordering and comment edit/delete are future refinements.
+- Search/filter, realtime collaboration, file uploads, billing, and invites are planned
+  future work.
+
+## Recruiter Review Path
+
+1. Live app/demo at the target URL once deployed.
+2. Board vertical slice: `apps/web/src/features/boards` and
+   `apps/api/src/modules/boards`.
+3. Task detail: checklist/comment/activity UI and DB-backed mutations.
+4. Dashboard metrics: `apps/web/src/features/dashboard` and
+   `apps/api/src/modules/workspaces/dashboard.ts`.
+5. AI feature: `apps/api/src/modules/ai`, task detail AI panel, and shared contracts.
+6. Backend contracts: `packages/shared/src/api/contracts.ts`.
+7. Database schema: `packages/db/src/schema.ts` and migrations.
+
+## Documentation
+
+- Current state: [STATUS.md](STATUS.md)
+- Final recruiter audit: [FINAL_RECRUITER_AUDIT.md](FINAL_RECRUITER_AUDIT.md)
+- Documentation map: [docs/index.md](docs/index.md)
+- API contracts: [docs/01-architecture/api-contracts.md](docs/01-architecture/api-contracts.md)
+- Database: [docs/01-architecture/database.md](docs/01-architecture/database.md)
+- Deployment: [docs/03-deployment/deployment-notes.md](docs/03-deployment/deployment-notes.md)
 
 ## License
 
-MIT — see `LICENSE`.
+MIT - see [LICENSE](LICENSE).

@@ -74,6 +74,23 @@ export function serviceUnavailable(message: string) {
   });
 }
 
+export function aiUnavailable(message: string, details?: unknown) {
+  return new AppError({
+    code: "AI_UNAVAILABLE",
+    message,
+    status: 503,
+    details
+  });
+}
+
+export function rateLimited(message: string) {
+  return new AppError({
+    code: "RATE_LIMITED",
+    message,
+    status: 429
+  });
+}
+
 export function toAppError(error: unknown): AppError {
   if (error instanceof AppError) {
     return error;

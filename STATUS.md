@@ -1,186 +1,392 @@
 # STATUS.md
 
-## Current stage
+## Current Phase
 
-Phase 2 — API foundation now passes after repair.
+Final Local Product Smoke + Recruiter Polish.
 
-The repository has a buildable pnpm TypeScript monorepo, PostgreSQL/Drizzle database foundation, shared contracts, and a Hono API foundation. The two Phase 2 blockers from the latest audit were repaired:
+Implementation date: June 6, 2026
 
-- password hashing now uses bcrypt instead of Node `crypto.scrypt`,
-- the normal API startup path can serve `GET /api/health` without `DATABASE_URL`, while DB-backed routes return structured `503 SERVICE_UNAVAILABLE` when DB configuration is missing.
+Local product audit date: June 6, 2026
 
-Phase 3 frontend shell has not started.
+Current product status: the local foundation, API, frontend shell, DB-backed board
+vertical slice, task detail polish, DB-backed dashboard, real backend-only AI Improve
+flow, recruiter-facing README, and final recruiter audit are implemented as code and
+pass static validation. Deployment baseline is ready for the next Coolify deployment
+attempt, but the public URL has not been verified yet.
 
-Runtime API smoke testing against a live PostgreSQL database is still pending because `DATABASE_URL` was not explicitly configured and verified as a safe local PostgreSQL database. Migrations and seed were not run during this repair.
+Task detail polish status: PASS as code. The task detail sheet now renders deeper
+API-backed task data and supports narrow DB-backed checklist/comment mutations plus
+existing task property, label, assignee, and status mutations.
 
-## Latest audit
+Task detail audit result: PASS. See `TASK_DETAIL_AUDIT.md`.
 
-Audit date: June 6, 2026
+Dashboard status: PASS as code. The dashboard API and `/app/dashboard` UI are
+DB-backed, workspace-scoped, authenticated, responsive, and covered by shared Zod
+contracts and EN/PL/CS translations.
 
-Audit file: `PHASE_0_3_AUDIT.md`
+AI feature status: PASS as code. The task detail sheet now includes Improve with AI,
+calls backend-only OpenAI integration, stores suggestions, supports apply/reject, and
+degrades gracefully when AI or DB configuration is unavailable.
 
-Detected phase: Phase 2 — API foundation complete after repair; Phase 3 frontend shell not started.
+Current decision: `READY_FOR_DEPLOYMENT`.
 
-Move-forward decision: `START_PHASE_3`
+Dashboard audit was intentionally skipped by prior instruction to move faster. Do not
+rewrite dashboard. The next repository action is deployment to Coolify followed by live
+runtime smoke.
 
-Exact next recommended action:
+## Completed Phases
 
-Start Phase 3 frontend app shell only:
+| Phase                          | Status | Summary                                                                                                                                               |
+| ------------------------------ | -----: | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Phase 0 - Repo foundation      |   PASS | Workspace, scripts, configs, lockfile, env example, and package folders exist.                                                                        |
+| Phase 1 - Database/seed        |   PASS | Drizzle schema, migrations, guarded DB commands, seed, indexes, FKs, and types exist.                                                                 |
+| Phase 2 - API/auth             |   PASS | Hono API/auth/board snapshot foundation exists and DB-less health startup works.                                                                      |
+| Phase 3 - App shell            |   PASS | Vite React shell, TanStack Router, TanStack Query, API client, auth UI, protected shell, theme, and i18n are implemented.                             |
+| Phase 4 - Board vertical slice |   PASS | DB-backed board snapshot, task CRUD, task detail sheet, persisted movement, mobile fallback, and WIP warning are implemented as code.                 |
+| Task detail polish             |   PASS | Task detail renders richer API-backed task data with editable core fields, labels, assignees, checklist add/toggle, comments, activity, and metadata. |
+| Task detail polish audit       |   PASS | Audit found no critical task detail blockers; required validation commands pass.                                                                      |
+| Dashboard metrics              |   PASS | Authenticated workspace dashboard endpoint and responsive dashboard UI use DB-backed metrics only.                                                    |
+| AI Improve                     |   PASS | Backend-only OpenAI task improvement, persisted suggestions, task detail comparison UI, apply/reject flow, and graceful unavailable states exist.     |
+| Recruiter polish               |   PASS | README, STATUS, docs index, and final recruiter audit honestly describe implemented and pending product scope.                                        |
+| Deployment baseline            |   PASS | Single-container API plus SPA serving, Dockerfile, Compose, startup script, healthcheck, env example, and deployment notes exist.                     |
 
-- TanStack Router setup,
-- API client,
-- TanStack Query provider,
-- i18next setup for EN/PL/CS,
-- theme provider with light/dark/system,
-- app layout shell,
-- sidebar/topbar/mobile navigation,
-- language switch,
-- theme switch,
-- login/register/demo screens,
-- protected route handling,
-- basic responsive shell.
+Phase 3 and Phase 4 remain stable under the local product audit in
+`LOCAL_PRODUCT_AUDIT.md`. The board works as a real API-backed vertical slice, and task
+detail is now the richest local task management surface. Deployment baseline work did
+not add dashboard, AI, or new product UI scope and must remain parked.
 
-Do not start Phase 4 board vertical slice, task CRUD, task movement, dashboard, AI, Docker, deployment, or product polish yet.
+## What Works
 
-## Phase status summary
+- Root `AGENTS.md` provides concise current agent rules.
+- Root `README.md` is recruiter-facing and links to current status/docs.
+- Root `STATUS.md` remains the implementation source of truth.
+- Product, architecture, implementation, deployment, review, and prompt docs are grouped
+  under `docs/`.
+- `docs/index.md` is the main documentation hub.
+- Existing useful audit and planning history is preserved in the docs tree.
+- Docker/Coolify baseline files exist.
+- `docs/03-deployment/ovh-cloudflare-coolify-prep.md` documents the
+  `https://scalesoftware.matgac.pl` deployment preparation path, including Cloudflare as
+  the currently authoritative DNS provider.
+- Static validation passes for format, lint, typecheck, and build checks.
+- Local product readiness audit is documented in `LOCAL_PRODUCT_AUDIT.md`.
+- Task detail polish audit is documented in `TASK_DETAIL_AUDIT.md`.
+- Task detail sheet renders title, description, priority, due date, blocked state,
+  column/status, labels, assignees, checklist items, comments, activity, created
+  metadata, started metadata, and completed metadata from API-backed task detail data.
+- Task detail supports editing title, description, priority, due date, blocked state,
+  status/column, labels, assignees, checklist item creation/toggle, comments, and
+  delete/archive using DB-backed endpoints.
+- Task detail includes loading, error/retry, empty checklist, empty comments, empty
+  activity, saving, and mobile-friendly layout states.
+- `GET /api/workspaces/:workspaceId/dashboard` requires authentication, validates
+  workspace membership, supports optional project scope, returns the standard success
+  envelope, and returns structured `SERVICE_UNAVAILABLE` when DB-backed routes are not
+  configured.
+- `/app/dashboard` renders real DB-backed summary metric cards, WIP warnings, priority
+  breakdown, status/column breakdown, due-soon risk list, and recent activity with
+  loading, empty, error, and DB-unavailable states.
+- Dashboard UI text is translated in English, Polish, and Czech.
+- `POST /api/tasks/:taskId/ai/improve` requires auth, validates workspace membership,
+  validates task/column ownership, sends task-relevant context only to OpenAI, validates
+  structured JSON with Zod, stores original/suggested payloads in `ai_suggestions`, and
+  creates `ai.suggestion_created` activity.
+- `POST /api/ai-suggestions/:suggestionId/apply` requires auth, validates suggestion
+  workspace access, applies improved title/description/priority/checklist items,
+  updates the board version, marks the suggestion accepted or partially applied, and
+  creates `ai.suggestion_applied` activity.
+- `POST /api/ai-suggestions/:suggestionId/reject` requires auth, validates suggestion
+  workspace access, marks the suggestion rejected, and creates
+  `ai.suggestion_rejected` activity.
+- Task detail includes an Improve with AI panel with loading, unavailable/error,
+  original-vs-improved comparison, acceptance criteria, suggested checklist, risk notes,
+  recommended priority, apply, and reject states.
+- AI UI text is translated in English, Polish, and Czech.
+- `README.md` is recruiter-facing and includes product summary, feature status, tech
+  stack, architecture, setup, env vars, DB migrate/seed instructions, scripts,
+  Docker/Coolify notes, known limitations, and review path.
+- `FINAL_RECRUITER_AUDIT.md` documents readiness score, completed surfaces,
+  runtime-pending items, GitHub safety, review path, deployment checklist, blockers, and
+  decision.
 
-| Phase                          |      Status | Summary                                                                                    |
-| ------------------------------ | ----------: | ------------------------------------------------------------------------------------------ |
-| Phase 0 — Repo foundation      |        PASS | Workspace, scripts, configs, lockfile, env example, and package folders exist              |
-| Phase 1 — Database/seed        |        PASS | Drizzle schema, migrations, guarded runtime DB commands, seed, indexes, FKs, types exist   |
-| Phase 2 — API/auth             |        PASS | Hono/API/auth/board snapshot exist; bcrypt hashing and DB-less health startup are repaired |
-| Phase 3 — App shell            | NOT_STARTED | Vite app exists and renders `null`; router, Query, i18n, theme, and shell are not started  |
-| Phase 4 — Board vertical slice | NOT_STARTED | Do not start until Phase 3 frontend shell is complete                                      |
+## Incomplete
 
-## Command results
+- Production deployment at `https://scalesoftware.matgac.pl` has not been verified in
+  this repository state.
+- DB-backed smoke tests still require a safe local or staging `DATABASE_URL`.
+- Checklist deletion/reordering and comment edit/delete remain future task-detail
+  refinements.
+- Dashboard runtime smoke test still requires a safe local or staging `DATABASE_URL`.
+- Real AI endpoint smoke test still requires a safe local/staging `DATABASE_URL` and
+  backend-only `OPENAI_API_KEY`.
+- Search/filter, realtime, file uploads, and billing remain future product phases.
+- Deployment execution and live verification remain the next operational step.
+- Public recruiter sharing remains pending until Coolify deployment and live smoke pass.
 
-| Command                                      | Result | Notes                                                                        |
-| -------------------------------------------- | -----: | ---------------------------------------------------------------------------- |
-| `pnpm typecheck`                             |   PASS | Workspace TypeScript checks pass                                             |
-| `pnpm lint`                                  |   PASS | ESLint passes with zero warnings                                             |
-| `pnpm build`                                 |   PASS | Workspace build passes                                                       |
-| `pnpm format:check`                          |   PASS | All matched files use Prettier style after documentation update              |
-| `pnpm --filter @agentboard/api typecheck`    |   PASS | API package typechecks                                                       |
-| `pnpm --filter @agentboard/api build`        |   PASS | API package build script passes                                              |
-| `pnpm --filter @agentboard/shared typecheck` |   PASS | Shared package typechecks                                                    |
-| `pnpm --filter @agentboard/shared build`     |   PASS | Shared package build script passes                                           |
-| `pnpm --filter @agentboard/db typecheck`     |   PASS | DB package typechecks without live database                                  |
-| `pnpm --filter @agentboard/db build`         |   PASS | DB package build script passes                                               |
-| `pnpm --filter @agentboard/web typecheck`    |   PASS | Web package typechecks                                                       |
-| `pnpm --filter @agentboard/web build`        |   PASS | Web package build script passes                                              |
-| DB-less `GET /api/health` smoke              |   PASS | Normal API startup without `DATABASE_URL` returned expected `200` payload    |
-| DB-less `GET /api/auth/me` smoke             |   PASS | DB-backed route returned structured `503 SERVICE_UNAVAILABLE` error envelope |
+## Files Changed In Dashboard Implementation
 
-Commands intentionally not run:
+- `apps/api/src/app.ts`
+- `apps/api/src/modules/workspaces/dashboard.ts`
+- `apps/api/src/modules/workspaces/routes.ts`
+- `apps/web/src/app/router.tsx`
+- `apps/web/src/components/layout/app-shell.tsx`
+- `apps/web/src/features/dashboard/dashboard-page.tsx`
+- `apps/web/src/features/dashboard/dashboard-queries.ts`
+- `apps/web/src/lib/api-client.ts`
+- `apps/web/src/i18n/locales/en/common.json`
+- `apps/web/src/i18n/locales/pl/common.json`
+- `apps/web/src/i18n/locales/cs/common.json`
+- `packages/shared/src/api/contracts.ts`
+- `docs/01-architecture/api-contracts.md`
+- `STATUS.md`
 
-- `pnpm --filter @agentboard/db db:migrate` — not run because `DATABASE_URL` was not explicitly configured and verified as safe.
-- `pnpm --filter @agentboard/db db:seed` — not run because `DATABASE_URL` was not explicitly configured and verified as safe.
-- Live PostgreSQL API smoke tests — not run because runtime DB configuration was not explicitly verified as safe.
+## Dashboard Implementation Changes
 
-## Repaired Phase 2 blockers
+Backend/API changes:
 
-### Password hashing algorithm
+- Added `GET /api/workspaces/:workspaceId/dashboard`.
+- Registered workspace routes under `/api/workspaces`.
+- Added structured 503 fallback for `/api/workspaces/*` when DB configuration is
+  missing.
+- Dashboard queries require auth, validate workspace membership, validate optional
+  project scope, and only read rows from the accessible workspace.
 
-`apps/api/src/modules/auth/security.ts` now hashes and verifies passwords with `bcrypt` using a cost factor of 12. Existing register/login route behavior is preserved. Plaintext passwords are not stored. Session token creation and hashing remain unchanged.
+Metrics implemented:
 
-### Health endpoint without DB configuration
+- `totalActiveTasks`: non-archived tasks outside `completes_work` columns.
+- `completedTasks`: non-archived tasks in `completes_work` columns.
+- `overdueTasks`: active tasks with due date before today.
+- `blockedTasks`: active tasks with `is_blocked = true` or column behavior
+  `blocks_work`.
+- `completionRate`: completed / all relevant non-archived tasks, with display percent.
+- `wipLimitWarnings`: active column task count over `wip_limit`.
+- `tasksByPriority`: active tasks grouped into low, medium, high, urgent.
+- `tasksByColumn`: ordered board/column breakdown with active/completed counts.
+- `dueSoonTasks`: active tasks due today through the next 7 days.
+- `recentActivity`: latest task activity events in scope.
 
-`apps/api/src/env.ts` now separates base API environment validation from database environment validation. `apps/api/src/index.ts` loads the base API env, creates a DB client only when `DATABASE_URL` is present, and otherwise starts the app without DB-backed routes.
+Frontend/UI changes:
 
-`GET /api/health` works through the normal server entrypoint without `DATABASE_URL`.
+- Added `/app/dashboard`.
+- Added dashboard navigation entry.
+- Added summary metric cards, WIP warnings, priority bars, status/column bars, due-soon
+  risk list, and recent activity list.
+- Added loading, no-workspace, empty-data, API error, and DB-unavailable states.
+- Kept the UI compact and responsive using the existing Tailwind/shadcn-style system.
 
-DB-backed routes under `/api/auth/*` and `/api/boards/*` return the existing structured error envelope with `503 SERVICE_UNAVAILABLE` when DB configuration is missing.
+Shared/docs/i18n changes:
 
-Migrate and seed safety from Phase 1 remains unchanged in `packages/db/src/client.ts`: runtime migrate/seed commands still require explicit `DATABASE_URL`.
+- Added shared Zod contracts for dashboard query, response, metric cards, WIP warnings,
+  priority breakdown, column breakdown, due-soon tasks, and recent activity.
+- Updated `docs/01-architecture/api-contracts.md` with the implemented dashboard
+  response shape and metric definitions.
+- Added dashboard translation keys in English, Polish, and Czech.
 
-## Completed setup
+## Files Changed In Task Detail Polish
 
-- Phase 0 repository foundation is complete.
-- Phase 1 database foundation is complete as code, including explicit `DATABASE_URL` guards for runtime migrate/seed commands.
-- Phase 2 API foundation is complete as code after repair.
-- Added shared Zod contracts for API envelopes, auth/session, board snapshot, task detail, health, and common domain enums.
-- Added Hono app structure under `/api/*`.
-- Added request ID middleware, structured errors, not-found handler, error handler, and local-development CORS.
-- Added request logging with method, path, status, duration, and request ID.
-- Added split API/base and DB environment validation.
-- Added DB-backed auth/session endpoints.
-- Added bcrypt password hashing.
-- Added reusable workspace ownership guard helpers.
-- Added authenticated DB-backed board snapshot endpoint.
+- `apps/web/src/features/boards/board-page.tsx`
+- `apps/web/src/features/boards/board-queries.ts`
+- `apps/web/src/lib/api-client.ts`
+- `apps/web/src/i18n/locales/en/common.json`
+- `apps/web/src/i18n/locales/pl/common.json`
+- `apps/web/src/i18n/locales/cs/common.json`
+- `apps/api/src/modules/tasks/routes.ts`
+- `packages/shared/src/api/contracts.ts`
+- `docs/01-architecture/api-contracts.md`
+- `STATUS.md`
 
-## Routes implemented
+## Task Detail Polish Changes
 
-| Method | Route                  | Status      | Notes                                                                   |
-| ------ | ---------------------- | ----------- | ----------------------------------------------------------------------- |
-| GET    | `/api/health`          | Implemented | Works without `DATABASE_URL`; does not query DB                         |
-| POST   | `/api/auth/register`   | Implemented | Creates user, first workspace, owner membership, DB session, cookie     |
-| POST   | `/api/auth/login`      | Implemented | Verifies bcrypt password hash, creates DB session, sets cookie          |
-| POST   | `/api/auth/demo`       | Implemented | Creates isolated demo user/workspace/project/board data and demo cookie |
-| POST   | `/api/auth/logout`     | Implemented | Deletes current DB session when present and clears cookie               |
-| GET    | `/api/auth/me`         | Implemented | Requires valid DB session and returns current user/workspaces           |
-| GET    | `/api/boards/:boardId` | Implemented | Requires auth, verifies workspace membership, returns DB board snapshot |
+UI improvements:
 
-## Remaining gaps
+- Expanded the existing task detail sheet into a sectioned productivity surface.
+- Added editable top-level task fields, status selector, compact metadata pills, label
+  toggles, assignee toggles, checklist section, comments section, activity section, and
+  created/started/completed metadata section.
+- Added polished loading, error/retry, empty checklist, empty comments, empty activity,
+  saving, and mobile-friendly full-height drawer states.
 
-- Phase 3 frontend app shell, auth screens, i18n provider, theme provider, and UI components are not implemented yet.
-- Runtime API behavior has not been smoke-tested against a live local PostgreSQL database in this environment.
-- Migrations have not been applied to a live PostgreSQL database in this environment.
-- Seed has not been executed against a live PostgreSQL database in this environment.
-- Task create/edit/delete routes are not implemented yet.
-- Task move/reorder endpoint is not implemented yet.
-- Task detail endpoint is not implemented yet.
-- Dashboard, AI Improve, Docker, deployment, public screenshots, and README demo polish are not implemented yet.
-- This folder may still need Git repository initialization before public GitHub work.
+API/backend changes:
 
-## Exact next prompt
+- Added shared Zod contracts for checklist item creation, checklist item updates, and
+  comment creation.
+- Added `POST /api/tasks/:taskId/checklist-items`.
+- Added `PATCH /api/tasks/checklist-items/:itemId`.
+- Added `POST /api/tasks/:taskId/comments`.
+- Each new mutation requires auth, validates workspace membership, verifies task/item
+  ownership through DB state, updates board version, returns fresh task detail and board
+  snapshot, and writes existing activity event types where supported.
+
+i18n changes:
+
+- Added English, Polish, and Czech keys for task detail sections, labels, assignees,
+  checklist, comments, activity, empty states, loading/error/retry states, save states,
+  blocked state labels, metadata labels, and activity event labels.
+
+## Files Changed In AI Improve Implementation
+
+- `apps/api/src/app.ts`
+- `apps/api/src/env.ts`
+- `apps/api/src/lib/errors.ts`
+- `apps/api/src/modules/ai/routes.ts`
+- `apps/api/src/modules/ai/service.ts`
+- `apps/api/src/modules/tasks/routes.ts`
+- `apps/web/src/features/boards/board-page.tsx`
+- `apps/web/src/features/boards/board-queries.ts`
+- `apps/web/src/lib/api-client.ts`
+- `apps/web/src/lib/api-errors.ts`
+- `apps/web/src/i18n/locales/en/common.json`
+- `apps/web/src/i18n/locales/pl/common.json`
+- `apps/web/src/i18n/locales/cs/common.json`
+- `packages/shared/src/api/contracts.ts`
+- `docs/01-architecture/ai-feature.md`
+- `docs/01-architecture/api-contracts.md`
+- `STATUS.md`
+
+## AI Improve Implementation Changes
+
+Backend/API changes:
+
+- Added `POST /api/tasks/:taskId/ai/improve`.
+- Added `POST /api/ai-suggestions/:suggestionId/apply`.
+- Added `POST /api/ai-suggestions/:suggestionId/reject`.
+- Added API env parsing for `AI_FEATURE_ENABLED`, `OPENAI_API_KEY`,
+  `OPENAI_MODEL`, `OPENAI_TIMEOUT_MS`, and `OPENAI_MAX_OUTPUT_TOKENS`.
+- Used OpenAI Responses API from backend code only with structured JSON Schema output.
+- Validated AI output with shared Zod schema before storing or returning it.
+- Persisted `originalPayload`, `suggestedPayload`, model name, and review status in
+  the existing `ai_suggestions` table.
+- Added `AI_UNAVAILABLE` and `RATE_LIMITED` error helpers.
+- Created AI task activity events for suggestion created, applied, and rejected.
+
+Frontend/UI changes:
+
+- Added an Improve with AI panel inside the existing task detail sheet.
+- Added loading, unavailable/error, pending review, applied, rejected, and partially
+  applied states.
+- Added original-vs-improved comparison for title, description, and priority.
+- Added rendered acceptance criteria, suggested checklist items, risk notes, and
+  recommended priority.
+- Added apply and reject actions; applying refreshes task detail and board snapshot
+  from backend response.
+- Kept normal task editing available when AI is unavailable or fails.
+
+Error/disabled behavior:
+
+- Missing `OPENAI_API_KEY` returns `AI_UNAVAILABLE`; the task is not changed.
+- `AI_FEATURE_ENABLED=false` returns `AI_UNAVAILABLE`; the task is not changed.
+- OpenAI timeout, provider failure, empty output, invalid JSON, and invalid schema are
+  converted to safe `AI_UNAVAILABLE` responses.
+- OpenAI rate/quota responses return `RATE_LIMITED`.
+- Without `DATABASE_URL`, DB-backed routes return structured `SERVICE_UNAVAILABLE`.
+
+i18n/docs changes:
+
+- Added English, Polish, and Czech AI panel translations.
+- Added English, Polish, and Czech AI unavailable/rate-limited error translations.
+- Updated `docs/01-architecture/ai-feature.md` and
+  `docs/01-architecture/api-contracts.md` to match implemented endpoint names and
+  payload shape.
+
+## Files Changed In Final Recruiter Polish
+
+- `README.md`
+- `FINAL_RECRUITER_AUDIT.md`
+- `docs/index.md`
+- `STATUS.md`
+
+## Final Recruiter Polish Changes
+
+- Rewrote `README.md` as a recruiter-facing project overview with honest implemented,
+  pending, and planned labels.
+- Added setup, env var, migrate/seed, script, Docker/Coolify, known limitation, and
+  recruiter review path sections.
+- Created `FINAL_RECRUITER_AUDIT.md` with readiness summary, readiness score, completed
+  surfaces, runtime-pending items, GitHub safety checklist, deployment checklist, final
+  blockers, and decision.
+- Updated `docs/index.md` to link the final recruiter audit.
+- Checked GitHub safety surface for `.env`, real secrets, local absolute paths, false
+  live-production claims, README quality, local Markdown links, and app translation keys.
+- Confirmed no `.env` is tracked, `LICENSE` exists, `.env.example` is present, and
+  `OPENAI_API_KEY` is not referenced by frontend code.
+
+## Commands Last Run
+
+Final recruiter polish validation completed on June 6, 2026.
+
+| Command                                |  Result | Notes                                                                                                  |
+| -------------------------------------- | ------: | ------------------------------------------------------------------------------------------------------ |
+| `pnpm format`                          |    PASS | Formatted README, STATUS, docs index, and final audit.                                                 |
+| `pnpm typecheck`                       |    PASS | Workspace TypeScript checks passed.                                                                    |
+| `pnpm lint`                            |    PASS | ESLint passed with zero warnings.                                                                      |
+| `pnpm build`                           |    PASS | Workspace build passed; Vite production build completed.                                               |
+| `pnpm format:check`                    |    PASS | Prettier check passed.                                                                                 |
+| `docker --version`                     |    PASS | Docker 27.3.1 is available in this environment.                                                        |
+| `docker build -t agentboard-local .`   |    PASS | Docker image build completed successfully.                                                             |
+| `printenv DATABASE_URL OPENAI_API_KEY` | NOT_SET | `DATABASE_URL` and `OPENAI_API_KEY` are not set in this shell.                                         |
+| Translation key coverage script        |    PASS | EN/PL/CS app-source translation key coverage passed.                                                   |
+| Markdown local link check              |    PASS | README, STATUS, final audit, and docs local links resolved.                                            |
+| GitHub safety grep                     |    PASS | No real API keys or local absolute filesystem paths found; remaining hits are field names/doc wording. |
+| DB-backed runtime smoke                | NOT_RUN | No explicitly confirmed safe local DB URL.                                                             |
+| AI endpoint smoke test                 | NOT_RUN | No safe `DATABASE_URL` and backend-only `OPENAI_API_KEY` in this shell.                                |
+| `pnpm db:migrate`                      | NOT_RUN | No explicitly confirmed safe local DB URL.                                                             |
+| `pnpm db:seed`                         | NOT_RUN | No explicitly confirmed safe local DB URL.                                                             |
+
+## Known Blockers
+
+- No foundation blocker prevents continuing local product work.
+- No critical task detail blocker remains after the focused audit.
+- DB-backed smoke tests are blocked until `DATABASE_URL` points to a safe database.
+- Dashboard runtime smoke tests are blocked until `DATABASE_URL` points to a safe
+  database.
+- Real AI endpoint smoke is blocked until both `DATABASE_URL` and backend-only
+  `OPENAI_API_KEY` are configured in a safe local or staging environment.
+
+## Latest Relevant Audit Docs
+
+- `LOCAL_PRODUCT_AUDIT.md`
+- `TASK_DETAIL_AUDIT.md`
+- `docs/04-reviews/phase-3-4-audit.md`
+- `docs/04-reviews/phase-0-3-audit.md`
+- `docs/04-reviews/phase-audit.md`
+- `docs/04-reviews/docs-review-and-fixes.md`
+
+## Next Recommended Action
+
+Deploy to Coolify:
 
 ```txt
 Continue the AgentBoard project from the current repository state.
 
-Start Phase 3 — Frontend app shell only.
+Read AGENTS.md, STATUS.md, README.md, FINAL_RECRUITER_AUDIT.md, docs/index.md, docs/03-deployment/deployment-notes.md, docs/03-deployment/coolify-deployment.md, docs/01-architecture/api-contracts.md, docs/01-architecture/database.md, and docs/01-architecture/ai-feature.md.
 
-Do not start Phase 4. Do not implement board screens, task CRUD, task movement, dashboard, AI, Docker, deployment, or product polish.
+Decision from final recruiter polish: READY_FOR_DEPLOYMENT.
 
-First read:
-- AGENTS.md
-- STATUS.md
-- PHASE_0_3_AUDIT.md
-- docs/03_ARCHITECTURE.md
-- docs/06_API_CONTRACTS.md
-- docs/10_IMPLEMENTATION_PLAN.md
-- docs/11_ACCEPTANCE_CRITERIA.md
+Deploy AgentBoard to Coolify at https://scalesoftware.matgac.pl and run live smoke tests.
 
-Goal:
-Implement only the Phase 3 frontend app shell:
-- TanStack Router setup
-- API client
-- TanStack Query provider
-- i18next setup with EN, PL, and CS
-- theme provider with light/dark/system
-- app layout shell
-- sidebar/topbar/mobile navigation
-- language switch
-- theme switch
-- login/register/demo screens
-- protected route handling
-- basic responsive shell
+Scope:
+- Deploy only through the documented Coolify/Docker Compose path.
+- Do not rewrite dashboard.
+- Do not add unrelated product features.
+- Keep OPENAI_API_KEY backend-only; never expose it to frontend code.
+- Use strong production secrets in Coolify; do not commit them.
+- Keep postgres internal-only.
 
-Constraints:
-- All visible UI text must use i18n keys for en, pl, and cs.
-- Keep API keys backend-only.
-- Do not fake board/product data in frontend.
-- Do not implement task CRUD, board movement, dashboard, AI, Docker, or deployment.
-- Do not run migrations or seed unless DATABASE_URL is explicitly configured and points to a safe local PostgreSQL database.
+Deployment goals:
+- Configure APP_URL, DATABASE_URL, SESSION_SECRET, Postgres env vars, SEED_DEMO_DATA, and optional OPENAI_API_KEY in Coolify.
+- Deploy the Docker Compose app service.
+- Verify https://scalesoftware.matgac.pl/api/health.
+- Verify SPA route refreshes.
+- Smoke demo login, board load, task create/edit/move/archive, task detail checklist/comment, dashboard metrics, language/theme switches, and responsive widths.
+- If OPENAI_API_KEY is configured backend-only, smoke Improve with AI generate/apply/reject; otherwise verify graceful AI unavailable state.
 
-Run:
-pnpm typecheck
-pnpm lint
-pnpm build
-pnpm format:check
+Validation:
+- Run pnpm typecheck
+- Run pnpm lint
+- Run pnpm build
+- Run pnpm format:check
+- Run docker build -t agentboard-local .
+- Run live deployment smoke checks.
 
-Update STATUS.md with the Phase 3 result and the next move-forward decision.
+Update STATUS.md with deployment results, live smoke results, remaining gaps, and the exact next recommended action before sharing with recruiters.
 ```
-
-## Implementation warning
-
-Do not start board UI, task CRUD/move, dashboard, AI, Docker, deployment, or Phase 4 before Phase 3 is completed.
