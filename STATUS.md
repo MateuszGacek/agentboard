@@ -10,6 +10,18 @@ Local product audit date: June 6, 2026
 
 Delivery state check date: June 6, 2026
 
+Coolify environment setup helper date: June 7, 2026
+
+Coolify environment setup helper status: BLOCKED_ON_LOCAL_ENV. Added a local
+secret-safe Coolify API helper and documentation for application environment variable
+setup. The helper validates required local shell variables, supports dry-run/push/verify,
+and is designed to print variable names and counts only. Validation passed, but
+`pnpm coolify:env:dry-run` stopped safely because this shell could not see
+`COOLIFY_URL`, `COOLIFY_TOKEN`, `COOLIFY_APP_UUID`, `AGENTBOARD_POSTGRES_PASSWORD`, or
+`AGENTBOARD_SESSION_SECRET`. No Coolify push, verify, deployment, SSH, or live smoke was
+performed. Deployment remains parked; do not claim production is deployed until the
+manual Coolify checks and live smoke pass. See `COOLIFY_ENV_SETUP.md`.
+
 Local runtime smoke date: June 6, 2026
 
 Coolify deploy verification date: June 6, 2026
