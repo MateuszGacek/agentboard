@@ -52,7 +52,9 @@ A project represents client/product delivery.
 
 MVP:
 
-- create/read/update/archive project,
+- create/list/update/archive/restore project,
+- newly-created projects receive one default board,
+- project cards open the primary board,
 - default seeded project: `AI Client Automation`.
 
 ### Board
@@ -139,6 +141,19 @@ Must include:
 
 Command menu is v1.1 if time is limited.
 
+### Projects
+
+Must support:
+
+- listing real DB-backed projects in the active workspace,
+- creating a project with a default board,
+- choosing a static project template during creation,
+- seeding non-blank templates with persisted starter tasks, labels, checklist items, and
+  activity,
+- editing, archiving, and restoring projects,
+- opening the project board,
+- empty state that leads normal registered users into the first project/board/task flow.
+
 ### Dashboard
 
 Dashboard should be useful but not overbuilt.
@@ -154,6 +169,9 @@ MVP metrics:
 - tasks by workflow status,
 - tasks by priority.
 
+The dashboard also includes a deterministic weekly report panel with copy-ready markdown
+for client/status updates. It is generated from database state and does not call AI.
+
 Definitions:
 
 - Active task: task in a non-done column and not archived.
@@ -168,6 +186,7 @@ Must support:
 - board snapshot loading,
 - horizontal desktop Kanban layout,
 - mobile column tabs/list layout,
+- quick saved views and browser-local custom saved views based on URL filters,
 - create task,
 - edit task,
 - delete task with confirmation,
@@ -205,6 +224,9 @@ Sections:
 4. Comments.
 5. Activity log.
 6. AI Improve.
+
+Board-level AI next actions are available as a review-first helper. Suggestions are
+transient and only become persisted work when the user creates a task from a suggestion.
 
 The task detail sheet should avoid overcrowding by using collapsible sections if needed.
 

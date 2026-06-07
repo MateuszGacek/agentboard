@@ -4,6 +4,28 @@
 
 AgentBoard Deploy Operator Mode: production runtime fix in progress.
 
+ScopePilot brand and content polish status: PASS as code on June 7, 2026. User-facing
+product branding was changed from AgentBoard to ScopePilot across the app shell, auth,
+home, workflow, project, settings, delivery overview, AI suggestion, HTML title, README,
+and docs index surfaces. EN/PL/CS application copy was rewritten to use more human,
+professional product language around delivery spaces, workflows, scope clarity, WIP
+pressure, and AI-assisted task clarification. Demo and seed content now uses the
+ScopePilot scenario and more realistic client-intake delivery wording. Internal package
+names, storage keys, API service identifiers, and deployment container names still keep
+their existing `agentboard` technical identifiers to avoid an unnecessary infrastructure
+rename.
+
+Latest ScopePilot brand/content validation:
+
+| Command             | Result | Notes                                                                 |
+| ------------------- | ------ | --------------------------------------------------------------------- |
+| `pnpm typecheck`    | PASS   | Fixed two pre-existing optional-property type issues found by checks. |
+| `pnpm lint`         | PASS   | ESLint passed with zero warnings.                                     |
+| `pnpm build`        | PASS   | Workspace build passed; Vite kept the existing chunk-size warning.    |
+| `pnpm check:i18n`   | PASS   | EN/PL/CS key parity passed with 405 shared keys.                      |
+| `pnpm format:check` | PASS   | Prettier check passed after formatting touched files.                 |
+| `pnpm check:links`  | PASS   | Markdown link check passed across 44 files.                           |
+
 Deploy operator date: June 7, 2026
 
 Deploy operator status: PRODUCTION_RECOVERED_MANUAL_RUNTIME. Local validation previously
@@ -43,6 +65,29 @@ Latest deployment fix validation:
 | `pnpm build`                                | PASS   | Workspace production build passed.                                |
 | `pnpm format:check`                         | PASS   | Prettier check passed.                                            |
 | `docker build -t agentboard-local .`        | PASS   | Local Docker image build completed.                               |
+
+Latest local AI/deploy wiring audit on June 8, 2026:
+
+| Command / check                                 | Result | Notes                                                                                                                                |
+| ----------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm typecheck`                                | PASS   | Workspace TypeScript checks passed.                                                                                                  |
+| `pnpm lint`                                     | PASS   | ESLint passed with zero warnings.                                                                                                    |
+| `pnpm build`                                    | PASS   | Workspace build passed; Vite emitted only the existing chunk-size warning.                                                           |
+| `pnpm format:check`                             | PASS   | Prettier check passed.                                                                                                               |
+| `pnpm check:i18n`                               | PASS   | EN/PL/CS key parity passed with 405 shared keys.                                                                                     |
+| `set -a; . ./.env.local; pnpm db:migrate`       | PASS   | Local migrations were already applied; Drizzle reported existing schema/migration notices only.                                      |
+| `set -a; . ./.env.local; pnpm smoke:local`      | PASS   | Covered project templates, CRUD, board, dashboard, weekly report, demo, AI unavailable, AI history, and AI next-actions unavailable. |
+| Mocked OpenAI success smoke                     | PASS   | Verified AI improve, suggestion history, apply, and board next-actions success path without calling the real OpenAI API.             |
+| AI deploy env forwarding                        | FIXED  | Compose and the Coolify env helper now pass `AI_FEATURE_ENABLED` so AI can be disabled at runtime.                                   |
+| `set -a; . ./.env.local; docker compose config` | PASS   | Rendered app/postgres services, app on `default` and external `coolify`, and `AI_FEATURE_ENABLED=true` in app runtime env.           |
+| `pnpm coolify:env:dry-run` with dummy locals    | PASS   | Dry-run listed expected Coolify env names including `AI_FEATURE_ENABLED`; no API call was made.                                      |
+| `docker build -t agentboard-local .`            | PASS   | Production image build completed after the AI env forwarding fix.                                                                    |
+| Public `/api/health` curl                       | PASS   | `https://scalesoftware.matgac.pl/api/health` returned `HTTP/2 200` and JSON health payload.                                          |
+| Public `/login` curl                            | PASS   | `https://scalesoftware.matgac.pl/login` returned `HTTP/2 200` and SPA HTML headers.                                                  |
+
+Real OpenAI provider smoke remains pending until a backend-only `OPENAI_API_KEY` is
+available in the target environment. Local validation confirms both the unavailable
+path and the provider-success integration shape with a mocked OpenAI response.
 
 Latest production runtime verification:
 
@@ -148,6 +193,86 @@ recruiter-facing README, and Docker/Coolify baseline are implemented as code, pa
 static validation, and now pass local DB-backed runtime smoke. Production is currently
 live at `https://scalesoftware.matgac.pl` through the recovered manual Docker runtime;
 `/api/health` and `/login` both return `HTTP/2 200`.
+
+Core CRUD and premium Kanban pass status: PASS as code on June 7, 2026. Normal
+registered users can now use a real local workspace flow: `/app` and `/app/workspaces`
+render a workspace overview, `/app/projects` lists active and archived DB-backed
+projects, project create/edit/archive/restore persist through the API, and each created
+project transactionally receives one default board with Backlog, Ready, In Progress,
+Review, Blocked, Done, plus default labels when the workspace has none. The board now
+has a top-level New task action, create task supports column/assignee/label selection,
+task detail supports checklist edit/delete and comment edit/delete, and dashboard
+metrics can be scoped by project. Motion polish was added with CSS-only
+`prefers-reduced-motion` support. Production deployment remains out of scope for this
+local pass.
+
+Latest core CRUD and premium Kanban validation:
+
+| Command                                    | Result       | Notes                                                                                                                                                        |
+| ------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm typecheck`                           | PASS         | Workspace TypeScript checks passed.                                                                                                                          |
+| `pnpm lint`                                | PASS         | ESLint passed with zero warnings.                                                                                                                            |
+| `pnpm build`                               | PASS         | Workspace build and Vite production build passed; Vite emitted only the existing chunk-size note.                                                            |
+| `pnpm format`                              | PASS         | Formatted changed TypeScript/TSX/JSON/markdown files.                                                                                                        |
+| `pnpm format:check`                        | PASS         | Prettier check passed after formatting.                                                                                                                      |
+| `pnpm check:i18n`                          | PASS         | EN/PL/CS key parity passed with 345 shared keys.                                                                                                             |
+| `set -a; . ./.env.local; pnpm db:migrate`  | PASS         | Local migration command passed after explicitly loading `.env.local`.                                                                                        |
+| `set -a; . ./.env.local; pnpm db:seed`     | PASS         | Local seed completed.                                                                                                                                        |
+| `set -a; . ./.env.local; pnpm smoke:local` | PASS         | Expanded smoke covers project CRUD, default board, task CRUD, checklist/comment edit-delete, dashboard, demo, AI unavailable.                                |
+| Browser viewport check                     | BLOCKED_TOOL | In-app Browser returned `ERR_BLOCKED_BY_CLIENT` for localhost, 127.0.0.1, ::1, and localtest.me; standalone Playwright/Puppeteer/Chromium are not installed. |
+
+AgentBoard v1.1 polish/mobile status: PASS as code on June 7, 2026. Added task-level
+AI suggestion history, `GET /api/tasks/:taskId/ai-suggestions`,
+`PATCH /api/board-columns/:columnId`, column name/WIP settings in the board UI,
+checklist reorder controls, delete confirmations for checklist items/comments, command
+menu (`Cmd/Ctrl+K`) with board actions, board column URL filtering for dashboard
+drill-downs, mobile column tabs, and a collapsible mobile-friendly filter panel.
+`scripts/local-smoke.mjs` now covers column settings, checklist reorder/delete, and AI
+history in addition to the prior project/task/dashboard/demo checks. Browser QA at
+360px passed for mobile board tabs/filter toggle/no horizontal overflow, task detail
+sheet width/no overflow/AI history/checklist reorder/comment actions, and command menu.
+The broader 768/1024/1440 browser loop was stopped after Browser policy rejected one
+malformed loop URL; static build and API smoke remain passing.
+
+Latest v1.1 polish/mobile validation:
+
+| Command                                    | Result       | Notes                                                                                                                                                                      |
+| ------------------------------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm typecheck`                           | PASS         | Workspace TypeScript checks passed after new API contracts, routes, and frontend hooks.                                                                                    |
+| `pnpm lint`                                | PASS         | ESLint passed with zero warnings.                                                                                                                                          |
+| `pnpm build`                               | PASS         | Workspace build and Vite production build passed; Vite emitted only the existing chunk-size note.                                                                          |
+| `pnpm format`                              | PASS         | Formatted changed TS/TSX/JSON/markdown/smoke files.                                                                                                                        |
+| `pnpm format:check`                        | PASS         | Prettier check passed after formatting.                                                                                                                                    |
+| `pnpm check:i18n`                          | PASS         | EN/PL/CS key parity passed with 375 shared keys.                                                                                                                           |
+| `set -a; . ./.env.local; pnpm db:migrate`  | PASS         | Local migrations were already applied; Drizzle reported existing schema/migration table notices only.                                                                      |
+| `set -a; . ./.env.local; pnpm smoke:local` | PASS         | Covered health, project CRUD, default board, column settings, task CRUD/move/edit/delete, checklist reorder/delete, comments, dashboard, demo, AI unavailable, AI history. |
+| Browser 360px mobile QA                    | PASS         | Verified board tabs/filter toggle/no overflow, task detail sheet/no overflow/AI history/checklist reorder/comment actions, command menu.                                   |
+| Browser 768/1024/1440 route loop           | BLOCKED_TOOL | Browser policy rejected one malformed loop URL; viewport was reset and local dev servers were stopped.                                                                     |
+
+AgentBoard next value slice status: PASS as code on June 7, 2026. Added static
+backend project templates with `GET /api/project-templates`, optional
+`CreateProjectRequest.templateKey`, transactionally seeded template tasks/checklists/labels,
+browser-local saved board views, board-level AI next actions via
+`POST /api/boards/:boardId/ai/next-actions`, a deterministic weekly report via
+`GET /api/workspaces/:workspaceId/reports/weekly`, and dashboard/project/board UI polish
+for those features. AI next-action suggestions remain transient until the user creates a
+task from a suggestion; saved board views remain localStorage-only and scoped per board.
+No realtime, billing, uploads, invites, RBAC, or project-template editing was added.
+
+Latest next value slice validation:
+
+| Command                                    | Result | Notes                                                                                                                                                                                                                                                                                               |
+| ------------------------------------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format`                              | PASS   | Prettier formatted checked workspace files after implementation and QA fixes.                                                                                                                                                                                                                       |
+| `pnpm typecheck`                           | PASS   | Workspace TypeScript checks passed after shared contracts, API routes/services, and frontend hooks/components.                                                                                                                                                                                      |
+| `pnpm lint`                                | PASS   | ESLint passed with zero warnings.                                                                                                                                                                                                                                                                   |
+| `pnpm build`                               | PASS   | Workspace build and Vite production build passed; Vite emitted only the existing chunk-size note.                                                                                                                                                                                                   |
+| `pnpm format:check`                        | PASS   | Prettier check passed.                                                                                                                                                                                                                                                                              |
+| `pnpm check:i18n`                          | PASS   | EN/PL/CS key parity passed with 405 shared keys.                                                                                                                                                                                                                                                    |
+| `set -a; . ./.env.local; pnpm db:migrate`  | PASS   | Local migrations were already applied; Drizzle reported existing schema/migration table notices only.                                                                                                                                                                                               |
+| `set -a; . ./.env.local; pnpm smoke:local` | PASS   | Covered health, project templates, blank project create, templated project seed tasks/checklists/labels, project edit/archive/restore, default board, column settings, task CRUD, checklist/comment edits, project dashboard, weekly report, demo, AI unavailable, AI history, AI next unavailable. |
+| Browser 360px QA                           | PASS   | Demo login, board saved views, board AI next actions unavailable message, projects template picker, dashboard weekly report, and no horizontal overflow after dashboard wrapping fix.                                                                                                               |
+| Browser 768/1024/1440 QA                   | PASS   | Board, dashboard, and projects routes rendered without horizontal overflow; viewport override was reset and local dev servers were stopped.                                                                                                                                                         |
 
 Task detail polish status: PASS as code. The task detail sheet now renders deeper
 API-backed task data and supports narrow DB-backed checklist/comment mutations plus

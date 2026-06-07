@@ -8,13 +8,16 @@ import {
   tasks
 } from "@agentboard/db";
 import {
+  aiNextActionSuggestionSchema,
   aiTaskImprovementSchema,
+  type AiNextActionSuggestion,
+  type AiNextActionsRequest,
   type AiSuggestion,
   type AiTaskImprovement,
   type ApplyAiSuggestionRequest,
   type TaskPriority
 } from "@agentboard/shared";
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 
 import type { ApiEnv } from "../../env";
 import {
@@ -66,11 +69,67 @@ const aiResponseJsonSchema = {
   }
 } as const;
 
+const aiNextActionsPayloadSchema = aiNextActionSuggestionSchema
+  .omit({ id: true })
+  .array()
+  .min(1)
+  .max(5);
+
+const aiNextActionsJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["suggestions"],
+  properties: {
+    suggestions: {
+      type: "array",
+      minItems: 1,
+      maxItems: 5,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: [
+          "title",
+          "description",
+          "priority",
+          "targetColumnSystemKey",
+          "acceptanceCriteria",
+          "checklistItems",
+          "riskNotes"
+        ],
+        properties: {
+          title: { type: "string", minLength: 3, maxLength: 160 },
+          description: { type: "string", minLength: 20, maxLength: 3000 },
+          priority: { type: "string", enum: ["low", "medium", "high", "urgent"] },
+          targetColumnSystemKey: {
+            type: "string",
+            enum: ["backlog", "ready", "in_progress", "review", "blocked", "done", "custom"]
+          },
+          acceptanceCriteria: {
+            type: "array",
+            maxItems: 6,
+            items: { type: "string", minLength: 1, maxLength: 500 }
+          },
+          checklistItems: {
+            type: "array",
+            maxItems: 6,
+            items: { type: "string", minLength: 1, maxLength: 240 }
+          },
+          riskNotes: {
+            type: "array",
+            maxItems: 4,
+            items: { type: "string", minLength: 1, maxLength: 500 }
+          }
+        }
+      }
+    }
+  }
+} as const;
+
 function toIsoTimestamp(value: Date | null) {
   return value ? value.toISOString() : null;
 }
 
-function mapSuggestion(row: typeof aiSuggestions.$inferSelect): AiSuggestion {
+export function mapSuggestion(row: typeof aiSuggestions.$inferSelect): AiSuggestion {
   const suggestedPayload = aiTaskImprovementSchema.parse(row.suggestedPayload);
 
   return {
@@ -85,6 +144,32 @@ function mapSuggestion(row: typeof aiSuggestions.$inferSelect): AiSuggestion {
     updatedAt: row.updatedAt.toISOString(),
     appliedAt: toIsoTimestamp(row.appliedAt)
   };
+}
+
+export async function listTaskAiSuggestions(input: {
+  db: DatabaseClient;
+  userId: string;
+  taskId: string;
+}): Promise<AiSuggestion[]> {
+  const [task] = await input.db
+    .select()
+    .from(tasks)
+    .where(and(eq(tasks.id, input.taskId), isNull(tasks.archivedAt)))
+    .limit(1);
+
+  if (!task) {
+    throw notFound("Task was not found.");
+  }
+
+  await assertWorkspaceMember(input.db, input.userId, task.workspaceId);
+
+  const rows = await input.db
+    .select()
+    .from(aiSuggestions)
+    .where(and(eq(aiSuggestions.taskId, task.id), eq(aiSuggestions.workspaceId, task.workspaceId)))
+    .orderBy(desc(aiSuggestions.createdAt));
+
+  return rows.map(mapSuggestion);
 }
 
 async function insertActivity(input: {
@@ -287,6 +372,179 @@ async function callOpenAi(input: {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function buildBoardNextActionsPayload(input: {
+  board: Awaited<ReturnType<typeof getBoardSnapshot>>;
+  focus?: string;
+}) {
+  return {
+    focus: input.focus?.trim() || null,
+    workspaceName: input.board.workspace.name,
+    projectName: input.board.project.name,
+    boardName: input.board.name,
+    columns: input.board.columns.map((column) => ({
+      name: column.name,
+      systemKey: column.systemKey,
+      behavior: column.behavior,
+      wipLimit: column.wip.limit,
+      wipCount: column.wip.count,
+      wipExceeded: column.wip.exceeded,
+      tasks: (input.board.tasksByColumn[column.id] ?? []).slice(0, 12).map((task) => ({
+        title: task.title,
+        descriptionPreview: task.descriptionPreview,
+        priority: task.priority,
+        isBlocked: task.isBlocked,
+        dueDate: task.dueDate,
+        labels: task.labels.map((label) => label.name),
+        checklist: task.checklist
+      }))
+    }))
+  };
+}
+
+function buildBoardNextActionsPrompt(payload: Record<string, unknown>, maxSuggestions: number) {
+  return [
+    "Suggest the next implementation tasks for this AI software agency Kanban board.",
+    "Return only JSON that matches the provided schema.",
+    `Return at most ${maxSuggestions} high-value suggestions.`,
+    "Do not duplicate existing tasks.",
+    "Prefer tasks that reduce delivery risk, unblock active work, or make acceptance criteria clearer.",
+    "Use the same language as the board/task content when obvious; otherwise use English.",
+    "Use an existing targetColumnSystemKey from the board where possible.",
+    "Do not include markdown tables.",
+    "",
+    JSON.stringify(payload, null, 2)
+  ].join("\n");
+}
+
+async function callOpenAiNextActions(input: {
+  env: ApiEnv;
+  boardPayload: Record<string, unknown>;
+  maxSuggestions: number;
+}): Promise<AiNextActionSuggestion[]> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), input.env.OPENAI_TIMEOUT_MS);
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${input.env.OPENAI_API_KEY}`,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        model: input.env.OPENAI_MODEL,
+        input: [
+          {
+            role: "system",
+            content:
+              "You suggest next software delivery tasks for an AI software agency Kanban board. Return structured JSON only."
+          },
+          {
+            role: "user",
+            content: buildBoardNextActionsPrompt(input.boardPayload, input.maxSuggestions)
+          }
+        ],
+        max_output_tokens: input.env.OPENAI_MAX_OUTPUT_TOKENS,
+        text: {
+          format: {
+            type: "json_schema",
+            name: "agentboard_next_actions",
+            description: "Next implementation tasks for a Kanban board.",
+            strict: true,
+            schema: aiNextActionsJsonSchema
+          }
+        }
+      }),
+      signal: controller.signal
+    });
+
+    const responsePayload = (await response.json().catch(() => ({}))) as unknown;
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        throw rateLimited("AI rate or quota limit was reached.");
+      }
+
+      throw aiUnavailable("AI next actions failed. No tasks were created.", {
+        status: response.status
+      });
+    }
+
+    const outputText = extractOutputText(responsePayload);
+
+    if (!outputText) {
+      throw aiUnavailable("AI returned an empty response.");
+    }
+
+    let parsedJson: unknown;
+
+    try {
+      parsedJson = JSON.parse(outputText);
+    } catch {
+      throw aiUnavailable("AI returned invalid JSON.");
+    }
+
+    const parsed = aiNextActionsPayloadSchema.safeParse(
+      typeof parsedJson === "object" && parsedJson !== null
+        ? (parsedJson as { suggestions?: unknown }).suggestions
+        : undefined
+    );
+
+    if (!parsed.success) {
+      throw aiUnavailable("AI response did not match the expected next-actions structure.", {
+        issues: parsed.error.flatten()
+      });
+    }
+
+    return parsed.data.slice(0, input.maxSuggestions).map((suggestion) => ({
+      ...suggestion,
+      id: crypto.randomUUID(),
+      acceptanceCriteria: trimList(suggestion.acceptanceCriteria, 6),
+      checklistItems: trimList(suggestion.checklistItems, 6),
+      riskNotes: trimList(suggestion.riskNotes, 4)
+    }));
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    if (error instanceof Error && error.name === "AbortError") {
+      throw aiUnavailable("AI next actions timed out. No tasks were created.");
+    }
+
+    throw aiUnavailable("AI next actions failed. No tasks were created.");
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function suggestBoardNextActions(input: {
+  db: DatabaseClient;
+  env: ApiEnv;
+  userId: string;
+  boardId: string;
+  body: AiNextActionsRequest;
+}) {
+  assertAiEnabled(input.env);
+
+  const board = await getBoardSnapshot(input.db, input.userId, input.boardId);
+  const maxSuggestions = input.body.maxSuggestions ?? 3;
+  const boardPayload = buildBoardNextActionsPayload(
+    input.body.focus ? { board, focus: input.body.focus } : { board }
+  );
+  const suggestions = await callOpenAiNextActions({
+    env: input.env,
+    boardPayload,
+    maxSuggestions
+  });
+
+  return {
+    boardId: board.id,
+    model: input.env.OPENAI_MODEL,
+    suggestions
+  };
 }
 
 export async function improveTaskWithAi(input: {

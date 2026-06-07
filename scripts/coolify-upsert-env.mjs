@@ -61,6 +61,7 @@ function requiredVariables() {
     ],
     ["SESSION_SECRET", sessionSecret, true],
     ["SEED_DEMO_DATA", "true", true],
+    ["AI_FEATURE_ENABLED", "true", true],
     ["OPENAI_API_KEY", "", false],
     ["OPENAI_MODEL", "gpt-5-nano", true]
   ].map(([key, value, required]) => ({ key, required, value }));

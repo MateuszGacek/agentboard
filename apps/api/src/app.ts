@@ -14,7 +14,8 @@ import { requestLogger } from "./middleware/logger";
 import { requestIdMiddleware } from "./middleware/request-id";
 import { createAiSuggestionRoutes } from "./modules/ai/routes";
 import { createAuthRoutes } from "./modules/auth/routes";
-import { createBoardRoutes } from "./modules/boards/routes";
+import { createBoardColumnRoutes, createBoardRoutes } from "./modules/boards/routes";
+import { createProjectRoutes, createProjectTemplateRoutes } from "./modules/projects/routes";
 import { createTaskRoutes } from "./modules/tasks/routes";
 import { createWorkspaceRoutes } from "./modules/workspaces/routes";
 import type { AppBindings } from "./types";
@@ -61,7 +62,10 @@ export function createApp(options: CreateAppOptions = {}) {
   if (options.db && env) {
     api.route("/auth", createAuthRoutes(options.db, env));
     api.route("/ai-suggestions", createAiSuggestionRoutes(options.db));
-    api.route("/boards", createBoardRoutes(options.db));
+    api.route("/board-columns", createBoardColumnRoutes(options.db));
+    api.route("/boards", createBoardRoutes(options.db, env));
+    api.route("/project-templates", createProjectTemplateRoutes(options.db));
+    api.route("/projects", createProjectRoutes(options.db));
     api.route("/tasks", createTaskRoutes(options.db, env));
     api.route("/workspaces", createWorkspaceRoutes(options.db));
   } else {
@@ -69,6 +73,15 @@ export function createApp(options: CreateAppOptions = {}) {
       throw serviceUnavailable(databaseUnavailableMessage());
     });
     api.all("/boards/*", () => {
+      throw serviceUnavailable(databaseUnavailableMessage());
+    });
+    api.all("/board-columns/*", () => {
+      throw serviceUnavailable(databaseUnavailableMessage());
+    });
+    api.all("/projects/*", () => {
+      throw serviceUnavailable(databaseUnavailableMessage());
+    });
+    api.all("/project-templates/*", () => {
       throw serviceUnavailable(databaseUnavailableMessage());
     });
     api.all("/ai-suggestions/*", () => {

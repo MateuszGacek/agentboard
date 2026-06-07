@@ -1,20 +1,20 @@
 {
   "app": {
-    "name": "AgentBoard",
-    "tagline": "AI-assisted Kanban for AI software agencies",
-    "loading": "Loading AgentBoard"
+    "name": "ScopePilot",
+    "tagline": "Delivery clarity for AI software teams",
+    "loading": "Loading ScopePilot"
   },
   "auth": {
     "login": {
-      "title": "Sign in",
-      "description": "Use your AgentBoard account or start an isolated demo session.",
+      "title": "Welcome back",
+      "description": "Sign in to continue planning real work, or open a fresh demo space.",
       "submit": "Sign in",
       "switchPrompt": "No account yet?",
       "switchLink": "Create one"
     },
     "register": {
-      "title": "Create account",
-      "description": "Create a workspace and start from the real API-backed foundation.",
+      "title": "Create your delivery space",
+      "description": "Start with a private delivery space where projects, workflows, and tasks are saved from day one.",
       "submit": "Create account",
       "switchPrompt": "Already have an account?",
       "switchLink": "Sign in"
@@ -28,8 +28,8 @@
       "passwordPlaceholder": "Minimum 8 characters"
     },
     "demo": {
-      "button": "Start demo session",
-      "description": "Creates a real demo session when the database is available."
+      "button": "Explore a live demo",
+      "description": "Opens an isolated demo with real saved projects, tasks, and workflow state."
     },
     "logout": "Log out",
     "protected": "Checking session"
@@ -37,65 +37,79 @@
   "nav": {
     "home": "Home",
     "app": "App",
-    "dashboard": "Dashboard",
-    "workspaces": "Workspaces",
+    "dashboard": "Overview",
+    "workspaces": "Spaces",
     "projects": "Projects",
     "settings": "Settings",
     "openMenu": "Open navigation",
     "closeMenu": "Close navigation"
   },
   "shell": {
-    "workspaceFallback": "No workspace selected",
-    "workspaceLabel": "Workspace",
-    "demoWorkspace": "Demo workspace",
-    "topbarTitle": "Delivery workspace",
+    "workspaceFallback": "No delivery space selected",
+    "workspaceLabel": "Delivery space",
+    "demoWorkspace": "Demo space",
+    "topbarTitle": "Delivery control room",
     "mobileMenu": "Navigation",
     "sessionLabel": "Session",
     "demoUser": "Demo"
   },
+  "command": {
+    "open": "Open command menu",
+    "label": "Command",
+    "title": "Quick actions",
+    "shortcut": "Press Cmd/Ctrl+K to jump to the next useful action.",
+    "dashboard": "Open delivery overview",
+    "projects": "Open projects",
+    "workspaces": "Open delivery space",
+    "settings": "Open settings",
+    "currentBoard": "Current workflow",
+    "createTask": "Add a task to this workflow",
+    "focusSearch": "Search this workflow",
+    "clearFilters": "Reset workflow filters"
+  },
   "pages": {
     "home": {
-      "kicker": "Recruiter-ready AI delivery workspace",
-      "title": "AgentBoard",
-      "description": "Plan AI software work, spot delivery risk, and turn rough task notes into clearer implementation briefs from one DB-backed workflow.",
+      "kicker": "Plan less guessing. Ship clearer AI work.",
+      "title": "ScopePilot",
+      "description": "Give AI delivery teams one place to shape rough ideas into scoped tasks, see risk before it slips, and keep every project moving from real saved data.",
       "primaryAction": "Sign in",
-      "secondaryAction": "Create account",
+      "secondaryAction": "Create space",
       "proofBoard": {
-        "title": "DB-backed Kanban",
-        "description": "Create, edit, move, and archive tasks with persisted board state."
+        "title": "A workflow that remembers",
+        "description": "Create, refine, move, and archive tasks without losing the operational context behind them."
       },
       "proofDashboard": {
-        "title": "Delivery visibility",
-        "description": "Track active work, WIP pressure, blocked tasks, due-soon risk, and recent activity."
+        "title": "Clear delivery signals",
+        "description": "Spot overload, blocked work, overdue risk, and recent movement before the next status call."
       },
       "proofAi": {
-        "title": "Backend-only AI path",
-        "description": "Improve rough tasks through the API while keeping OpenAI keys out of the frontend."
+        "title": "AI that sharpens scope",
+        "description": "Turn vague notes into reviewable briefs, acceptance criteria, and next steps while keeping secrets server-side."
       }
     },
     "app": {
-      "title": "Workspace overview",
-      "description": "Use the board and dashboard to review real delivery state for this workspace."
+      "title": "Delivery space overview",
+      "description": "Review project load, continue the right workflow, and keep delivery decisions grounded in current data."
     },
     "workspaces": {
-      "title": "Workspaces",
-      "description": "Workspace listing starts in a later vertical slice. This route is intentionally shell-only."
+      "title": "Delivery spaces",
+      "description": "Use this area to review the active space for your team and demo session."
     },
     "projects": {
       "title": "Projects",
-      "description": "Project listing starts in a later vertical slice. This route is intentionally shell-only."
+      "description": "Create client or internal delivery projects, then open the workflow that keeps the work moving."
     },
     "settings": {
       "title": "Settings",
-      "description": "Settings are limited to shell controls in Phase 3."
+      "description": "Adjust your local preferences and confirm the current delivery context."
     },
     "boardPlaceholder": {
-      "title": "Board",
-      "description": "Board module starts in Phase 4."
+      "title": "Workflow",
+      "description": "Open a project workflow to plan, move, and refine delivery tasks."
     },
     "notFound": {
       "title": "Page not found",
-      "description": "The requested route is not part of the current shell."
+      "description": "This page is not available in the current product flow."
     }
   },
   "theme": {
@@ -113,29 +127,42 @@
   "common": {
     "cancel": "Cancel",
     "close": "Close",
+    "delete": "Delete",
     "dismiss": "Dismiss",
     "save": "Save"
   },
   "board": {
-    "empty": "No board data is available.",
+    "empty": "This workflow does not have any saved data yet.",
     "version": "Version {{version}}",
     "column": {
-      "empty": "No tasks in this column.",
+      "empty": "No tasks here yet.",
       "taskCount": "{{count}} tasks"
+    },
+    "columnSettings": {
+      "open": "Open column settings",
+      "title": "Column settings",
+      "description": "Rename {{column}} or set a work-in-progress limit.",
+      "name": "Column name",
+      "wipLimit": "WIP limit",
+      "noWipLimit": "No limit",
+      "wipHelp": "Leave empty to remove the WIP limit.",
+      "invalidWip": "WIP limit must be a whole number between 1 and 99."
     },
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
       "warning": "Limit exceeded"
     },
     "filters": {
-      "title": "Board filters",
+      "title": "Workflow filters",
+      "show": "Show filters",
+      "hide": "Hide filters",
       "search": "Search",
-      "searchPlaceholder": "Search title or description",
+      "searchPlaceholder": "Search task title or detail",
       "priority": "Priority",
       "allPriorities": "All priorities",
       "blocked": "Blocked",
       "blockedOptions": {
-        "all": "All work",
+        "all": "All tasks",
         "blocked": "Blocked only",
         "open": "Open only"
       },
@@ -143,6 +170,8 @@
       "allAssignees": "All assignees",
       "label": "Label",
       "allLabels": "All labels",
+      "column": "Column",
+      "allColumns": "All columns",
       "due": "Due date",
       "dueOptions": {
         "all": "Any due date",
@@ -153,21 +182,44 @@
       },
       "resultCount": "Showing {{count}} of {{total}} tasks",
       "reset": "Reset filters",
-      "empty": "No tasks match the current filters."
+      "empty": "No tasks match these filters."
+    },
+    "savedViews": {
+      "title": "Saved views",
+      "description": "Apply quick filters or save this workflow filter set in this browser.",
+      "name": "View name",
+      "save": "Save view",
+      "delete": "Delete saved view {{name}}",
+      "presets": {
+        "myWork": "My work",
+        "blocked": "Blocked",
+        "dueSoon": "Due soon",
+        "overdue": "Overdue",
+        "highPriority": "High priority",
+        "inProgress": "In progress"
+      }
+    },
+    "aiNext": {
+      "title": "AI next actions",
+      "description": "Ask the backend AI path for next task suggestions. Nothing is saved until you create a task.",
+      "focusPlaceholder": "Optional focus, e.g. unblock QA before handoff",
+      "suggest": "Suggest",
+      "createTask": "Create task",
+      "created": "Created"
     },
     "tips": {
-      "title": "Board guidance",
+      "title": "Workflow guidance",
       "welcome": {
-        "title": "Start from the real delivery board",
-        "body": "Use filters to review active work without leaving the API-backed board state."
+        "title": "Start from the live delivery workflow",
+        "body": "Use filters to review active work while staying close to the saved project state."
       },
       "wip": {
-        "title": "WIP limits flag delivery pressure",
-        "body": "When a column exceeds its limit, reduce active work before pulling more tasks forward."
+        "title": "WIP limits reveal delivery pressure",
+        "body": "When a column exceeds its limit, finish or unblock active work before pulling more in."
       },
       "ai": {
-        "title": "AI Improve stays review-first",
-        "body": "The task detail panel can draft clearer briefs, but changes are only applied after review."
+        "title": "AI suggestions stay review-first",
+        "body": "ScopePilot can draft clearer briefs, but the team chooses what gets applied."
       }
     },
     "shortcuts": {
@@ -175,18 +227,18 @@
       "newTask": "Shortcut: N creates a task"
     },
     "create": {
-      "button": "Create task",
-      "title": "Create task",
+      "button": "Add task",
+      "title": "Add task",
       "column": "New task in {{column}}",
-      "submit": "Create"
+      "submit": "Add task"
     },
     "detail": {
       "title": "Task detail",
-      "description": "Review and edit task fields, ownership, comments, checklist, activity, and AI suggestions.",
+      "description": "Clarify the brief, ownership, checklist, discussion, activity, and AI suggestions in one place.",
       "loading": "Loading task detail",
       "retry": "Retry",
       "saving": "Saving changes...",
-      "saveHint": "Changes are saved from this detail sheet.",
+      "saveHint": "Every change here updates the saved task.",
       "status": "Status",
       "assignees": "Assignees",
       "labels": "Labels",
@@ -206,37 +258,48 @@
       "noDueDate": "No due date",
       "blockedYes": "Yes",
       "blockedNo": "No",
-      "emptyAssignees": "No workspace members are available to assign.",
-      "emptyLabels": "No labels are available for this workspace.",
-      "emptyDescription": "No description yet.",
-      "emptyChecklist": "No checklist items yet.",
-      "emptyComments": "No comments yet.",
-      "emptyActivity": "No activity yet.",
+      "emptyAssignees": "No delivery space members are available to assign.",
+      "emptyLabels": "No labels are available in this delivery space.",
+      "emptyDescription": "Add context so the next owner knows what good looks like.",
+      "emptyChecklist": "Add checklist items to make the work easier to finish.",
+      "emptyComments": "No discussion yet.",
+      "emptyActivity": "No task activity yet.",
       "addChecklist": "Add item",
       "addChecklistLabel": "New checklist item",
       "addChecklistPlaceholder": "Add a checklist item",
+      "editChecklist": "Edit checklist item",
+      "editChecklistLabel": "Checklist item title",
+      "deleteChecklist": "Delete checklist item",
+      "moveChecklistUp": "Move checklist item up",
+      "moveChecklistDown": "Move checklist item down",
       "markChecklistDone": "Mark checklist item done",
       "markChecklistOpen": "Reopen checklist item",
       "commentCount": "{{count}} comments",
       "addComment": "Add comment",
       "addCommentLabel": "New comment",
-      "addCommentPlaceholder": "Write a comment"
+      "addCommentPlaceholder": "Write a comment",
+      "editComment": "Edit comment",
+      "editCommentLabel": "Comment body",
+      "deleteComment": "Delete comment"
     },
     "ai": {
-      "title": "Improve with AI",
+      "title": "Clarify with AI",
       "powered": "Powered by AI",
-      "description": "Turn a rough task into a clearer implementation brief with acceptance criteria and subtasks.",
-      "improve": "Improve with AI",
-      "loading": "Improving task clarity...",
+      "description": "Convert a rough task into a sharper brief with acceptance criteria, suggested steps, and risk notes.",
+      "improve": "Clarify with AI",
+      "loading": "Drafting a clearer task...",
       "original": "Original",
-      "improved": "AI improved",
+      "improved": "Suggested brief",
       "acceptanceCriteria": "Acceptance criteria",
-      "suggestedChecklist": "Suggested checklist",
+      "suggestedChecklist": "Suggested next steps",
       "riskNotes": "Risk notes",
       "recommendedPriority": "Recommended priority",
+      "history": "Suggestion history",
+      "historyCount": "{{count}} suggestions",
+      "emptyHistory": "No AI suggestions have been created yet.",
       "apply": "Apply suggestion",
       "reject": "Reject suggestion",
-      "titleRequired": "This task needs at least a title before AI can improve it.",
+      "titleRequired": "Add a task title before asking AI to clarify it.",
       "emptyAcceptanceCriteria": "No acceptance criteria were suggested.",
       "emptyChecklist": "No checklist items were suggested.",
       "emptyRiskNotes": "No risk notes were suggested.",
@@ -248,11 +311,11 @@
         "failed": "Failed"
       },
       "reviewed": {
-        "accepted": "This AI suggestion has been applied.",
-        "rejected": "This AI suggestion has been rejected.",
-        "partially_applied": "This AI suggestion has been partially applied.",
-        "failed": "This AI suggestion failed.",
-        "pending": "This AI suggestion is pending review."
+        "accepted": "This suggestion has been applied.",
+        "rejected": "This suggestion has been rejected.",
+        "partially_applied": "This suggestion has been partially applied.",
+        "failed": "This suggestion failed.",
+        "pending": "This suggestion is waiting for review."
       }
     },
     "activity": {
@@ -273,12 +336,12 @@
     "delete": {
       "button": "Delete task",
       "title": "Delete task",
-      "description": "This archives the task and removes it from the board.",
+      "description": "This archives the task and removes it from the active workflow.",
       "confirm": "Delete"
     },
     "move": {
       "label": "Move to",
-      "mobileHint": "Use this control on mobile instead of dragging."
+      "mobileHint": "Use this control on mobile when drag and drop is not practical."
     },
     "task": {
       "title": "Title",
@@ -302,55 +365,142 @@
       "dragHint": "Drag to move task"
     }
   },
+  "projects": {
+    "eyebrow": "Project portfolio",
+    "title": "Projects",
+    "subtitle": "Create a project, open its workflow, and keep the delivery overview aligned with what the team is actually doing.",
+    "listLabel": "Project list",
+    "updated": "Updated {{date}}",
+    "openBoard": "Open workflow",
+    "emptyDescription": "No description yet.",
+    "status": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "fields": {
+      "name": "Project name",
+      "namePlaceholder": "Client automation rollout",
+      "description": "Description",
+      "descriptionPlaceholder": "What this delivery project covers",
+      "boardName": "Workflow name",
+      "boardNamePlaceholder": "Defaults to project name + Workflow"
+    },
+    "templates": {
+      "label": "Project template",
+      "description": "Seed the first workflow with delivery-ready tasks, labels, and checklist items.",
+      "recommended": "Recommended",
+      "taskCount": "{{count}} tasks"
+    },
+    "actions": {
+      "create": "New project",
+      "edit": "Edit",
+      "archive": "Archive",
+      "restore": "Restore",
+      "openBoard": "Open workflow",
+      "dashboard": "Overview"
+    },
+    "dialog": {
+      "createTitle": "New project",
+      "editTitle": "Edit project",
+      "description": "Project changes are saved to this delivery space."
+    },
+    "create": {
+      "button": "New project",
+      "title": "New project",
+      "description": "Create a project with a ready-to-use delivery workflow.",
+      "submit": "Create project"
+    },
+    "board": {
+      "taskCount": "{{count}} tasks, {{active}} active",
+      "missing": "This project does not have a workflow yet."
+    },
+    "card": {
+      "noDescription": "No description yet.",
+      "updated": "Updated {{date}}",
+      "board": "Workflow",
+      "noBoard": "No workflow",
+      "tasks": "Tasks",
+      "activeTasks": "Active"
+    },
+    "sections": {
+      "active": "Active projects",
+      "archived": "Archived projects"
+    },
+    "empty": {
+      "title": "No projects yet",
+      "description": "Create the first project in this delivery space to open a workflow and add tasks."
+    },
+    "errors": {
+      "noWorkspace": "Select or create a delivery space before creating projects."
+    }
+  },
+  "workspace": {
+    "title": "Delivery space overview",
+    "subtitle": "Review project load and continue into the first active workflow.",
+    "actions": {
+      "continueBoard": "Continue workflow"
+    },
+    "metrics": {
+      "activeProjects": "Active projects",
+      "totalTasks": "Total tasks",
+      "activeTasks": "Active tasks"
+    }
+  },
   "settings": {
-    "eyebrow": "Workspace controls",
+    "eyebrow": "Product preferences",
     "title": "Settings",
-    "subtitle": "Adjust local preferences and confirm the current workspace and deployment posture.",
+    "subtitle": "Tune the interface for this browser and confirm the active delivery space.",
     "preferences": {
       "title": "Preferences",
-      "description": "Browser-level settings for this AgentBoard session.",
+      "description": "Browser-level settings for this ScopePilot session.",
       "theme": "Theme",
       "themeHelp": "Stored locally and applied immediately.",
       "language": "Language",
       "languageHelp": "Updates visible product copy across the app."
     },
     "workspace": {
-      "title": "Workspace",
-      "description": "Current session context from the authenticated API.",
-      "name": "Workspace",
+      "title": "Delivery space",
+      "description": "Current session context from your signed-in account.",
+      "name": "Delivery space",
       "mode": "Mode",
-      "none": "No workspace selected",
-      "demo": "Demo workspace",
-      "standard": "Standard workspace",
-      "demoNote": "Demo mode uses real persisted data in an isolated demo workspace."
+      "none": "No delivery space selected",
+      "demo": "Demo space",
+      "standard": "Standard space",
+      "demoNote": "Demo mode uses real saved data in an isolated space."
     },
     "deployment": {
-      "title": "Deployment status",
-      "description": "Operational guardrails for this product delivery mode.",
-      "status": "Production deployment remains parked.",
-      "note": "No live server changes are allowed in this mode. The known Coolify/Traefik blocker stays documented for a later deployment-readiness pass."
+      "title": "Runtime status",
+      "description": "Operational notes for the current environment.",
+      "status": "Production is running from the recovered runtime.",
+      "note": "Keep secrets server-side and use the documented checks before making deployment changes."
     }
   },
   "dashboard": {
-    "eyebrow": "Agency operating view",
-    "title": "Dashboard",
-    "subtitle": "A compact DB-backed view of delivery load, WIP pressure, near-term risk, and recent work across the workspace.",
-    "metrics": "Dashboard metrics",
+    "eyebrow": "Delivery overview",
+    "title": "Delivery overview",
+    "subtitle": "A compact view of workload, WIP pressure, near-term risk, and recent movement across the delivery space.",
+    "projectSubtitle": "A focused delivery view for {{project}}.",
+    "projectFilter": {
+      "label": "Project",
+      "all": "All projects",
+      "openBoard": "Open workflow"
+    },
+    "metrics": "Delivery metrics",
     "cards": {
       "totalActiveTasks": "Active tasks",
-      "totalActiveTasksHelper": "Open work outside completion columns",
+      "totalActiveTasksHelper": "Work that still needs movement",
       "completedTasks": "Completed tasks",
-      "completedTasksHelper": "Tasks in completes-work columns",
+      "completedTasksHelper": "Work already marked as done",
       "overdueTasks": "Overdue tasks",
       "overdueTasksHelper": "Open tasks past due date",
       "blockedTasks": "Blocked tasks",
-      "blockedTasksHelper": "Blocked flag or blocked column",
+      "blockedTasksHelper": "Tasks flagged or parked as blocked",
       "completionRate": "Completion rate",
       "completionRateHelper": "Completed from all tracked tasks"
     },
     "wip": {
       "title": "WIP warnings",
-      "description": "Columns where active task count exceeds the configured WIP limit.",
+      "description": "Columns where active work exceeds the agreed limit.",
       "count": "{{count}} / {{limit}} active",
       "context": "{{project}} / {{board}} is over limit by {{overBy}}.",
       "empty": "No WIP limits are currently exceeded."
@@ -360,10 +510,10 @@
       "description": "Active work grouped by priority."
     },
     "columns": {
-      "title": "Tasks by status",
-      "description": "Active task distribution by board column.",
+      "title": "Tasks by workflow stage",
+      "description": "Active task distribution by workflow column.",
       "activeCount": "{{count}} active",
-      "empty": "No board columns are available yet."
+      "empty": "No workflow columns are available yet."
     },
     "dueSoon": {
       "title": "Due soon",
@@ -373,17 +523,31 @@
     },
     "activity": {
       "title": "Recent activity",
-      "description": "Latest task events from this workspace.",
+      "description": "Latest task events from this delivery space.",
       "empty": "No recent task activity yet."
     },
+    "weekly": {
+      "title": "Weekly report",
+      "description": "A copy-ready operating summary for this week.",
+      "copy": "Copy report",
+      "copied": "Copied",
+      "metrics": {
+        "newTasksCount": "New",
+        "completedTasksCount": "Completed",
+        "blockedTasksCount": "Blocked",
+        "overdueTasksCount": "Overdue",
+        "aiSuggestionsCount": "AI suggestions"
+      }
+    },
     "empty": {
-      "title": "No dashboard data yet",
-      "description": "Create real board tasks in this workspace and the dashboard will populate from the database."
+      "title": "No delivery data yet",
+      "description": "Create project tasks in this delivery space and the overview will fill in automatically.",
+      "action": "Create a project"
     },
     "errors": {
-      "dbUnavailable": "Dashboard metrics require the database. Configure a safe local PostgreSQL DATABASE_URL and retry. Request ID: {{requestId}}.",
-      "emptyResponse": "The dashboard response was empty.",
-      "noWorkspace": "Select or create a workspace to view dashboard metrics."
+      "dbUnavailable": "Delivery metrics need a working database connection. Configure a safe local PostgreSQL DATABASE_URL and retry. Request ID: {{requestId}}.",
+      "emptyResponse": "The delivery overview response was empty.",
+      "noWorkspace": "Select or create a delivery space to view metrics."
     }
   },
   "states": {
@@ -393,10 +557,10 @@
   },
   "errors": {
     "api": "The API returned an error. Request ID: {{requestId}}.",
-    "aiUnavailable": "AI unavailable. Your task was not changed. Request ID: {{requestId}}.",
+    "aiUnavailable": "AI is unavailable right now. Your task was not changed. Request ID: {{requestId}}.",
     "aiRateLimited": "AI rate or quota limit reached. Your task was not changed. Request ID: {{requestId}}.",
     "conflict": "This account or resource already exists.",
-    "serviceUnavailable": "Database-backed routes are not available right now. Configure a safe local PostgreSQL DATABASE_URL for auth and demo sessions. Request ID: {{requestId}}.",
+    "serviceUnavailable": "Saved-data routes are not available right now. Configure a safe local PostgreSQL DATABASE_URL for sign-in and demo sessions. Request ID: {{requestId}}.",
     "unauthorized": "Sign in to continue.",
     "unexpected": "Something went wrong. Try again.",
     "validation": "Check the form fields and try again."

@@ -4,6 +4,8 @@
 
 **Improve with AI**
 
+Secondary helper: **AI next actions** on a board.
+
 ## Goal
 
 Use AI to make vague Kanban tasks clearer and more implementation-ready.
@@ -41,6 +43,15 @@ Task detail UI
       -> validate structured JSON
       -> store ai_suggestion
       -> return suggestion to frontend
+
+Board UI
+  -> POST /api/boards/:boardId/ai/next-actions
+    -> Hono backend
+      -> validate auth/workspace/board
+      -> call OpenAI
+      -> validate structured JSON
+      -> return transient task suggestions
+      -> frontend creates accepted tasks through normal task/checklist APIs
 ```
 
 ## User flow
@@ -156,6 +167,7 @@ Do not include private assumptions.
 
 ```txt
 POST /api/tasks/:taskId/ai/improve
+POST /api/boards/:boardId/ai/next-actions
 ```
 
 Backend must:
@@ -170,6 +182,15 @@ Backend must:
 8. store original and suggested payload in `ai_suggestions`,
 9. create activity event,
 10. return suggestion.
+
+For board next actions:
+
+- authenticate user and validate board workspace ownership,
+- build a compact board snapshot context,
+- call OpenAI with structured output,
+- validate response with Zod,
+- do not write suggestions to the database,
+- return suggestions for explicit user review.
 
 ### Timeout
 

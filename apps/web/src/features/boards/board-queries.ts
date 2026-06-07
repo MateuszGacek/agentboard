@@ -1,4 +1,6 @@
 import type {
+  AiNextActionsRequest,
+  AiNextActionSuggestion,
   ApplyAiSuggestionRequest,
   BoardSnapshot,
   BoardTaskCard,
@@ -6,7 +8,9 @@ import type {
   CreateCommentRequest,
   CreateTaskRequest,
   MoveTaskRequest,
+  UpdateBoardColumnRequest,
   UpdateChecklistItemRequest,
+  UpdateCommentRequest,
   UpdateTaskRequest
 } from "@agentboard/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +19,8 @@ import { boardApi, taskApi } from "../../lib/api-client";
 
 export const boardQueryKey = (boardId: string) => ["board", boardId] as const;
 export const taskDetailQueryKey = (taskId: string | null) => ["task", taskId] as const;
+export const aiSuggestionsQueryKey = (taskId: string | null) =>
+  ["task-ai-suggestions", taskId] as const;
 
 export function useBoard(boardId: string) {
   return useQuery({
@@ -37,6 +43,35 @@ export function useTaskDetail(taskId: string | null) {
   });
 }
 
+export function useTaskAiSuggestions(taskId: string | null) {
+  return useQuery({
+    queryKey: aiSuggestionsQueryKey(taskId),
+    queryFn: ({ signal }) => {
+      if (!taskId) {
+        throw new Error("Task ID is required.");
+      }
+
+      return taskApi.listAiSuggestions(taskId, signal);
+    },
+    enabled: Boolean(taskId)
+  });
+}
+
+export function useUpdateBoardColumnMutation(boardId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ columnId, body }: { columnId: string; body: UpdateBoardColumnRequest }) =>
+      boardApi.updateColumn(columnId, body),
+    onSuccess: ({ board }) => {
+      queryClient.setQueryData(boardQueryKey(boardId), board);
+    },
+    onError: () => {
+      void queryClient.invalidateQueries({ queryKey: boardQueryKey(boardId) });
+    }
+  });
+}
+
 export function useCreateTaskMutation(boardId: string) {
   const queryClient = useQueryClient();
 
@@ -44,6 +79,70 @@ export function useCreateTaskMutation(boardId: string) {
     mutationFn: (body: CreateTaskRequest) => taskApi.createTask(body),
     onSuccess: ({ board }) => {
       queryClient.setQueryData(boardQueryKey(boardId), board);
+    }
+  });
+}
+
+export function useSuggestBoardNextActionsMutation(boardId: string) {
+  return useMutation({
+    mutationFn: (body: AiNextActionsRequest) => boardApi.suggestNextActions(boardId, body)
+  });
+}
+
+export function useCreateTaskFromAiSuggestionMutation(boardId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      board,
+      suggestion
+    }: {
+      board: BoardSnapshot;
+      suggestion: AiNextActionSuggestion;
+    }) => {
+      const targetColumn =
+        board.columns.find((column) => column.systemKey === suggestion.targetColumnSystemKey) ??
+        board.columns[0];
+
+      if (!targetColumn) {
+        throw new Error("Board must have at least one column.");
+      }
+
+      const created = await taskApi.createTask({
+        boardId: board.id,
+        columnId: targetColumn.id,
+        title: suggestion.title,
+        description: [
+          suggestion.description,
+          suggestion.acceptanceCriteria.length > 0
+            ? `\nAcceptance criteria:\n${suggestion.acceptanceCriteria.map((item) => `- ${item}`).join("\n")}`
+            : "",
+          suggestion.riskNotes.length > 0
+            ? `\nRisk notes:\n${suggestion.riskNotes.map((item) => `- ${item}`).join("\n")}`
+            : ""
+        ]
+          .join("")
+          .trim(),
+        priority: suggestion.priority,
+        dueDate: null,
+        assigneeIds: [],
+        labelIds: []
+      });
+
+      let result = created;
+
+      for (const title of suggestion.checklistItems) {
+        result = await taskApi.createChecklistItem(created.task.id, { title });
+      }
+
+      return result;
+    },
+    onSuccess: ({ board, task }) => {
+      queryClient.setQueryData(boardQueryKey(boardId), board);
+      queryClient.setQueryData(taskDetailQueryKey(task.id), task);
+    },
+    onError: () => {
+      void queryClient.invalidateQueries({ queryKey: boardQueryKey(boardId) });
     }
   });
 }
@@ -101,6 +200,18 @@ export function useUpdateChecklistItemMutation(boardId: string, taskId: string) 
   });
 }
 
+export function useDeleteChecklistItemMutation(boardId: string, taskId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (itemId: string) => taskApi.deleteChecklistItem(itemId),
+    onSuccess: (result) => updateTaskDetailCaches(queryClient, boardId, taskId, result),
+    onError: () => {
+      void queryClient.invalidateQueries({ queryKey: taskDetailQueryKey(taskId) });
+    }
+  });
+}
+
 export function useCreateCommentMutation(boardId: string, taskId: string) {
   const queryClient = useQueryClient();
 
@@ -113,9 +224,39 @@ export function useCreateCommentMutation(boardId: string, taskId: string) {
   });
 }
 
-export function useImproveTaskWithAiMutation(taskId: string) {
+export function useUpdateCommentMutation(boardId: string, taskId: string) {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: () => taskApi.improveWithAi(taskId)
+    mutationFn: ({ commentId, body }: { commentId: string; body: UpdateCommentRequest }) =>
+      taskApi.updateComment(commentId, body),
+    onSuccess: (result) => updateTaskDetailCaches(queryClient, boardId, taskId, result),
+    onError: () => {
+      void queryClient.invalidateQueries({ queryKey: taskDetailQueryKey(taskId) });
+    }
+  });
+}
+
+export function useDeleteCommentMutation(boardId: string, taskId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (commentId: string) => taskApi.deleteComment(commentId),
+    onSuccess: (result) => updateTaskDetailCaches(queryClient, boardId, taskId, result),
+    onError: () => {
+      void queryClient.invalidateQueries({ queryKey: taskDetailQueryKey(taskId) });
+    }
+  });
+}
+
+export function useImproveTaskWithAiMutation(taskId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => taskApi.improveWithAi(taskId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: aiSuggestionsQueryKey(taskId) });
+    }
   });
 }
 
@@ -130,7 +271,10 @@ export function useApplyAiSuggestionMutation(boardId: string, taskId: string) {
       suggestionId: string;
       body: ApplyAiSuggestionRequest;
     }) => taskApi.applyAiSuggestion(suggestionId, body),
-    onSuccess: (result) => updateTaskDetailCaches(queryClient, boardId, taskId, result),
+    onSuccess: (result) => {
+      updateTaskDetailCaches(queryClient, boardId, taskId, result);
+      void queryClient.invalidateQueries({ queryKey: aiSuggestionsQueryKey(taskId) });
+    },
     onError: () => {
       void queryClient.invalidateQueries({ queryKey: taskDetailQueryKey(taskId) });
       void queryClient.invalidateQueries({ queryKey: boardQueryKey(boardId) });
@@ -139,8 +283,15 @@ export function useApplyAiSuggestionMutation(boardId: string, taskId: string) {
 }
 
 export function useRejectAiSuggestionMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (suggestionId: string) => taskApi.rejectAiSuggestion(suggestionId)
+    mutationFn: (suggestionId: string) => taskApi.rejectAiSuggestion(suggestionId),
+    onSuccess: (result) => {
+      void queryClient.invalidateQueries({
+        queryKey: aiSuggestionsQueryKey(result.suggestion.taskId)
+      });
+    }
   });
 }
 

@@ -1,62 +1,61 @@
-# AgentBoard
+# ScopePilot
 
-**AI-assisted Kanban for AI software agencies.**
+**Delivery clarity for AI software teams.**
 
 Live URL placeholder: [https://scalesoftware.matgac.pl](https://scalesoftware.matgac.pl)
 
-Deployment is prepared but not yet verified at the public URL in this repository state.
-See [STATUS.md](STATUS.md) for the current source of truth.
+Production runtime has been recovered for the public URL. See [STATUS.md](STATUS.md)
+for the current source of truth and latest verification results.
 
 ## Product Summary
 
-AgentBoard is a full-stack recruitment portfolio product for AI/software teams that
-need clearer task briefs, healthier work-in-progress limits, and delivery visibility.
-It is intentionally built as a real vertical slice with PostgreSQL persistence, typed
-API contracts, authenticated workspace boundaries, responsive UI, and a backend-only
-OpenAI integration.
+ScopePilot is a full-stack product for AI/software teams that need to turn vague ideas
+into clear delivery tasks, keep work-in-progress under control, and see risk early. It
+is intentionally built as a real vertical slice with PostgreSQL persistence, typed API
+contracts, authenticated workspace boundaries, responsive UI, and server-side OpenAI
+integration.
 
 The core workflow is:
 
 ```txt
-Workspace -> Project -> Board -> Column -> Task -> Task detail -> AI improvement
+Delivery space -> Project -> Workflow -> Column -> Task -> Task detail -> AI clarification
 ```
 
 ## Why This Exists
 
 AI delivery teams often start from vague task notes, unclear acceptance criteria, and
-too much work in progress. AgentBoard demonstrates how a production-minded SaaS product
-can turn that into a reviewable workflow:
+too much work in progress. ScopePilot turns that into a reviewable workflow:
 
-- boards show current delivery state,
+- workflows show current delivery state,
 - task detail captures the implementation brief,
 - WIP warnings highlight delivery pressure,
-- dashboard metrics summarize risk,
-- Improve with AI converts rough tasks into clearer execution plans.
+- delivery metrics summarize risk,
+- AI clarification converts rough tasks into clearer execution plans.
 
 ## Feature Status
 
-| Area                    | Status    | Notes                                                              |
-| ----------------------- | --------- | ------------------------------------------------------------------ |
-| Auth/register/login     | Completed | Cookie sessions, password hashing, protected routes.               |
-| Demo session            | Completed | Creates isolated demo workspace/project/board data.                |
-| Workspace/project shell | Completed | Shell and placeholders exist; full management UI is planned.       |
-| DB-backed Kanban board  | Completed | Board snapshot comes from PostgreSQL through authenticated API.    |
-| Task create/edit/delete | Completed | Create, update, archive/delete, and detail APIs are DB-backed.     |
-| Drag/drop movement      | Completed | Desktop task movement persists across columns and ordering.        |
-| Mobile move fallback    | Completed | Native status selector avoids relying on mobile drag/drop.         |
-| WIP warnings            | Completed | Column WIP limit warnings use DB-backed counts.                    |
-| Task detail             | Completed | Properties, labels, assignees, checklist, comments, activity.      |
-| Dashboard metrics       | Completed | Workspace metrics, WIP risk, due-soon, priority/status breakdowns. |
-| Improve with AI         | Completed | Backend-only OpenAI call, persisted suggestions, apply/reject UI.  |
-| Search/filter           | Completed | Board filters run over the authenticated API snapshot.             |
-| EN/PL/CS i18n           | Completed | Visible UI strings use translation keys.                           |
-| Light/dark/system theme | Completed | Stored client preference with system mode support.                 |
-| Responsive UI           | Completed | Shell, board, dashboard, and task sheet use responsive layouts.    |
-| Docker/Coolify baseline | Completed | Dockerfile, Compose, entrypoint, healthcheck, deployment notes.    |
-| Public deployment       | Pending   | Target URL is documented but not verified yet.                     |
-| Runtime DB/OpenAI smoke | Pending   | Requires safe `DATABASE_URL` and backend-only `OPENAI_API_KEY`.    |
-| Realtime collaboration  | Planned   | Out of scope for the current recruiter-ready slice.                |
-| File uploads, billing   | Planned   | Future product work, intentionally not implemented.                |
+| Area                    | Status    | Notes                                                                |
+| ----------------------- | --------- | -------------------------------------------------------------------- |
+| Auth/register/login     | Completed | Cookie sessions, password hashing, protected routes.                 |
+| Demo session            | Completed | Creates isolated demo space/project/workflow data.                   |
+| Space/project shell     | Completed | Shell and core project flow exist; full space management is planned. |
+| Saved workflow board    | Completed | Workflow snapshot comes from PostgreSQL through authenticated API.   |
+| Task create/edit/delete | Completed | Create, update, archive/delete, and detail APIs use persisted data.  |
+| Drag/drop movement      | Completed | Desktop task movement persists across columns and ordering.          |
+| Mobile move fallback    | Completed | Native status selector avoids relying on mobile drag/drop.           |
+| WIP warnings            | Completed | Column WIP limit warnings use persisted counts.                      |
+| Task detail             | Completed | Properties, labels, assignees, checklist, comments, activity.        |
+| Delivery metrics        | Completed | Space metrics, WIP risk, due-soon, priority/status breakdowns.       |
+| Clarify with AI         | Completed | Server-side OpenAI call, persisted suggestions, apply/reject UI.     |
+| Search/filter           | Completed | Workflow filters run over the authenticated API snapshot.            |
+| EN/PL/CS i18n           | Completed | Visible UI strings use translation keys.                             |
+| Light/dark/system theme | Completed | Stored client preference with system mode support.                   |
+| Responsive UI           | Completed | Shell, workflow, overview, and task sheet use responsive layouts.    |
+| Docker/Coolify baseline | Completed | Dockerfile, Compose, entrypoint, healthcheck, deployment notes.      |
+| Public deployment       | Completed | Public `/api/health` and `/login` returned `HTTP/2 200`.             |
+| Runtime DB/OpenAI smoke | Pending   | Requires safe `DATABASE_URL` and server-only `OPENAI_API_KEY`.       |
+| Realtime collaboration  | Planned   | Out of scope for the current recruiter-ready slice.                  |
+| File uploads, billing   | Planned   | Future product work, intentionally not implemented.                  |
 
 ## Tech Stack
 
@@ -90,8 +89,8 @@ Production is designed around one public domain:
 
 Security and boundary notes:
 
-- `OPENAI_API_KEY` is backend-only and must never be exposed in frontend code.
-- DB-backed routes require authentication and workspace membership checks.
+- `OPENAI_API_KEY` is server-only and must never be exposed in frontend code.
+- Persisted routes require authentication and workspace membership checks.
 - Migration and seed scripts require an explicit `DATABASE_URL`; there is no fallback DB URL.
 - API responses use standard success/error envelopes.
 
@@ -101,7 +100,7 @@ Prerequisites:
 
 - Node.js 22+
 - pnpm 9+
-- PostgreSQL 16+ for DB-backed runtime smoke
+- PostgreSQL 16+ for persisted-data runtime smoke
 
 Install and configure:
 
@@ -110,14 +109,14 @@ pnpm install
 cp .env.example .env
 ```
 
-Edit `.env` for your local machine. At minimum, DB-backed routes need:
+Edit `.env` for your local machine. At minimum, persisted-data routes need:
 
 ```txt
 DATABASE_URL=postgres://agentboard:agentboard@localhost:5432/agentboard
 SESSION_SECRET=change-me-in-local-env
 ```
 
-AI Improve is optional for local review:
+AI clarification is optional for local review:
 
 ```txt
 AI_FEATURE_ENABLED=true
@@ -137,8 +136,8 @@ pnpm db:migrate
 pnpm db:seed
 ```
 
-The seed is designed to be idempotent and creates demo workspace/project/board/task
-data for review.
+The seed is designed to be idempotent and creates demo space/project/workflow/task data
+for review.
 
 ## Development Scripts
 
@@ -180,7 +179,7 @@ Internal documentation links can be checked separately:
 pnpm check:links
 ```
 
-DB-backed local smoke expects the API to already be running against a safe local
+Persisted-data local smoke expects the API to already be running against a safe local
 database URL:
 
 ```bash
@@ -197,8 +196,8 @@ pnpm smoke:local
 
 - `/api/health`
 - demo session creation
-- board snapshot
-- workspace dashboard
+- workflow snapshot
+- delivery overview
 - AI unavailable behavior when `OPENAI_API_KEY` is unset
 
 To point it at another local API port:
@@ -209,11 +208,11 @@ SMOKE_API_URL=http://127.0.0.1:3001/api pnpm smoke:local
 
 Environment requirements:
 
-- `DATABASE_URL` is required for demo auth, board snapshot, dashboard, and task/AI
-  DB-backed routes. Use only a safe local or staging database.
-- `OPENAI_API_KEY` is optional. When unset, smoke expects the backend-only AI path to
+- `DATABASE_URL` is required for demo auth, workflow snapshot, delivery overview, and
+  task/AI persisted routes. Use only a safe local or staging database.
+- `OPENAI_API_KEY` is optional. When unset, smoke expects the server-side AI path to
   return the graceful `AI_UNAVAILABLE` response. When explicitly set, smoke expects AI
-  Improve to succeed and may call OpenAI from the backend.
+  clarification to succeed and may call OpenAI from the backend.
 
 ## Docker and Coolify Notes
 
@@ -235,7 +234,7 @@ Coolify deployment model:
 4. Keep the `postgres` service internal.
 5. Set production env vars in Coolify, especially `DATABASE_URL`,
    `SESSION_SECRET`, `APP_URL`, and optional `OPENAI_API_KEY`.
-6. Deploy and verify `/api/health`, demo login, board, task detail, dashboard, and AI
+6. Deploy and verify `/api/health`, demo login, workflow, task detail, overview, and AI
    unavailable/working state.
 
 For first verification, Cloudflare should point `A scalesoftware` to `198.100.155.183`
@@ -251,20 +250,20 @@ More detail: [docs/03-deployment/deployment-notes.md](docs/03-deployment/deploym
 
 ## Known Limitations
 
-- The target public URL is documented but not yet verified as deployed.
-- Runtime DB smoke is pending until a safe `DATABASE_URL` is configured.
-- Real AI smoke is pending until a backend-only `OPENAI_API_KEY` is configured.
-- Workspace/project/settings routes are shell placeholders; full management UI is planned.
-- Checklist deletion/reordering and comment edit/delete are future refinements.
+- Production runtime is live through manual recovery containers; Coolify saved
+  configuration should still be synchronized before relying on one-click redeploy.
+- Runtime DB smoke needs a safe `DATABASE_URL` when run locally.
+- Real AI smoke is pending until a server-only `OPENAI_API_KEY` is configured.
+- Full multi-workspace management UI is planned.
 - Realtime collaboration, file uploads, billing, and invites are planned future work.
 
 ## Recruiter Review Path
 
 1. Live app/demo at the target URL once deployed.
-2. Board vertical slice: `apps/web/src/features/boards` and
+2. Workflow vertical slice: `apps/web/src/features/boards` and
    `apps/api/src/modules/boards`.
-3. Task detail: checklist/comment/activity UI and DB-backed mutations.
-4. Dashboard metrics: `apps/web/src/features/dashboard` and
+3. Task detail: checklist/comment/activity UI and persisted mutations.
+4. Delivery metrics: `apps/web/src/features/dashboard` and
    `apps/api/src/modules/workspaces/dashboard.ts`.
 5. AI feature: `apps/api/src/modules/ai`, task detail AI panel, and shared contracts.
 6. Backend contracts: `packages/shared/src/api/contracts.ts`.

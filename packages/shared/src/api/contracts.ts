@@ -226,6 +226,87 @@ export const projectSummarySchema = z.object({
   slug: z.string()
 });
 
+export const projectPrimaryBoardSchema = z.object({
+  id: idSchema,
+  workspaceId: idSchema,
+  projectId: idSchema,
+  name: z.string(),
+  slug: z.string(),
+  version: z.number().int(),
+  taskCount: z.number().int().nonnegative(),
+  activeTaskCount: z.number().int().nonnegative()
+});
+
+export type ProjectPrimaryBoard = z.infer<typeof projectPrimaryBoardSchema>;
+
+export const workspaceProjectSchema = z.object({
+  id: idSchema,
+  workspaceId: idSchema,
+  name: z.string(),
+  slug: z.string(),
+  description: z.string().nullable(),
+  status: projectStatusSchema,
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  primaryBoard: projectPrimaryBoardSchema.nullable()
+});
+
+export type WorkspaceProject = z.infer<typeof workspaceProjectSchema>;
+
+export const projectTemplateKeyValues = [
+  "blank",
+  "ai-agency-delivery",
+  "web-app-delivery",
+  "qa-hardening",
+  "discovery-sprint"
+] as const;
+
+export const projectTemplateKeySchema = z.enum(projectTemplateKeyValues);
+export type ProjectTemplateKey = z.infer<typeof projectTemplateKeySchema>;
+
+export const projectTemplateSummarySchema = z.object({
+  key: projectTemplateKeySchema,
+  name: z.string(),
+  description: z.string(),
+  taskCount: z.number().int().nonnegative(),
+  labelNames: z.array(z.string()),
+  recommended: z.boolean()
+});
+
+export type ProjectTemplateSummary = z.infer<typeof projectTemplateSummarySchema>;
+
+export const createProjectRequestSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  description: z.string().trim().max(2000).nullable().optional(),
+  boardName: z.string().trim().min(1).max(120).optional(),
+  templateKey: projectTemplateKeySchema.optional().default("blank")
+});
+
+export type CreateProjectRequest = z.infer<typeof createProjectRequestSchema>;
+
+export const updateProjectRequestSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120).optional(),
+    description: z.string().trim().max(2000).nullable().optional(),
+    status: projectStatusSchema.optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one project field must be provided."
+  });
+
+export type UpdateProjectRequest = z.infer<typeof updateProjectRequestSchema>;
+
+export const updateBoardColumnRequestSchema = z
+  .object({
+    name: z.string().trim().min(1).max(80).optional(),
+    wipLimit: z.number().int().min(1).max(99).nullable().optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one column field must be provided."
+  });
+
+export type UpdateBoardColumnRequest = z.infer<typeof updateBoardColumnRequestSchema>;
+
 export const boardSummarySchema = z.object({
   id: idSchema,
   workspaceId: idSchema,
@@ -372,6 +453,12 @@ export const createCommentRequestSchema = z.object({
 
 export type CreateCommentRequest = z.infer<typeof createCommentRequestSchema>;
 
+export const updateCommentRequestSchema = z.object({
+  body: z.string().trim().min(1).max(2000)
+});
+
+export type UpdateCommentRequest = z.infer<typeof updateCommentRequestSchema>;
+
 export const aiTaskImprovementSchema = z.object({
   improvedTitle: z.string().trim().min(3).max(120),
   improvedDescription: z.string().trim().min(20).max(5000),
@@ -421,6 +508,10 @@ export type ImproveTaskWithAiResponseData = {
   suggestion: AiSuggestion;
 };
 
+export type AiSuggestionsResponseData = {
+  suggestions: AiSuggestion[];
+};
+
 export type ApplyAiSuggestionResponseData = {
   suggestion: AiSuggestion;
   task: TaskDetail;
@@ -429,6 +520,35 @@ export type ApplyAiSuggestionResponseData = {
 
 export type RejectAiSuggestionResponseData = {
   suggestion: AiSuggestion;
+};
+
+export const aiNextActionsRequestSchema = z
+  .object({
+    focus: z.string().trim().max(500).optional(),
+    maxSuggestions: z.number().int().min(1).max(5).optional().default(3)
+  })
+  .optional()
+  .default({});
+
+export type AiNextActionsRequest = z.infer<typeof aiNextActionsRequestSchema>;
+
+export const aiNextActionSuggestionSchema = z.object({
+  id: idSchema,
+  title: z.string().trim().min(3).max(160),
+  description: z.string().trim().min(20).max(3000),
+  priority: taskPrioritySchema,
+  targetColumnSystemKey: columnSystemKeySchema,
+  acceptanceCriteria: z.array(z.string().trim().min(1).max(500)).max(6),
+  checklistItems: z.array(z.string().trim().min(1).max(240)).max(6),
+  riskNotes: z.array(z.string().trim().min(1).max(500)).max(4)
+});
+
+export type AiNextActionSuggestion = z.infer<typeof aiNextActionSuggestionSchema>;
+
+export type AiNextActionsResponseData = {
+  boardId: string;
+  model: string;
+  suggestions: AiNextActionSuggestion[];
 };
 
 export const dashboardQuerySchema = z.object({
@@ -545,6 +665,47 @@ export const dashboardMetricsSchema = z.object({
 
 export type DashboardMetrics = z.infer<typeof dashboardMetricsSchema>;
 
+export const weeklyReportQuerySchema = z.object({
+  projectId: idSchema.optional(),
+  weekStart: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional()
+});
+
+export type WeeklyReportQuery = z.infer<typeof weeklyReportQuerySchema>;
+
+export const weeklyReportResponseSchema = z.object({
+  workspaceId: idSchema,
+  projectId: idSchema.nullable(),
+  generatedAt: z.string().datetime(),
+  weekStart: z.string(),
+  weekEnd: z.string(),
+  newTasksCount: z.number().int().nonnegative(),
+  completedTasksCount: z.number().int().nonnegative(),
+  overdueTasksCount: z.number().int().nonnegative(),
+  blockedTasksCount: z.number().int().nonnegative(),
+  aiSuggestionsCount: z.number().int().nonnegative(),
+  wipLimitWarnings: z.array(dashboardWipLimitWarningSchema),
+  dueSoonTasks: z.array(dashboardDueSoonTaskSchema),
+  recentActivity: z.array(dashboardRecentActivitySchema),
+  summaryMarkdown: z.string()
+});
+
+export type WeeklyReportResponse = z.infer<typeof weeklyReportResponseSchema>;
+
+export type ProjectsResponseData = {
+  projects: WorkspaceProject[];
+};
+
+export type ProjectTemplatesResponseData = {
+  templates: ProjectTemplateSummary[];
+};
+
+export type CreateProjectResponseData = {
+  project: WorkspaceProject;
+};
+
 export type CreateTaskResponseData = {
   task: TaskDetail;
   board: BoardSnapshot;
@@ -564,12 +725,31 @@ export type MoveTaskResponseData = {
   board: BoardSnapshot;
 };
 
+export type UpdateProjectResponseData = {
+  project: WorkspaceProject;
+};
+
+export type UpdateBoardColumnResponseData = {
+  column: BoardColumn;
+  board: BoardSnapshot;
+};
+
 export type ChecklistResponseData = {
   task: TaskDetail;
   board: BoardSnapshot;
 };
 
+export type DeleteChecklistItemResponseData = {
+  task: TaskDetail;
+  board: BoardSnapshot;
+};
+
 export type CommentResponseData = {
+  task: TaskDetail;
+  board: BoardSnapshot;
+};
+
+export type DeleteCommentResponseData = {
   task: TaskDetail;
   board: BoardSnapshot;
 };

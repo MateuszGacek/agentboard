@@ -1,6 +1,9 @@
 import type {
   ApiError,
   ApiSuccess,
+  AiNextActionsRequest,
+  AiNextActionsResponseData,
+  AiSuggestionsResponseData,
   ApplyAiSuggestionRequest,
   ApplyAiSuggestionResponseData,
   BoardSnapshot,
@@ -8,9 +11,13 @@ import type {
   CommentResponseData,
   CreateChecklistItemRequest,
   CreateCommentRequest,
+  CreateProjectRequest,
+  CreateProjectResponseData,
   CreateTaskRequest,
   CreateTaskResponseData,
   DashboardMetrics,
+  DeleteChecklistItemResponseData,
+  DeleteCommentResponseData,
   DeleteTaskResponseData,
   DemoLoginRequest,
   DemoLoginResponseData,
@@ -19,13 +26,21 @@ import type {
   LogoutResponseData,
   MoveTaskRequest,
   MoveTaskResponseData,
+  ProjectsResponseData,
+  ProjectTemplatesResponseData,
   RegisterRequest,
   RejectAiSuggestionResponseData,
   SessionResponse,
   TaskDetail,
+  UpdateBoardColumnRequest,
+  UpdateBoardColumnResponseData,
   UpdateChecklistItemRequest,
+  UpdateCommentRequest,
+  UpdateProjectRequest,
+  UpdateProjectResponseData,
   UpdateTaskRequest,
-  UpdateTaskResponseData
+  UpdateTaskResponseData,
+  WeeklyReportResponse
 } from "@agentboard/shared";
 
 export class ApiClientError extends Error {
@@ -119,15 +134,76 @@ export const authApi = {
 
 export const boardApi = {
   getBoard: (boardId: string, signal?: AbortSignal) =>
-    apiRequest<BoardSnapshot>(`/api/boards/${boardId}`, signal ? { signal } : undefined)
+    apiRequest<BoardSnapshot>(`/api/boards/${boardId}`, signal ? { signal } : undefined),
+  suggestNextActions: (boardId: string, body: AiNextActionsRequest) =>
+    apiRequest<AiNextActionsResponseData>(`/api/boards/${boardId}/ai/next-actions`, {
+      method: "POST",
+      body
+    }),
+  updateColumn: (columnId: string, body: UpdateBoardColumnRequest) =>
+    apiRequest<UpdateBoardColumnResponseData>(`/api/board-columns/${columnId}`, {
+      method: "PATCH",
+      body
+    })
 };
 
 export const dashboardApi = {
-  getDashboard: (workspaceId: string, signal?: AbortSignal) =>
-    apiRequest<DashboardMetrics>(
-      `/api/workspaces/${workspaceId}/dashboard`,
+  getDashboard: (workspaceId: string, projectId?: string | null, signal?: AbortSignal) => {
+    const params = new URLSearchParams();
+
+    if (projectId) {
+      params.set("projectId", projectId);
+    }
+
+    const query = params.toString();
+    const path = `/api/workspaces/${workspaceId}/dashboard${query ? `?${query}` : ""}`;
+
+    return apiRequest<DashboardMetrics>(path, signal ? { signal } : undefined);
+  },
+  getWeeklyReport: (
+    workspaceId: string,
+    projectId?: string | null,
+    weekStart?: string | null,
+    signal?: AbortSignal
+  ) => {
+    const params = new URLSearchParams();
+
+    if (projectId) {
+      params.set("projectId", projectId);
+    }
+
+    if (weekStart) {
+      params.set("weekStart", weekStart);
+    }
+
+    const query = params.toString();
+    const path = `/api/workspaces/${workspaceId}/reports/weekly${query ? `?${query}` : ""}`;
+
+    return apiRequest<WeeklyReportResponse>(path, signal ? { signal } : undefined);
+  }
+};
+
+export const projectApi = {
+  listTemplates: (signal?: AbortSignal) =>
+    apiRequest<ProjectTemplatesResponseData>(
+      "/api/project-templates",
       signal ? { signal } : undefined
-    )
+    ),
+  listProjects: (workspaceId: string, signal?: AbortSignal) =>
+    apiRequest<ProjectsResponseData>(
+      `/api/workspaces/${workspaceId}/projects`,
+      signal ? { signal } : undefined
+    ),
+  createProject: (workspaceId: string, body: CreateProjectRequest) =>
+    apiRequest<CreateProjectResponseData>(`/api/workspaces/${workspaceId}/projects`, {
+      method: "POST",
+      body
+    }),
+  updateProject: (projectId: string, body: UpdateProjectRequest) =>
+    apiRequest<UpdateProjectResponseData>(`/api/projects/${projectId}`, {
+      method: "PATCH",
+      body
+    })
 };
 
 export const taskApi = {
@@ -147,8 +223,21 @@ export const taskApi = {
       method: "PATCH",
       body
     }),
+  deleteChecklistItem: (itemId: string) =>
+    apiRequest<DeleteChecklistItemResponseData>(`/api/tasks/checklist-items/${itemId}`, {
+      method: "DELETE"
+    }),
   createComment: (taskId: string, body: CreateCommentRequest) =>
     apiRequest<CommentResponseData>(`/api/tasks/${taskId}/comments`, { method: "POST", body }),
+  updateComment: (commentId: string, body: UpdateCommentRequest) =>
+    apiRequest<CommentResponseData>(`/api/tasks/comments/${commentId}`, {
+      method: "PATCH",
+      body
+    }),
+  deleteComment: (commentId: string) =>
+    apiRequest<DeleteCommentResponseData>(`/api/tasks/comments/${commentId}`, {
+      method: "DELETE"
+    }),
   deleteTask: (taskId: string) =>
     apiRequest<DeleteTaskResponseData>(`/api/tasks/${taskId}`, { method: "DELETE" }),
   moveTask: (taskId: string, body: MoveTaskRequest) =>
@@ -157,6 +246,11 @@ export const taskApi = {
     apiRequest<ImproveTaskWithAiResponseData>(`/api/tasks/${taskId}/ai/improve`, {
       method: "POST"
     }),
+  listAiSuggestions: (taskId: string, signal?: AbortSignal) =>
+    apiRequest<AiSuggestionsResponseData>(
+      `/api/tasks/${taskId}/ai-suggestions`,
+      signal ? { signal } : undefined
+    ),
   applyAiSuggestion: (suggestionId: string, body: ApplyAiSuggestionRequest) =>
     apiRequest<ApplyAiSuggestionResponseData>(`/api/ai-suggestions/${suggestionId}/apply`, {
       method: "POST",

@@ -6,7 +6,7 @@ import { useSession } from "../features/auth/auth-queries";
 import { ProtectedRoute } from "../features/auth/protected-route";
 import { BoardPage } from "../features/boards/board-page";
 import { DashboardPage } from "../features/dashboard/dashboard-page";
-import { PlaceholderPage } from "../features/placeholders/placeholder-page";
+import { ProjectsPage } from "../features/projects/projects-page";
 import { SettingsPage } from "../features/settings/settings-page";
 import { HomePage } from "../routes/home-page";
 
@@ -61,28 +61,19 @@ const appRoute = createRoute({
 const appIndexRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "/",
-  component: () => (
-    <PlaceholderPage titleKey="pages.app.title" descriptionKey="pages.app.description" />
-  )
+  component: WorkspaceOverviewRouteComponent
 });
 
 const workspacesRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "workspaces",
-  component: () => (
-    <PlaceholderPage
-      titleKey="pages.workspaces.title"
-      descriptionKey="pages.workspaces.description"
-    />
-  )
+  component: WorkspaceOverviewRouteComponent
 });
 
 const projectsRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "projects",
-  component: () => (
-    <PlaceholderPage titleKey="pages.projects.title" descriptionKey="pages.projects.description" />
-  )
+  component: ProjectsRouteComponent
 });
 
 const settingsRoute = createRoute({
@@ -107,8 +98,32 @@ function DashboardRouteComponent() {
   const session = useSession();
   const activeWorkspaceId =
     session.data?.activeWorkspaceId ?? session.data?.workspaces[0]?.id ?? null;
+  const projectId =
+    typeof window === "undefined"
+      ? null
+      : new URLSearchParams(window.location.search).get("projectId");
 
-  return <DashboardPage workspaceId={activeWorkspaceId} />;
+  return <DashboardPage projectId={projectId} workspaceId={activeWorkspaceId} />;
+}
+
+function activeWorkspaceFromSession(session: ReturnType<typeof useSession>) {
+  return (
+    session.data?.workspaces.find(
+      (workspace) => workspace.id === session.data?.activeWorkspaceId
+    ) ??
+    session.data?.workspaces[0] ??
+    null
+  );
+}
+
+function WorkspaceOverviewRouteComponent() {
+  const session = useSession();
+  return <ProjectsPage mode="overview" workspace={activeWorkspaceFromSession(session)} />;
+}
+
+function ProjectsRouteComponent() {
+  const session = useSession();
+  return <ProjectsPage mode="projects" workspace={activeWorkspaceFromSession(session)} />;
 }
 
 function BoardRouteComponent() {

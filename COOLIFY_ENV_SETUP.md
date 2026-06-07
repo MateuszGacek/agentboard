@@ -20,6 +20,7 @@ POSTGRES_PASSWORD
 DATABASE_URL
 SESSION_SECRET
 SEED_DEMO_DATA
+AI_FEATURE_ENABLED
 OPENAI_API_KEY
 OPENAI_MODEL
 ```
@@ -34,6 +35,7 @@ WEB_DIST_DIR=/app/apps/web/dist
 POSTGRES_DB=agentboard
 POSTGRES_USER=agentboard
 SEED_DEMO_DATA=true
+AI_FEATURE_ENABLED=true
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-nano
 ```
@@ -110,7 +112,8 @@ is_preview=false
 ```
 
 Preview env variables are ignored by this helper. `OPENAI_API_KEY` is optional and may
-be left empty.
+be left empty. `AI_FEATURE_ENABLED=false` keeps the backend AI routes in the safe
+unavailable state even when other OpenAI variables are present.
 
 ## Manual Coolify Checks Before Deploy
 

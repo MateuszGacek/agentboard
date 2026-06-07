@@ -1,12 +1,21 @@
 import type { DatabaseClient } from "@agentboard/db";
-import { boardColumns, boards, projects, taskActivityEvents, tasks, users } from "@agentboard/db";
+import {
+  aiSuggestions,
+  boardColumns,
+  boards,
+  projects,
+  taskActivityEvents,
+  tasks,
+  users
+} from "@agentboard/db";
 import {
   taskPriorityValues,
   type ActivityEventType,
   type DashboardMetrics,
-  type TaskPriority
+  type TaskPriority,
+  type WeeklyReportResponse
 } from "@agentboard/shared";
-import { and, asc, desc, eq, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNull, lt } from "drizzle-orm";
 
 import { assertProjectInWorkspace, assertWorkspaceMember } from "./ownership";
 
@@ -310,5 +319,143 @@ export async function getWorkspaceDashboard(
       actor: row.actor?.id ? row.actor : null,
       createdAt: row.createdAt.toISOString()
     }))
+  };
+}
+
+function startOfUtcWeek(value: Date) {
+  const date = new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+  const day = date.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  date.setUTCDate(date.getUTCDate() + diff);
+  return date;
+}
+
+function parseWeekStart(value: string | undefined) {
+  if (!value) {
+    return startOfUtcWeek(new Date());
+  }
+
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return startOfUtcWeek(new Date());
+  }
+
+  return parsed;
+}
+
+function markdownReport(input: {
+  dashboard: DashboardMetrics;
+  weekStart: string;
+  weekEnd: string;
+  newTasksCount: number;
+  completedTasksCount: number;
+  aiSuggestionsCount: number;
+}) {
+  const warningLine =
+    input.dashboard.wipLimitWarnings.length > 0
+      ? `${input.dashboard.wipLimitWarnings.length} WIP warning(s)`
+      : "No WIP warnings";
+  const dueLine =
+    input.dashboard.dueSoonTasks.length > 0
+      ? `${input.dashboard.dueSoonTasks.length} due-soon task(s)`
+      : "No due-soon tasks";
+
+  return [
+    `## AgentBoard weekly report (${input.weekStart} - ${input.weekEnd})`,
+    "",
+    `- New tasks: ${input.newTasksCount}`,
+    `- Completed tasks: ${input.completedTasksCount}`,
+    `- Active tasks: ${input.dashboard.totalActiveTasks}`,
+    `- Blocked tasks: ${input.dashboard.blockedTasks}`,
+    `- Overdue tasks: ${input.dashboard.overdueTasks}`,
+    `- AI suggestions created: ${input.aiSuggestionsCount}`,
+    `- WIP: ${warningLine}`,
+    `- Due soon: ${dueLine}`,
+    `- Completion rate: ${input.dashboard.completionRate.displayPercent}`
+  ].join("\n");
+}
+
+export async function getWorkspaceWeeklyReport(
+  db: DatabaseClient,
+  scope: DashboardScope & { weekStart?: string }
+): Promise<WeeklyReportResponse> {
+  await assertWorkspaceMember(db, scope.userId, scope.workspaceId);
+
+  if (scope.projectId) {
+    await assertProjectInWorkspace(db, scope.projectId, scope.workspaceId);
+  }
+
+  const dashboard = await getWorkspaceDashboard(db, scope);
+  const weekStartDate = parseWeekStart(scope.weekStart);
+  const weekEndExclusive = addDays(weekStartDate, 7);
+  const weekEndInclusive = addDays(weekStartDate, 6);
+  const projectFilter = scope.projectId ? eq(tasks.projectId, scope.projectId) : undefined;
+
+  const newTaskRows = await db
+    .select({ id: tasks.id })
+    .from(tasks)
+    .where(
+      and(
+        eq(tasks.workspaceId, scope.workspaceId),
+        isNull(tasks.archivedAt),
+        gte(tasks.createdAt, weekStartDate),
+        lt(tasks.createdAt, weekEndExclusive),
+        projectFilter
+      )
+    );
+
+  const completedTaskRows = await db
+    .select({ id: tasks.id })
+    .from(tasks)
+    .where(
+      and(
+        eq(tasks.workspaceId, scope.workspaceId),
+        isNull(tasks.archivedAt),
+        gte(tasks.completedAt, weekStartDate),
+        lt(tasks.completedAt, weekEndExclusive),
+        projectFilter
+      )
+    );
+
+  const aiSuggestionRows = await db
+    .select({ id: aiSuggestions.id })
+    .from(aiSuggestions)
+    .innerJoin(tasks, eq(aiSuggestions.taskId, tasks.id))
+    .where(
+      and(
+        eq(aiSuggestions.workspaceId, scope.workspaceId),
+        isNull(tasks.archivedAt),
+        gte(aiSuggestions.createdAt, weekStartDate),
+        lt(aiSuggestions.createdAt, weekEndExclusive),
+        projectFilter
+      )
+    );
+
+  const weekStart = dateKey(weekStartDate);
+  const weekEnd = dateKey(weekEndInclusive);
+
+  return {
+    workspaceId: scope.workspaceId,
+    projectId: scope.projectId ?? null,
+    generatedAt: new Date().toISOString(),
+    weekStart,
+    weekEnd,
+    newTasksCount: newTaskRows.length,
+    completedTasksCount: completedTaskRows.length,
+    overdueTasksCount: dashboard.overdueTasks,
+    blockedTasksCount: dashboard.blockedTasks,
+    aiSuggestionsCount: aiSuggestionRows.length,
+    wipLimitWarnings: dashboard.wipLimitWarnings,
+    dueSoonTasks: dashboard.dueSoonTasks,
+    recentActivity: dashboard.recentActivity,
+    summaryMarkdown: markdownReport({
+      dashboard,
+      weekStart,
+      weekEnd,
+      newTasksCount: newTaskRows.length,
+      completedTasksCount: completedTaskRows.length,
+      aiSuggestionsCount: aiSuggestionRows.length
+    })
   };
 }

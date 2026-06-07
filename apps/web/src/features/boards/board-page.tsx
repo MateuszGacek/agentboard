@@ -1,11 +1,14 @@
 import type {
+  AiNextActionSuggestion,
   AiSuggestion,
   BoardColumn,
   BoardSnapshot,
   BoardTaskCard,
+  ColumnSystemKey,
   TaskDetail,
   TaskPriority
 } from "@agentboard/shared";
+import { columnSystemKeyValues } from "@agentboard/shared";
 import {
   closestCorners,
   DndContext,
@@ -20,17 +23,24 @@ import {
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import {
   AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  Bookmark,
+  Check,
   CalendarDays,
   CheckCircle2,
   Circle,
   GripVertical,
   Loader2,
   MessageSquare,
+  Pencil,
   Plus,
   Search,
+  Settings,
   SlidersHorizontal,
   Sparkles,
   Tag,
+  Trash2,
   UserRound,
   X
 } from "lucide-react";
@@ -52,15 +62,23 @@ import {
   useBoard,
   useCreateChecklistItemMutation,
   useCreateCommentMutation,
+  useCreateTaskFromAiSuggestionMutation,
   useCreateTaskMutation,
+  useDeleteChecklistItemMutation,
+  useDeleteCommentMutation,
   useDeleteTaskMutation,
   useImproveTaskWithAiMutation,
   useMoveTaskMutation,
   useRejectAiSuggestionMutation,
+  useSuggestBoardNextActionsMutation,
   useTaskDetail,
+  useTaskAiSuggestions,
+  useUpdateBoardColumnMutation,
   useUpdateChecklistItemMutation,
+  useUpdateCommentMutation,
   useUpdateTaskMutation
 } from "./board-queries";
+import { useSession } from "../auth/auth-queries";
 
 type BoardPageProps = {
   boardId: string;
@@ -84,7 +102,15 @@ type BoardFiltersState = {
   blocked: BoardBlockedFilter;
   assigneeId: string;
   labelId: string;
+  columnSystemKey: "all" | ColumnSystemKey;
   due: BoardDueFilter;
+};
+
+type SavedBoardView = {
+  id: string;
+  name: string;
+  filters: BoardFiltersState;
+  createdAt: string;
 };
 
 const priorityValues: TaskPriority[] = ["low", "medium", "high", "urgent"];
@@ -97,8 +123,72 @@ const defaultBoardFilters: BoardFiltersState = {
   blocked: "all",
   assigneeId: "all",
   labelId: "all",
+  columnSystemKey: "all",
   due: "all"
 };
+
+function savedViewsStorageKey(boardId: string) {
+  return `agentboard.boardViews.${boardId}`;
+}
+
+function readSavedBoardViews(boardId: string): SavedBoardView[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(savedViewsStorageKey(boardId)) ?? "[]");
+    return Array.isArray(parsed) ? (parsed as SavedBoardView[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeSavedBoardViews(boardId: string, views: SavedBoardView[]) {
+  window.localStorage.setItem(savedViewsStorageKey(boardId), JSON.stringify(views));
+}
+
+function boardViewPresets(currentUserId: string | null): Array<{
+  id: string;
+  labelKey: string;
+  filters: BoardFiltersState;
+}> {
+  return [
+    {
+      id: "my-work",
+      labelKey: "board.savedViews.presets.myWork",
+      filters: {
+        ...defaultBoardFilters,
+        assigneeId: currentUserId ?? "all"
+      }
+    },
+    {
+      id: "blocked",
+      labelKey: "board.savedViews.presets.blocked",
+      filters: { ...defaultBoardFilters, blocked: "blocked" }
+    },
+    {
+      id: "due-soon",
+      labelKey: "board.savedViews.presets.dueSoon",
+      filters: { ...defaultBoardFilters, due: "week" }
+    },
+    {
+      id: "overdue",
+      labelKey: "board.savedViews.presets.overdue",
+      filters: { ...defaultBoardFilters, due: "overdue" }
+    },
+    {
+      id: "high-priority",
+      labelKey: "board.savedViews.presets.highPriority",
+      filters: { ...defaultBoardFilters, priority: "high" }
+    },
+    {
+      id: "in-progress",
+      labelKey: "board.savedViews.presets.inProgress",
+      filters: { ...defaultBoardFilters, columnSystemKey: "in_progress" }
+    }
+  ];
+}
 
 const taskPriorityTone: Record<TaskPriority, string> = {
   low: "border-border bg-muted/40 text-muted-foreground",
@@ -115,6 +205,12 @@ const initialTaskForm: TaskFormState = {
   isBlocked: false,
   blockedReason: ""
 };
+
+const boardCommandEvents = {
+  createTask: "agentboard:board-create-task",
+  focusSearch: "agentboard:board-focus-search",
+  clearFilters: "agentboard:board-clear-filters"
+} as const;
 
 function getTaskLocation(board: BoardSnapshot, taskId: string) {
   for (const column of board.columns) {
@@ -215,6 +311,10 @@ function isDueFilter(value: string | null): value is BoardDueFilter {
   return dueFilterValues.includes(value as BoardDueFilter);
 }
 
+function isColumnSystemKey(value: string | null): value is ColumnSystemKey {
+  return columnSystemKeyValues.includes(value as ColumnSystemKey);
+}
+
 function readBoardFiltersFromUrl(): BoardFiltersState {
   if (typeof window === "undefined") {
     return defaultBoardFilters;
@@ -224,6 +324,7 @@ function readBoardFiltersFromUrl(): BoardFiltersState {
   const priority = params.get("priority");
   const blocked = params.get("blocked");
   const due = params.get("due");
+  const column = params.get("column");
 
   return {
     q: params.get("q") ?? "",
@@ -231,6 +332,7 @@ function readBoardFiltersFromUrl(): BoardFiltersState {
     blocked: isBlockedFilter(blocked) ? blocked : "all",
     assigneeId: params.get("assignee") ?? "all",
     labelId: params.get("label") ?? "all",
+    columnSystemKey: isColumnSystemKey(column) ? column : "all",
     due: isDueFilter(due) ? due : "all"
   };
 }
@@ -247,6 +349,7 @@ function writeBoardFiltersToUrl(filters: BoardFiltersState) {
     ["blocked", "blocked"],
     ["assigneeId", "assignee"],
     ["labelId", "label"],
+    ["columnSystemKey", "column"],
     ["due", "due"]
   ];
 
@@ -272,6 +375,7 @@ function hasActiveBoardFilters(filters: BoardFiltersState) {
     filters.blocked !== "all" ||
     filters.assigneeId !== "all" ||
     filters.labelId !== "all" ||
+    filters.columnSystemKey !== "all" ||
     filters.due !== "all"
   );
 }
@@ -350,7 +454,9 @@ function getFilteredTasksByColumn(board: BoardSnapshot, filters: BoardFiltersSta
   return Object.fromEntries(
     board.columns.map((column) => [
       column.id,
-      (board.tasksByColumn[column.id] ?? []).filter((task) => filterBoardTask(task, filters))
+      filters.columnSystemKey !== "all" && column.systemKey !== filters.columnSystemKey
+        ? []
+        : (board.tasksByColumn[column.id] ?? []).filter((task) => filterBoardTask(task, filters))
     ])
   ) as BoardSnapshot["tasksByColumn"];
 }
@@ -447,7 +553,7 @@ function BoardFilterBar({
             />
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
           <div className="space-y-2">
             <Label htmlFor="board-priority-filter">{t("board.filters.priority")}</Label>
             <Select
@@ -516,6 +622,27 @@ function BoardFilterBar({
             </Select>
           </div>
           <div className="space-y-2">
+            <Label htmlFor="board-column-filter">{t("board.filters.column")}</Label>
+            <Select
+              id="board-column-filter"
+              onChange={(event) =>
+                onChange({
+                  ...filters,
+                  columnSystemKey:
+                    event.target.value === "all" ? "all" : (event.target.value as ColumnSystemKey)
+                })
+              }
+              value={filters.columnSystemKey}
+            >
+              <option value="all">{t("board.filters.allColumns")}</option>
+              {board.columns.map((column) => (
+                <option key={column.id} value={column.systemKey}>
+                  {column.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="board-due-filter">{t("board.filters.due")}</Label>
             <Select
               id="board-due-filter"
@@ -548,6 +675,229 @@ function BoardFilterBar({
           ) : null}
         </div>
       </div>
+    </section>
+  );
+}
+
+function SavedViewsBar({
+  board,
+  currentUserId,
+  filters,
+  onApply
+}: {
+  board: BoardSnapshot;
+  currentUserId: string | null;
+  filters: BoardFiltersState;
+  onApply: (filters: BoardFiltersState) => void;
+}) {
+  const { t } = useTranslation();
+  const [views, setViews] = React.useState<SavedBoardView[]>(() => readSavedBoardViews(board.id));
+  const [name, setName] = React.useState("");
+  const presets = boardViewPresets(currentUserId).filter(
+    (preset) => preset.id !== "my-work" || currentUserId !== null
+  );
+
+  const persist = (nextViews: SavedBoardView[]) => {
+    setViews(nextViews);
+    writeSavedBoardViews(board.id, nextViews);
+  };
+
+  const saveCurrent = () => {
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      return;
+    }
+
+    persist([
+      {
+        id: crypto.randomUUID(),
+        name: trimmedName,
+        filters,
+        createdAt: new Date().toISOString()
+      },
+      ...views
+    ]);
+    setName("");
+  };
+
+  return (
+    <section className="space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-sm font-semibold">{t("board.savedViews.title")}</h2>
+          <p className="text-xs leading-5 text-muted-foreground">
+            {t("board.savedViews.description")}
+          </p>
+        </div>
+        <div className="flex min-w-0 flex-col gap-2 sm:w-80 sm:flex-row">
+          <Input
+            aria-label={t("board.savedViews.name")}
+            onChange={(event) => setName(event.target.value)}
+            placeholder={t("board.savedViews.name")}
+            value={name}
+          />
+          <Button disabled={!name.trim()} onClick={saveCurrent} type="button" variant="outline">
+            <Bookmark className="h-4 w-4" aria-hidden="true" />
+            {t("board.savedViews.save")}
+          </Button>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {presets.map((preset) => (
+          <Button
+            key={preset.id}
+            onClick={() => onApply(preset.filters)}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            {t(preset.labelKey)}
+          </Button>
+        ))}
+      </div>
+      {views.length > 0 ? (
+        <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+          {views.map((view) => (
+            <span
+              className="inline-flex max-w-full items-center gap-1 rounded-md border border-border bg-background p-1"
+              key={view.id}
+            >
+              <button
+                className="min-h-8 truncate px-2 text-sm font-medium hover:text-primary"
+                onClick={() => onApply(view.filters)}
+                type="button"
+              >
+                {view.name}
+              </button>
+              <Button
+                aria-label={t("board.savedViews.delete", { name: view.name })}
+                onClick={() => persist(views.filter((candidate) => candidate.id !== view.id))}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <X className="h-3.5 w-3.5" aria-hidden="true" />
+              </Button>
+            </span>
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function AiNextActionsPanel({ board }: { board: BoardSnapshot }) {
+  const { t } = useTranslation();
+  const suggestNextActions = useSuggestBoardNextActionsMutation(board.id);
+  const createFromSuggestion = useCreateTaskFromAiSuggestionMutation(board.id);
+  const [focus, setFocus] = React.useState("");
+  const [suggestions, setSuggestions] = React.useState<AiNextActionSuggestion[]>([]);
+  const [createdSuggestionIds, setCreatedSuggestionIds] = React.useState<string[]>([]);
+
+  const handleSuggest = () => {
+    suggestNextActions.mutate(
+      {
+        focus: focus.trim() || undefined,
+        maxSuggestions: 3
+      },
+      {
+        onSuccess: (result) => {
+          setSuggestions(result.suggestions);
+          setCreatedSuggestionIds([]);
+        }
+      }
+    );
+  };
+
+  const handleCreate = (suggestion: AiNextActionSuggestion) => {
+    createFromSuggestion.mutate(
+      { board, suggestion },
+      {
+        onSuccess: () =>
+          setCreatedSuggestionIds((current) =>
+            current.includes(suggestion.id) ? current : [...current, suggestion.id]
+          )
+      }
+    );
+  };
+
+  return (
+    <section className="space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0 space-y-1">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-accent" aria-hidden="true" />
+            <h2 className="text-sm font-semibold">{t("board.aiNext.title")}</h2>
+          </div>
+          <p className="text-sm leading-6 text-muted-foreground">{t("board.aiNext.description")}</p>
+        </div>
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row lg:w-[34rem]">
+          <Input
+            onChange={(event) => setFocus(event.target.value)}
+            placeholder={t("board.aiNext.focusPlaceholder")}
+            value={focus}
+          />
+          <Button disabled={suggestNextActions.isPending} onClick={handleSuggest} type="button">
+            {suggestNextActions.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+            )}
+            {t("board.aiNext.suggest")}
+          </Button>
+        </div>
+      </div>
+      {suggestNextActions.error ? (
+        <InlineAlert>{getUserFacingApiError(suggestNextActions.error, t, "ai")}</InlineAlert>
+      ) : null}
+      {createFromSuggestion.error ? (
+        <InlineAlert>{getUserFacingApiError(createFromSuggestion.error, t)}</InlineAlert>
+      ) : null}
+      {suggestions.length > 0 ? (
+        <div className="grid gap-3 lg:grid-cols-3">
+          {suggestions.map((suggestion) => {
+            const created = createdSuggestionIds.includes(suggestion.id);
+
+            return (
+              <article
+                className="rounded-md border border-border bg-background p-3"
+                key={suggestion.id}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="break-words text-sm font-semibold">{suggestion.title}</h3>
+                  <span className="shrink-0 rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">
+                    {t(`board.priority.${suggestion.priority}`)}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {suggestion.description}
+                </p>
+                {suggestion.checklistItems.length > 0 ? (
+                  <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
+                    {suggestion.checklistItems.slice(0, 3).map((item) => (
+                      <li className="flex gap-2" key={item}>
+                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                <Button
+                  className="mt-3 w-full"
+                  disabled={created || createFromSuggestion.isPending}
+                  onClick={() => handleCreate(suggestion)}
+                  size="sm"
+                  type="button"
+                  variant={created ? "outline" : "default"}
+                >
+                  {created ? t("board.aiNext.created") : t("board.aiNext.createTask")}
+                </Button>
+              </article>
+            );
+          })}
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -642,7 +992,7 @@ function DialogFrame({
         aria-describedby={description ? descriptionId : undefined}
         aria-labelledby={titleId}
         aria-modal="true"
-        className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-auto rounded-lg border border-border bg-card shadow-shell"
+        className="max-h-[calc(100vh-2rem)] w-full max-w-lg animate-dialog-in overflow-auto rounded-lg border border-border bg-card shadow-shell"
         role="dialog"
       >
         <header className="flex items-center justify-between gap-3 border-b border-border p-4">
@@ -702,7 +1052,7 @@ function SheetFrame({
         aria-describedby={description ? descriptionId : undefined}
         aria-labelledby={titleId}
         aria-modal="true"
-        className="ml-auto flex h-full w-full flex-col overflow-hidden border-l border-border bg-card shadow-shell sm:max-w-2xl"
+        className="ml-auto flex h-full w-full animate-sheet-in flex-col overflow-hidden border-l border-border bg-card shadow-shell sm:max-w-2xl"
         role="dialog"
       >
         <header className="flex items-center justify-between gap-3 border-b border-border p-4">
@@ -733,11 +1083,13 @@ function SheetFrame({
 function TaskFields({
   form,
   setForm,
-  showBlocked
+  showBlocked,
+  titleAutoFocus = false
 }: {
   form: TaskFormState;
   setForm: React.Dispatch<React.SetStateAction<TaskFormState>>;
   showBlocked: boolean;
+  titleAutoFocus?: boolean;
 }) {
   const { t } = useTranslation();
 
@@ -746,6 +1098,7 @@ function TaskFields({
       <div className="space-y-2">
         <Label htmlFor="task-title">{t("board.task.title")}</Label>
         <Input
+          autoFocus={titleAutoFocus}
           id="task-title"
           onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
           value={form.title}
@@ -835,6 +1188,9 @@ function CreateTaskDialog({
 }) {
   const { t } = useTranslation();
   const [form, setForm] = React.useState<TaskFormState>(initialTaskForm);
+  const [columnId, setColumnId] = React.useState(column.id);
+  const [assigneeIds, setAssigneeIds] = React.useState<string[]>([]);
+  const [labelIds, setLabelIds] = React.useState<string[]>([]);
   const [error, setError] = React.useState<string | null>(null);
   const createTask = useCreateTaskMutation(board.id);
 
@@ -849,13 +1205,13 @@ function CreateTaskDialog({
     createTask.mutate(
       {
         boardId: board.id,
-        columnId: column.id,
+        columnId,
         title: form.title,
         description: form.description.trim() ? form.description : null,
         priority: form.priority,
         dueDate: form.dueDate || null,
-        assigneeIds: [],
-        labelIds: []
+        assigneeIds,
+        labelIds
       },
       { onSuccess: onClose }
     );
@@ -867,7 +1223,95 @@ function CreateTaskDialog({
     <DialogFrame description={description} onClose={onClose} title={t("board.create.title")}>
       <form className="space-y-4 p-4" onSubmit={handleSubmit}>
         <p className="text-sm text-muted-foreground">{description}</p>
-        <TaskFields form={form} setForm={setForm} showBlocked={false} />
+        <TaskFields form={form} setForm={setForm} showBlocked={false} titleAutoFocus />
+        <div className="space-y-2">
+          <Label htmlFor="create-task-column">{t("board.detail.status")}</Label>
+          <Select
+            id="create-task-column"
+            onChange={(event) => setColumnId(event.target.value)}
+            value={columnId}
+          >
+            {board.columns.map((candidate) => (
+              <option key={candidate.id} value={candidate.id}>
+                {candidate.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">{t("board.detail.assignees")}</p>
+            {board.availableMembers.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {board.availableMembers.map((member) => {
+                  const selected = assigneeIds.includes(member.id);
+
+                  return (
+                    <button
+                      aria-pressed={selected}
+                      className={cn(
+                        "inline-flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm transition",
+                        selected
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground"
+                      )}
+                      key={member.id}
+                      onClick={() =>
+                        setAssigneeIds((current) =>
+                          current.includes(member.id)
+                            ? current.filter((id) => id !== member.id)
+                            : [...current, member.id]
+                        )
+                      }
+                      type="button"
+                    >
+                      <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
+                      {member.name}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <EmptyDetailState>{t("board.detail.emptyAssignees")}</EmptyDetailState>
+            )}
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-medium">{t("board.detail.labels")}</p>
+            {board.availableLabels.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {board.availableLabels.map((label) => {
+                  const selected = labelIds.includes(label.id);
+
+                  return (
+                    <button
+                      aria-pressed={selected}
+                      className={cn(
+                        "inline-flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm transition",
+                        selected
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground"
+                      )}
+                      key={label.id}
+                      onClick={() =>
+                        setLabelIds((current) =>
+                          current.includes(label.id)
+                            ? current.filter((id) => id !== label.id)
+                            : [...current, label.id]
+                        )
+                      }
+                      type="button"
+                    >
+                      <Tag className="h-3.5 w-3.5" aria-hidden="true" />
+                      {label.name}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <EmptyDetailState>{t("board.detail.emptyLabels")}</EmptyDetailState>
+            )}
+          </div>
+        </div>
         {error ? <InlineAlert>{error}</InlineAlert> : null}
         {createTask.error ? (
           <InlineAlert>{getUserFacingApiError(createTask.error, t)}</InlineAlert>
@@ -878,6 +1322,100 @@ function CreateTaskDialog({
           </Button>
           <Button disabled={createTask.isPending} type="submit">
             {t("board.create.submit")}
+          </Button>
+        </div>
+      </form>
+    </DialogFrame>
+  );
+}
+
+function ColumnSettingsDialog({
+  column,
+  isSaving,
+  error,
+  onClose,
+  onSubmit
+}: {
+  column: BoardColumn;
+  isSaving: boolean;
+  error: unknown;
+  onClose: () => void;
+  onSubmit: (body: { name: string; wipLimit: number | null }) => void;
+}) {
+  const { t } = useTranslation();
+  const [name, setName] = React.useState(column.name);
+  const [wipLimit, setWipLimit] = React.useState(column.wipLimit?.toString() ?? "");
+  const [localError, setLocalError] = React.useState<string | null>(null);
+
+  const description = t("board.columnSettings.description", { column: column.name });
+
+  return (
+    <DialogFrame
+      description={description}
+      onClose={onClose}
+      title={t("board.columnSettings.title")}
+    >
+      <form
+        className="space-y-4 p-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+
+          if (!name.trim()) {
+            setLocalError(t("validation.required"));
+            return;
+          }
+
+          const parsedWipLimit = wipLimit.trim() ? Number(wipLimit) : null;
+
+          if (
+            parsedWipLimit !== null &&
+            (!Number.isInteger(parsedWipLimit) || parsedWipLimit < 1 || parsedWipLimit > 99)
+          ) {
+            setLocalError(t("board.columnSettings.invalidWip"));
+            return;
+          }
+
+          onSubmit({ name, wipLimit: parsedWipLimit });
+        }}
+      >
+        <p className="text-sm text-muted-foreground">{description}</p>
+        <div className="space-y-2">
+          <Label htmlFor="column-name">{t("board.columnSettings.name")}</Label>
+          <Input
+            id="column-name"
+            onChange={(event) => {
+              setName(event.target.value);
+              setLocalError(null);
+            }}
+            value={name}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="column-wip-limit">{t("board.columnSettings.wipLimit")}</Label>
+          <Input
+            id="column-wip-limit"
+            inputMode="numeric"
+            max={99}
+            min={1}
+            onChange={(event) => {
+              setWipLimit(event.target.value);
+              setLocalError(null);
+            }}
+            placeholder={t("board.columnSettings.noWipLimit")}
+            type="number"
+            value={wipLimit}
+          />
+          <p className="text-xs text-muted-foreground">{t("board.columnSettings.wipHelp")}</p>
+        </div>
+        {localError ? <InlineAlert>{localError}</InlineAlert> : null}
+        {error ? <InlineAlert>{getUserFacingApiError(error, t)}</InlineAlert> : null}
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button onClick={onClose} type="button" variant="outline">
+            {t("common.cancel")}
+          </Button>
+          <Button disabled={isSaving} type="submit">
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
+            {t("common.save")}
           </Button>
         </div>
       </form>
@@ -896,12 +1434,16 @@ function TaskDetailSheet({
 }) {
   const { i18n, t } = useTranslation();
   const task = useTaskDetail(taskId);
+  const aiSuggestions = useTaskAiSuggestions(taskId);
   const updateTask = useUpdateTaskMutation(board.id, taskId);
   const deleteTask = useDeleteTaskMutation(board.id);
   const moveTask = useMoveTaskMutation(board.id);
   const createChecklistItem = useCreateChecklistItemMutation(board.id, taskId);
   const updateChecklistItem = useUpdateChecklistItemMutation(board.id, taskId);
+  const deleteChecklistItem = useDeleteChecklistItemMutation(board.id, taskId);
   const createComment = useCreateCommentMutation(board.id, taskId);
+  const updateComment = useUpdateCommentMutation(board.id, taskId);
+  const deleteComment = useDeleteCommentMutation(board.id, taskId);
   const improveWithAi = useImproveTaskWithAiMutation(taskId);
   const applyAiSuggestion = useApplyAiSuggestionMutation(board.id, taskId);
   const rejectAiSuggestion = useRejectAiSuggestionMutation();
@@ -1002,7 +1544,10 @@ function TaskDetailSheet({
     moveTask.isPending ||
     createChecklistItem.isPending ||
     updateChecklistItem.isPending ||
-    createComment.isPending;
+    deleteChecklistItem.isPending ||
+    createComment.isPending ||
+    updateComment.isPending ||
+    deleteComment.isPending;
 
   return (
     <SheetFrame
@@ -1129,6 +1674,10 @@ function TaskDetailSheet({
               }}
               rejectError={rejectAiSuggestion.error}
               suggestion={aiSuggestion}
+              suggestions={aiSuggestions.data?.suggestions ?? []}
+              suggestionsError={aiSuggestions.error}
+              suggestionsLoading={aiSuggestions.isLoading}
+              onSelectSuggestion={setAiSuggestion}
               task={task.data}
             />
 
@@ -1204,12 +1753,19 @@ function TaskDetailSheet({
               addError={createChecklistItem.error}
               checklistTitle={checklistTitle}
               isAdding={createChecklistItem.isPending}
+              isDeleting={deleteChecklistItem.isPending}
               isUpdating={updateChecklistItem.isPending}
               onChecklistTitleChange={setChecklistTitle}
+              onDelete={(itemId) => deleteChecklistItem.mutate(itemId)}
+              onMove={(itemId, position) =>
+                updateChecklistItem.mutate({ itemId, body: { position } })
+              }
+              onRename={(itemId, title) => updateChecklistItem.mutate({ itemId, body: { title } })}
               onSubmit={handleChecklistSubmit}
               onToggle={(itemId, isDone) =>
                 updateChecklistItem.mutate({ itemId, body: { isDone: !isDone } })
               }
+              updateError={updateChecklistItem.error ?? deleteChecklistItem.error}
               task={task.data}
             />
 
@@ -1217,8 +1773,13 @@ function TaskDetailSheet({
               addError={createComment.error}
               commentBody={commentBody}
               isAdding={createComment.isPending}
+              isDeleting={deleteComment.isPending}
+              isUpdating={updateComment.isPending}
               onCommentBodyChange={setCommentBody}
+              onDelete={(commentId) => deleteComment.mutate(commentId)}
+              onEdit={(commentId, body) => updateComment.mutate({ commentId, body: { body } })}
               onSubmit={handleCommentSubmit}
+              updateError={updateComment.error ?? deleteComment.error}
               task={task.data}
             />
 
@@ -1260,8 +1821,17 @@ function TaskDetailSheet({
             {updateChecklistItem.error ? (
               <InlineAlert>{getUserFacingApiError(updateChecklistItem.error, t)}</InlineAlert>
             ) : null}
+            {deleteChecklistItem.error ? (
+              <InlineAlert>{getUserFacingApiError(deleteChecklistItem.error, t)}</InlineAlert>
+            ) : null}
             {createComment.error ? (
               <InlineAlert>{getUserFacingApiError(createComment.error, t)}</InlineAlert>
+            ) : null}
+            {updateComment.error ? (
+              <InlineAlert>{getUserFacingApiError(updateComment.error, t)}</InlineAlert>
+            ) : null}
+            {deleteComment.error ? (
+              <InlineAlert>{getUserFacingApiError(deleteComment.error, t)}</InlineAlert>
             ) : null}
             {deleteTask.error ? (
               <InlineAlert>{getUserFacingApiError(deleteTask.error, t)}</InlineAlert>
@@ -1348,10 +1918,17 @@ function AiImprovePanel({
   rejectError,
   onImprove,
   onApply,
-  onReject
+  onReject,
+  suggestions,
+  suggestionsLoading,
+  suggestionsError,
+  onSelectSuggestion
 }: {
   task: TaskDetail;
   suggestion: AiSuggestion | null;
+  suggestions: AiSuggestion[];
+  suggestionsLoading: boolean;
+  suggestionsError: unknown;
   isImproving: boolean;
   isApplying: boolean;
   isRejecting: boolean;
@@ -1361,8 +1938,9 @@ function AiImprovePanel({
   onImprove: () => void;
   onApply: () => void;
   onReject: () => void;
+  onSelectSuggestion: (suggestion: AiSuggestion) => void;
 }) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const isPending = suggestion?.status === "pending";
 
   return (
@@ -1396,6 +1974,58 @@ function AiImprovePanel({
         {improveError ? (
           <InlineAlert>{getUserFacingApiError(improveError, t, "ai")}</InlineAlert>
         ) : null}
+
+        <div className="space-y-2 rounded-md border border-border bg-card p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h4 className="text-sm font-semibold">{t("board.ai.history")}</h4>
+            <span className="text-xs text-muted-foreground">
+              {t("board.ai.historyCount", { count: suggestions.length })}
+            </span>
+          </div>
+          {suggestionsLoading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : null}
+          {suggestionsError ? (
+            <InlineAlert>{getUserFacingApiError(suggestionsError, t, "ai")}</InlineAlert>
+          ) : null}
+          {!suggestionsLoading && suggestions.length === 0 ? (
+            <EmptyDetailState>{t("board.ai.emptyHistory")}</EmptyDetailState>
+          ) : null}
+          {suggestions.length > 0 ? (
+            <ul className="space-y-2">
+              {suggestions.map((candidate) => (
+                <li key={candidate.id}>
+                  <button
+                    aria-pressed={suggestion?.id === candidate.id}
+                    className={cn(
+                      "flex w-full flex-col gap-1 rounded-md border px-3 py-2 text-left text-sm transition hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring",
+                      suggestion?.id === candidate.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-background"
+                    )}
+                    onClick={() => onSelectSuggestion(candidate)}
+                    type="button"
+                  >
+                    <span className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="min-w-0 break-words font-medium">
+                        {candidate.suggestedPayload.improvedTitle}
+                      </span>
+                      <span className="shrink-0 rounded border border-border px-2 py-0.5 text-xs text-muted-foreground">
+                        {t(`board.ai.status.${candidate.status}`)}
+                      </span>
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {candidate.model} / {formatTimestamp(candidate.createdAt, i18n.language)}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
 
         {suggestion ? (
           <div className="space-y-3 rounded-md border border-border bg-card p-3">
@@ -1541,22 +2171,37 @@ function ChecklistSection({
   task,
   checklistTitle,
   onChecklistTitleChange,
+  onDelete,
+  onMove,
+  onRename,
   onSubmit,
   onToggle,
   isAdding,
+  isDeleting,
   isUpdating,
-  addError
+  addError,
+  updateError
 }: {
   task: TaskDetail;
   checklistTitle: string;
   onChecklistTitleChange: (value: string) => void;
+  onDelete: (itemId: string) => void;
+  onMove: (itemId: string, position: number) => void;
+  onRename: (itemId: string, title: string) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onToggle: (itemId: string, isDone: boolean) => void;
   isAdding: boolean;
+  isDeleting: boolean;
   isUpdating: boolean;
   addError: unknown;
+  updateError: unknown;
 }) {
   const { t } = useTranslation();
+  const [editingItem, setEditingItem] = React.useState<{ id: string; title: string } | null>(null);
+  const [confirmDeleteItemId, setConfirmDeleteItemId] = React.useState<string | null>(null);
+  const sortedItems = [...task.checklistItems].sort(
+    (left, right) => left.position - right.position
+  );
 
   return (
     <DetailSection
@@ -1585,45 +2230,169 @@ function ChecklistSection({
           {t("board.detail.addChecklist")}
         </Button>
       </form>
-      {task.checklistItems.length > 0 ? (
+      {sortedItems.length > 0 ? (
         <ul className="space-y-2">
-          {task.checklistItems.map((item) => (
-            <li
-              className="flex items-start gap-3 rounded-md border border-border bg-card px-3 py-2"
-              key={item.id}
-            >
-              <button
-                aria-label={
-                  item.isDone
-                    ? t("board.detail.markChecklistOpen")
-                    : t("board.detail.markChecklistDone")
-                }
-                className="mt-0.5 text-muted-foreground hover:text-foreground disabled:opacity-50"
-                disabled={isUpdating}
-                onClick={() => onToggle(item.id, item.isDone)}
-                type="button"
+          {sortedItems.map((item, index) => {
+            const previousItem = sortedItems[index - 1] ?? null;
+            const nextItem = sortedItems[index + 1] ?? null;
+
+            return (
+              <li
+                className="flex items-start gap-3 rounded-md border border-border bg-card px-3 py-2"
+                key={item.id}
               >
-                {item.isDone ? (
-                  <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />
-                ) : (
-                  <Circle className="h-4 w-4" aria-hidden="true" />
-                )}
-              </button>
-              <span
-                className={cn(
-                  "text-sm leading-5",
-                  item.isDone ? "text-muted-foreground line-through" : "text-foreground"
-                )}
-              >
-                {item.title}
-              </span>
-            </li>
-          ))}
+                <button
+                  aria-label={
+                    item.isDone
+                      ? t("board.detail.markChecklistOpen")
+                      : t("board.detail.markChecklistDone")
+                  }
+                  className="mt-0.5 text-muted-foreground hover:text-foreground disabled:opacity-50"
+                  disabled={isUpdating}
+                  onClick={() => onToggle(item.id, item.isDone)}
+                  type="button"
+                >
+                  {item.isDone ? (
+                    <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />
+                  ) : (
+                    <Circle className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </button>
+                <div className="min-w-0 flex-1">
+                  {editingItem?.id === item.id ? (
+                    <form
+                      className="flex flex-col gap-2 sm:flex-row"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+
+                        if (!editingItem.title.trim()) {
+                          return;
+                        }
+
+                        onRename(item.id, editingItem.title);
+                        setEditingItem(null);
+                      }}
+                    >
+                      <Input
+                        aria-label={t("board.detail.editChecklistLabel")}
+                        onChange={(event) =>
+                          setEditingItem({ id: item.id, title: event.target.value })
+                        }
+                        value={editingItem.title}
+                      />
+                      <div className="flex gap-2">
+                        <Button disabled={isUpdating} size="sm" type="submit">
+                          {t("common.save")}
+                        </Button>
+                        <Button
+                          onClick={() => setEditingItem(null)}
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <span
+                      className={cn(
+                        "break-words text-sm leading-5",
+                        item.isDone ? "text-muted-foreground line-through" : "text-foreground"
+                      )}
+                    >
+                      {item.title}
+                    </span>
+                  )}
+                </div>
+                {editingItem?.id !== item.id ? (
+                  <div className="flex shrink-0 gap-1">
+                    <Button
+                      aria-label={t("board.detail.moveChecklistUp")}
+                      disabled={isUpdating || !previousItem}
+                      onClick={() => {
+                        if (previousItem) {
+                          onMove(item.id, previousItem.position - 1);
+                        }
+                      }}
+                      size="icon"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Button>
+                    <Button
+                      aria-label={t("board.detail.moveChecklistDown")}
+                      disabled={isUpdating || !nextItem}
+                      onClick={() => {
+                        if (nextItem) {
+                          onMove(item.id, nextItem.position + 1);
+                        }
+                      }}
+                      size="icon"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Button>
+                    {confirmDeleteItemId === item.id ? (
+                      <>
+                        <Button
+                          disabled={isDeleting}
+                          onClick={() => {
+                            onDelete(item.id);
+                            setConfirmDeleteItemId(null);
+                          }}
+                          size="sm"
+                          type="button"
+                          variant="destructive"
+                        >
+                          {t("common.delete")}
+                        </Button>
+                        <Button
+                          onClick={() => setConfirmDeleteItemId(null)}
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          aria-label={t("board.detail.editChecklist")}
+                          disabled={isUpdating}
+                          onClick={() => setEditingItem({ id: item.id, title: item.title })}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                        </Button>
+                        <Button
+                          aria-label={t("board.detail.deleteChecklist")}
+                          disabled={isDeleting}
+                          onClick={() => setConfirmDeleteItemId(item.id)}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <EmptyDetailState>{t("board.detail.emptyChecklist")}</EmptyDetailState>
       )}
       {addError ? <InlineAlert>{getUserFacingApiError(addError, t)}</InlineAlert> : null}
+      {updateError ? <InlineAlert>{getUserFacingApiError(updateError, t)}</InlineAlert> : null}
     </DetailSection>
   );
 }
@@ -1632,18 +2401,33 @@ function CommentsSection({
   task,
   commentBody,
   onCommentBodyChange,
+  onDelete,
+  onEdit,
   onSubmit,
   isAdding,
-  addError
+  isDeleting,
+  isUpdating,
+  addError,
+  updateError
 }: {
   task: TaskDetail;
   commentBody: string;
   onCommentBodyChange: (value: string) => void;
+  onDelete: (commentId: string) => void;
+  onEdit: (commentId: string, body: string) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   isAdding: boolean;
+  isDeleting: boolean;
+  isUpdating: boolean;
   addError: unknown;
+  updateError: unknown;
 }) {
   const { i18n, t } = useTranslation();
+  const [editingComment, setEditingComment] = React.useState<{
+    id: string;
+    body: string;
+  } | null>(null);
+  const [confirmDeleteCommentId, setConfirmDeleteCommentId] = React.useState<string | null>(null);
 
   return (
     <DetailSection
@@ -1670,9 +2454,100 @@ function CommentsSection({
                   {formatTimestamp(comment.createdAt, i18n.language)}
                 </time>
               </div>
-              <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-foreground">
-                {comment.body}
-              </p>
+              {editingComment?.id === comment.id ? (
+                <form
+                  className="mt-3 space-y-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+
+                    if (!editingComment.body.trim()) {
+                      return;
+                    }
+
+                    onEdit(comment.id, editingComment.body);
+                    setEditingComment(null);
+                  }}
+                >
+                  <Label className="sr-only" htmlFor={`edit-comment-${comment.id}`}>
+                    {t("board.detail.editCommentLabel")}
+                  </Label>
+                  <Textarea
+                    id={`edit-comment-${comment.id}`}
+                    onChange={(event) =>
+                      setEditingComment({ id: comment.id, body: event.target.value })
+                    }
+                    value={editingComment.body}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button disabled={isUpdating} size="sm" type="submit">
+                      {t("common.save")}
+                    </Button>
+                    <Button
+                      onClick={() => setEditingComment(null)}
+                      size="sm"
+                      type="button"
+                      variant="outline"
+                    >
+                      {t("common.cancel")}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-foreground">
+                    {comment.body}
+                  </p>
+                  <div className="mt-3 flex flex-wrap justify-end gap-1">
+                    {confirmDeleteCommentId === comment.id ? (
+                      <>
+                        <Button
+                          disabled={isDeleting}
+                          onClick={() => {
+                            onDelete(comment.id);
+                            setConfirmDeleteCommentId(null);
+                          }}
+                          size="sm"
+                          type="button"
+                          variant="destructive"
+                        >
+                          {t("common.delete")}
+                        </Button>
+                        <Button
+                          onClick={() => setConfirmDeleteCommentId(null)}
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          aria-label={t("board.detail.editComment")}
+                          disabled={isUpdating}
+                          onClick={() => setEditingComment({ id: comment.id, body: comment.body })}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                        </Button>
+                        <Button
+                          aria-label={t("board.detail.deleteComment")}
+                          disabled={isDeleting}
+                          onClick={() => setConfirmDeleteCommentId(comment.id)}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
             </li>
           ))}
         </ul>
@@ -1695,6 +2570,7 @@ function CommentsSection({
         </div>
       </form>
       {addError ? <InlineAlert>{getUserFacingApiError(addError, t)}</InlineAlert> : null}
+      {updateError ? <InlineAlert>{getUserFacingApiError(updateError, t)}</InlineAlert> : null}
     </DetailSection>
   );
 }
@@ -1856,11 +2732,13 @@ function BoardColumnView({
   column,
   tasks,
   onCreateTask,
+  onEditColumn,
   onOpenTask
 }: {
   column: BoardColumn;
   tasks: BoardTaskCard[];
   onCreateTask: (column: BoardColumn) => void;
+  onEditColumn: (column: BoardColumn) => void;
   onOpenTask: (taskId: string) => void;
 }) {
   const { t } = useTranslation();
@@ -1874,9 +2752,20 @@ function BoardColumnView({
       <header className="mb-3 space-y-2">
         <div className="flex items-start justify-between gap-3">
           <h2 className="min-w-0 break-words text-sm font-semibold">{column.name}</h2>
-          <span className="shrink-0 rounded bg-secondary px-2 py-1 text-xs text-muted-foreground">
-            {t("board.column.taskCount", { count: tasks.length })}
-          </span>
+          <div className="flex shrink-0 items-center gap-1">
+            <span className="rounded bg-secondary px-2 py-1 text-xs text-muted-foreground">
+              {t("board.column.taskCount", { count: tasks.length })}
+            </span>
+            <Button
+              aria-label={t("board.columnSettings.open")}
+              onClick={() => onEditColumn(column)}
+              size="icon"
+              type="button"
+              variant="ghost"
+            >
+              <Settings className="h-3.5 w-3.5" aria-hidden="true" />
+            </Button>
+          </div>
         </div>
         {column.wip.limit !== null ? (
           <div
@@ -1920,18 +2809,45 @@ function BoardColumnView({
 export function BoardPage({ boardId }: BoardPageProps) {
   const { t } = useTranslation();
   const board = useBoard(boardId);
+  const session = useSession();
   const moveTask = useMoveTaskMutation(boardId);
+  const updateColumn = useUpdateBoardColumnMutation(boardId);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [createColumn, setCreateColumn] = React.useState<BoardColumn | null>(null);
+  const [editingColumn, setEditingColumn] = React.useState<BoardColumn | null>(null);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
   const [filters, setFilters] = React.useState<BoardFiltersState>(() => readBoardFiltersFromUrl());
+  const [filtersOpen, setFiltersOpen] = React.useState(() => hasActiveBoardFilters(filters));
+  const [activeMobileColumnId, setActiveMobileColumnId] = React.useState<string | null>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const hasFilters = hasActiveBoardFilters(filters);
 
   React.useEffect(() => {
     writeBoardFiltersToUrl(filters);
   }, [filters]);
+
+  React.useEffect(() => {
+    if (!board.data) {
+      return;
+    }
+
+    setActiveMobileColumnId((current) => current ?? board.data.columns[0]?.id ?? null);
+  }, [board.data]);
+
+  React.useEffect(() => {
+    if (!board.data || filters.columnSystemKey === "all") {
+      return;
+    }
+
+    const filteredColumn = board.data.columns.find(
+      (column) => column.systemKey === filters.columnSystemKey
+    );
+
+    if (filteredColumn) {
+      setActiveMobileColumnId(filteredColumn.id);
+    }
+  }, [board.data, filters.columnSystemKey]);
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -1958,6 +2874,35 @@ export function BoardPage({ boardId }: BoardPageProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [board.data, createColumn, selectedTaskId]);
+
+  React.useEffect(() => {
+    const createFirstTask = () => {
+      const targetColumn =
+        board.data?.columns.find((column) => column.id === activeMobileColumnId) ??
+        board.data?.columns[0];
+
+      if (targetColumn) {
+        setCreateColumn(targetColumn);
+      }
+    };
+    const focusSearch = () => {
+      setFiltersOpen(true);
+      window.setTimeout(() => searchInputRef.current?.focus(), 0);
+    };
+    const clearFilters = () => {
+      setFilters(defaultBoardFilters);
+      setFiltersOpen(false);
+    };
+
+    window.addEventListener(boardCommandEvents.createTask, createFirstTask);
+    window.addEventListener(boardCommandEvents.focusSearch, focusSearch);
+    window.addEventListener(boardCommandEvents.clearFilters, clearFilters);
+    return () => {
+      window.removeEventListener(boardCommandEvents.createTask, createFirstTask);
+      window.removeEventListener(boardCommandEvents.focusSearch, focusSearch);
+      window.removeEventListener(boardCommandEvents.clearFilters, clearFilters);
+    };
+  }, [activeMobileColumnId, board.data]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveTaskId(String(event.active.id));
@@ -2030,6 +2975,15 @@ export function BoardPage({ boardId }: BoardPageProps) {
     (count, column) => count + (filteredTasksByColumn[column.id]?.length ?? 0),
     0
   );
+  const activeMobileColumn =
+    board.data.columns.find((column) => column.id === activeMobileColumnId) ??
+    board.data.columns[0] ??
+    null;
+  const currentUserId =
+    session.data?.user &&
+    board.data.availableMembers.some((member) => member.id === session.data?.user.id)
+      ? session.data.user.id
+      : null;
 
   return (
     <div className="space-y-5">
@@ -2040,40 +2994,119 @@ export function BoardPage({ boardId }: BoardPageProps) {
           </p>
           <h1 className="mt-1 break-words text-2xl font-semibold">{board.data.name}</h1>
         </div>
-        <p className="w-fit shrink-0 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-          {t("board.version", { version: board.data.version })}
-        </p>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Button
+            disabled={!board.data.columns[0]}
+            onClick={() => {
+              const firstColumn = board.data?.columns[0];
+
+              if (firstColumn) {
+                setCreateColumn(firstColumn);
+              }
+            }}
+            type="button"
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            {t("board.create.button")}
+          </Button>
+          <p className="w-fit rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
+            {t("board.version", { version: board.data.version })}
+          </p>
+        </div>
       </header>
       {moveTask.error ? (
         <InlineAlert>{getUserFacingApiError(moveTask.error, t)}</InlineAlert>
       ) : null}
       <BoardTips board={board.data} />
-      <BoardFilterBar
-        board={board.data}
-        filters={filters}
-        onChange={setFilters}
-        onReset={() => setFilters(defaultBoardFilters)}
-        resultCount={filteredTaskCount}
-        searchInputRef={searchInputRef}
-        totalCount={totalTaskCount}
-      />
+      <AiNextActionsPanel board={board.data} />
+      <section className="space-y-3">
+        <SavedViewsBar
+          board={board.data}
+          currentUserId={currentUserId}
+          filters={filters}
+          onApply={(nextFilters) => {
+            setFilters(nextFilters);
+            setFiltersOpen(hasActiveBoardFilters(nextFilters));
+          }}
+        />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button
+            onClick={() => setFiltersOpen((current) => !current)}
+            type="button"
+            variant={hasFilters ? "default" : "outline"}
+          >
+            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+            {filtersOpen ? t("board.filters.hide") : t("board.filters.show")}
+          </Button>
+          <p className="text-xs text-muted-foreground" aria-live="polite">
+            {t("board.filters.resultCount", { count: filteredTaskCount, total: totalTaskCount })}
+          </p>
+        </div>
+        {filtersOpen ? (
+          <BoardFilterBar
+            board={board.data}
+            filters={filters}
+            onChange={setFilters}
+            onReset={() => {
+              setFilters(defaultBoardFilters);
+              setFiltersOpen(false);
+            }}
+            resultCount={filteredTaskCount}
+            searchInputRef={searchInputRef}
+            totalCount={totalTaskCount}
+          />
+        ) : null}
+      </section>
       {hasFilters && filteredTaskCount === 0 ? (
         <div className="rounded-md border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
           {t("board.filters.empty")}
         </div>
       ) : null}
+      <div className="sticky top-16 z-10 -mx-4 flex gap-2 overflow-x-auto border-y border-border bg-background/95 px-4 py-2 backdrop-blur lg:hidden">
+        {board.data.columns.map((column) => (
+          <button
+            aria-pressed={activeMobileColumn?.id === column.id}
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium",
+              activeMobileColumn?.id === column.id
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-card text-muted-foreground"
+            )}
+            key={column.id}
+            onClick={() => setActiveMobileColumnId(column.id)}
+            type="button"
+          >
+            <span>{column.name}</span>
+            <span className="rounded bg-background/20 px-1.5 py-0.5 text-xs">
+              {(filteredTasksByColumn[column.id] ?? []).length}
+            </span>
+          </button>
+        ))}
+      </div>
       <DndContext
         collisionDetection={closestCorners}
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
         sensors={sensors}
       >
-        <div className="grid gap-4 lg:flex lg:overflow-x-auto lg:pb-4">
+        <div className="grid gap-4 lg:hidden">
+          {activeMobileColumn ? (
+            <BoardColumnView
+              column={activeMobileColumn}
+              onCreateTask={setCreateColumn}
+              onEditColumn={setEditingColumn}
+              onOpenTask={setSelectedTaskId}
+              tasks={filteredTasksByColumn[activeMobileColumn.id] ?? []}
+            />
+          ) : null}
+        </div>
+        <div className="hidden gap-4 lg:flex lg:overflow-x-auto lg:pb-4">
           {board.data.columns.map((column) => (
             <BoardColumnView
               column={column}
               key={column.id}
               onCreateTask={setCreateColumn}
+              onEditColumn={setEditingColumn}
               onOpenTask={setSelectedTaskId}
               tasks={filteredTasksByColumn[column.id] ?? []}
             />
@@ -2081,6 +3114,20 @@ export function BoardPage({ boardId }: BoardPageProps) {
         </div>
         <DragOverlay>{activeTask ? <TaskCard dragging task={activeTask} /> : null}</DragOverlay>
       </DndContext>
+      {editingColumn ? (
+        <ColumnSettingsDialog
+          column={editingColumn}
+          error={updateColumn.error}
+          isSaving={updateColumn.isPending}
+          onClose={() => setEditingColumn(null)}
+          onSubmit={(body) =>
+            updateColumn.mutate(
+              { columnId: editingColumn.id, body },
+              { onSuccess: () => setEditingColumn(null) }
+            )
+          }
+        />
+      ) : null}
       {createColumn ? (
         <CreateTaskDialog
           board={board.data}

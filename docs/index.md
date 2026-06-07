@@ -1,4 +1,4 @@
-# AgentBoard Documentation Index
+# ScopePilot Documentation Index
 
 Use this page as the main navigation hub. For current implementation truth, always
 start with [../STATUS.md](../STATUS.md).

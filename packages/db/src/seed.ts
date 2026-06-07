@@ -102,7 +102,7 @@ async function main() {
         await tx
           .insert(workspaces)
           .values({
-            name: "Scale Software Demo",
+            name: "ScopePilot Demo",
             slug: "scale-software-demo",
             createdBy: owner.id,
             isDemo: true,
@@ -111,7 +111,7 @@ async function main() {
           .onConflictDoUpdate({
             target: workspaces.slug,
             set: {
-              name: "Scale Software Demo",
+              name: "ScopePilot Demo",
               createdBy: owner.id,
               isDemo: true,
               updatedAt: now
@@ -146,8 +146,9 @@ async function main() {
           .values({
             workspaceId: workspace.id,
             slug: "ai-client-automation",
-            name: "AI Client Automation",
-            description: "Delivery board for an AI agency automation engagement.",
+            name: "Client Intake Automation",
+            description:
+              "A delivery project for turning client intake into a reliable AI-assisted workflow.",
             status: "active",
             createdBy: owner.id,
             updatedAt: now
@@ -155,8 +156,9 @@ async function main() {
           .onConflictDoUpdate({
             target: [projects.workspaceId, projects.slug],
             set: {
-              name: "AI Client Automation",
-              description: "Delivery board for an AI agency automation engagement.",
+              name: "Client Intake Automation",
+              description:
+                "A delivery project for turning client intake into a reliable AI-assisted workflow.",
               status: "active",
               createdBy: owner.id,
               updatedAt: now
@@ -173,8 +175,9 @@ async function main() {
             workspaceId: workspace.id,
             projectId: project.id,
             slug: "delivery-board",
-            name: "Delivery Board",
-            description: "Seeded Kanban board for recruiter demo review.",
+            name: "Scope Workflow",
+            description:
+              "A seeded delivery workflow with overload, blocked work, and review-ready scope examples.",
             version: 1,
             updatedAt: now
           })
@@ -182,8 +185,9 @@ async function main() {
             target: [boards.projectId, boards.slug],
             set: {
               workspaceId: workspace.id,
-              name: "Delivery Board",
-              description: "Seeded Kanban board for recruiter demo review.",
+              name: "Scope Workflow",
+              description:
+                "A seeded delivery workflow with overload, blocked work, and review-ready scope examples.",
               updatedAt: now
             }
           })
@@ -397,9 +401,9 @@ async function main() {
 
       const seededTasks = await Promise.all([
         upsertTask({
-          title: "Map client onboarding workflow",
+          title: "Map the client intake journey",
           description:
-            "Interview the operations lead and convert the current onboarding steps into a clear automation map.",
+            "Interview the operations lead and turn the current intake steps into a clear automation map.",
           columnKey: "backlog",
           priority: "medium",
           position: 0,
@@ -407,8 +411,9 @@ async function main() {
           createdBy: strategist.id
         }),
         upsertTask({
-          title: "Make this automation task clearer",
-          description: "Need better task for client thing. Maybe use AI and checklist.",
+          title: "Clarify the first automation brief",
+          description:
+            "The intake idea is still too broad. Use AI to turn it into a brief the team can review.",
           columnKey: "backlog",
           priority: "low",
           position: 1,
@@ -416,7 +421,7 @@ async function main() {
           createdBy: owner.id
         }),
         upsertTask({
-          title: "Draft agent handoff checklist",
+          title: "Draft implementation handoff checklist",
           description:
             "Define the minimum context an implementation agent needs before touching client automation code.",
           columnKey: "ready",
@@ -480,9 +485,9 @@ async function main() {
           startedAt: daysFromNow(-1)
         }),
         upsertTask({
-          title: "Review dashboard metric definitions",
+          title: "Review delivery metric definitions",
           description:
-            "Check that active, completed, overdue, blocked, and WIP calculations match the product docs.",
+            "Check that active, completed, overdue, blocked, and WIP calculations match the delivery rules.",
           columnKey: "review",
           priority: "medium",
           position: 0,
@@ -491,7 +496,7 @@ async function main() {
           startedAt: daysFromNow(-3)
         }),
         upsertTask({
-          title: "QA multilingual task detail copy",
+          title: "Review multilingual task detail copy",
           description:
             "Review English, Polish, and Czech UI labels for task properties and AI improvement actions.",
           columnKey: "review",
@@ -504,7 +509,7 @@ async function main() {
         upsertTask({
           title: "Resolve OpenAI quota limits for demo tenant",
           description:
-            "Confirm provider quota and fallback messaging before enabling public AI Improve in the demo.",
+            "Confirm provider quota and fallback messaging before enabling public AI clarification in the demo.",
           columnKey: "blocked",
           priority: "urgent",
           position: 0,
@@ -515,7 +520,7 @@ async function main() {
           startedAt: daysFromNow(-4)
         }),
         upsertTask({
-          title: "Ship discovery workshop template",
+          title: "Publish discovery workshop template",
           description:
             "Finalize the client workshop agenda and reusable task intake prompts for new automation projects.",
           columnKey: "done",
@@ -527,9 +532,9 @@ async function main() {
           completedAt: daysFromNow(-2)
         }),
         upsertTask({
-          title: "Create initial demo workspace seed",
+          title: "Create initial ScopePilot demo data",
           description:
-            "Prepare baseline data that shows WIP overload, blocked work, overdue risk, and completed delivery.",
+            "Prepare baseline data that shows overload, blocked work, overdue risk, and completed delivery.",
           columnKey: "done",
           priority: "medium",
           position: 1,
@@ -556,9 +561,9 @@ async function main() {
         { task: "Implement prompt evaluation dataset", userId: engineer.id },
         { task: "Connect Slack approval notifications", userId: engineer.id },
         { task: "Add retry policy for webhook worker", userId: engineer.id },
-        { task: "Review dashboard metric definitions", userId: reviewer.id },
-        { task: "QA multilingual task detail copy", userId: reviewer.id },
-        { task: "Draft agent handoff checklist", userId: strategist.id },
+        { task: "Review delivery metric definitions", userId: reviewer.id },
+        { task: "Review multilingual task detail copy", userId: reviewer.id },
+        { task: "Draft implementation handoff checklist", userId: strategist.id },
         { task: "Resolve OpenAI quota limits for demo tenant", userId: owner.id }
       ];
 
@@ -579,11 +584,11 @@ async function main() {
         { task: "Build invoice extraction agent prototype", label: "Automation" },
         { task: "Implement prompt evaluation dataset", label: "AI Assist" },
         { task: "Connect Slack approval notifications", label: "Automation" },
-        { task: "Review dashboard metric definitions", label: "QA" },
-        { task: "QA multilingual task detail copy", label: "QA" },
+        { task: "Review delivery metric definitions", label: "QA" },
+        { task: "Review multilingual task detail copy", label: "QA" },
         { task: "Resolve OpenAI quota limits for demo tenant", label: "Client Risk" },
-        { task: "Map client onboarding workflow", label: "Discovery" },
-        { task: "Make this automation task clearer", label: "AI Assist" }
+        { task: "Map the client intake journey", label: "Discovery" },
+        { task: "Clarify the first automation brief", label: "AI Assist" }
       ];
 
       for (const link of taskLabelLinks) {
@@ -651,19 +656,19 @@ async function main() {
           position: 1
         }),
         upsertChecklistItem({
-          taskTitle: "Draft agent handoff checklist",
+          taskTitle: "Draft implementation handoff checklist",
           title: "Add required repository context",
           position: 0,
           isDone: true
         }),
         upsertChecklistItem({
-          taskTitle: "Draft agent handoff checklist",
+          taskTitle: "Draft implementation handoff checklist",
           title: "Add acceptance criteria template",
           position: 1
         }),
         upsertChecklistItem({
-          taskTitle: "Make this automation task clearer",
-          title: "Use AI Improve to generate acceptance criteria",
+          taskTitle: "Clarify the first automation brief",
+          title: "Use AI to draft acceptance criteria",
           position: 0
         })
       ]);
@@ -704,9 +709,9 @@ async function main() {
           body: "Do not enable public AI actions until the missing-key and quota fallback states are verified."
         }),
         upsertComment({
-          taskTitle: "Make this automation task clearer",
+          taskTitle: "Clarify the first automation brief",
           authorId: strategist.id,
-          body: "This task is intentionally vague so the AI Improve flow has a useful before/after example."
+          body: "This task is intentionally broad so the AI clarification flow has a useful before-and-after example."
         })
       ]);
 
@@ -767,14 +772,14 @@ async function main() {
           message: "Task marked blocked while waiting for quota confirmation."
         }),
         upsertActivityEvent({
-          taskTitle: "Create initial demo workspace seed",
+          taskTitle: "Create initial ScopePilot demo data",
           actorId: engineer.id,
           type: "task.completed",
           message: "Task completed after seed data was prepared."
         })
       ]);
 
-      const aiExampleTask = taskFor("Make this automation task clearer");
+      const aiExampleTask = taskFor("Clarify the first automation brief");
       const existingSuggestion = await tx
         .select()
         .from(aiSuggestions)
@@ -796,7 +801,7 @@ async function main() {
             priority: aiExampleTask.priority
           },
           suggestedPayload: {
-            improvedTitle: "Clarify client automation requirements and acceptance criteria",
+            improvedTitle: "Clarify client intake automation requirements and acceptance criteria",
             improvedDescription:
               "Turn the vague automation request into a concise implementation brief for the client workflow.",
             acceptanceCriteria: [
@@ -820,7 +825,7 @@ async function main() {
           taskId: aiExampleTask.id,
           actorId: owner.id,
           type: "ai.suggestion_created",
-          message: "AI suggested improvements for this intentionally vague task.",
+          message: "AI suggested a clearer brief for this intentionally broad task.",
           metadata: { model: "gpt-5-nano" }
         });
       }
@@ -832,7 +837,7 @@ async function main() {
 
 main()
   .then(() => {
-    console.log("AgentBoard demo seed completed.");
+    console.log("ScopePilot demo seed completed.");
   })
   .catch((error: unknown) => {
     console.error(error);

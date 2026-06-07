@@ -198,38 +198,65 @@ If not authenticated: `401 UNAUTHORIZED`.
 
 ## Workspace/project contracts
 
-### GET /api/workspaces
-
-Response:
-
-```ts
-type WorkspaceListItem = {
-  id: ID;
-  name: string;
-  slug: string;
-  role: WorkspaceRole;
-  isDemo: boolean;
-};
-
-type WorkspacesResponse = ApiSuccess<WorkspaceListItem[]>;
-```
+Workspace membership is currently exposed through `SessionResponse.workspaces`.
 
 ### GET /api/workspaces/:workspaceId/projects
 
 Response:
 
 ```ts
-type ProjectListItem = {
+type ProjectPrimaryBoard = {
+  id: ID;
+  workspaceId: ID;
+  projectId: ID;
+  name: string;
+  slug: string;
+  version: number;
+  taskCount: number;
+  activeTaskCount: number;
+};
+
+type WorkspaceProject = {
   id: ID;
   workspaceId: ID;
   name: string;
+  slug: string;
   description: string | null;
   status: ProjectStatus;
-  boardId: ID | null;
+  createdAt: string;
   updatedAt: string;
+  primaryBoard: ProjectPrimaryBoard | null;
 };
 
-type ProjectsResponse = ApiSuccess<ProjectListItem[]>;
+type ProjectsResponse = ApiSuccess<{
+  projects: WorkspaceProject[];
+}>;
+```
+
+### GET /api/project-templates
+
+Response:
+
+```ts
+type ProjectTemplateKey =
+  | "blank"
+  | "ai-agency-delivery"
+  | "web-app-delivery"
+  | "qa-hardening"
+  | "discovery-sprint";
+
+type ProjectTemplateSummary = {
+  key: ProjectTemplateKey;
+  name: string;
+  description: string;
+  taskCount: number;
+  labelNames: string[];
+  recommended: boolean;
+};
+
+type ProjectTemplatesResponse = ApiSuccess<{
+  templates: ProjectTemplateSummary[];
+}>;
 ```
 
 ### POST /api/workspaces/:workspaceId/projects
@@ -239,16 +266,30 @@ Request:
 ```ts
 type CreateProjectRequest = {
   name: string;
-  description?: string;
-  createDefaultBoard?: boolean;
+  description?: string | null;
+  boardName?: string;
+  templateKey?: ProjectTemplateKey;
 };
 ```
 
 Response:
 
 ```ts
-type CreateProjectResponse = ApiSuccess<ProjectListItem>;
+type CreateProjectResponse = ApiSuccess<{
+  project: WorkspaceProject;
+}>;
 ```
+
+Rules:
+
+- User must be a member of the workspace.
+- Creation is transactional.
+- Each newly-created project receives one default board.
+- Default board columns are Backlog, Ready, In Progress, Review, Blocked, Done.
+- Creation ensures default labels exist.
+- Missing `templateKey` defaults to `blank`.
+- Non-blank templates seed initial tasks, labels, checklist items, and activity events
+  in the same transaction.
 
 ### PATCH /api/projects/:projectId
 
@@ -265,7 +306,9 @@ type UpdateProjectRequest = {
 Response:
 
 ```ts
-type UpdateProjectResponse = ApiSuccess<ProjectListItem>;
+type UpdateProjectResponse = ApiSuccess<{
+  project: WorkspaceProject;
+}>;
 ```
 
 ## Board snapshot contract
@@ -419,12 +462,13 @@ type TaskDetail = BoardTaskCard & {
 type TaskDetailResponse = ApiSuccess<TaskDetail>;
 ```
 
-### POST /api/boards/:boardId/tasks
+### POST /api/tasks
 
 Request:
 
 ```ts
 type CreateTaskRequest = {
+  boardId: ID;
   columnId: ID;
   title: string;
   description?: string | null;
@@ -523,6 +567,33 @@ type MoveTaskResponse = ApiSuccess<{
 }>;
 ```
 
+### PATCH /api/board-columns/:columnId
+
+Request:
+
+```ts
+type UpdateBoardColumnRequest = {
+  name?: string;
+  wipLimit?: number | null;
+};
+```
+
+Response:
+
+```ts
+type UpdateBoardColumnResponse = ApiSuccess<{
+  column: BoardColumn;
+  board: BoardSnapshot;
+}>;
+```
+
+Rules:
+
+- User must be a member of the column workspace.
+- Column must belong to an active board column.
+- Updates only display name and WIP limit in this slice.
+- Increments board version and returns a fresh board snapshot.
+
 ## Checklist contracts
 
 ### POST /api/tasks/:taskId/checklist-items
@@ -565,13 +636,14 @@ type UpdateChecklistResponse = ApiSuccess<{
 }>;
 ```
 
-### DELETE /api/checklist-items/:itemId
+### DELETE /api/tasks/checklist-items/:itemId
 
 Response:
 
 ```ts
 type DeleteChecklistResponse = ApiSuccess<{
   task: TaskDetail;
+  board: BoardSnapshot;
 }>;
 ```
 
@@ -596,7 +668,7 @@ type CreateCommentResponse = ApiSuccess<{
 }>;
 ```
 
-### PATCH /api/comments/:commentId
+### PATCH /api/tasks/comments/:commentId
 
 Request:
 
@@ -611,16 +683,18 @@ Response:
 ```ts
 type UpdateCommentResponse = ApiSuccess<{
   task: TaskDetail;
+  board: BoardSnapshot;
 }>;
 ```
 
-### DELETE /api/comments/:commentId
+### DELETE /api/tasks/comments/:commentId
 
 Response:
 
 ```ts
 type DeleteCommentResponse = ApiSuccess<{
   task: TaskDetail;
+  board: BoardSnapshot;
 }>;
 ```
 
@@ -735,6 +809,45 @@ Definitions:
 - WIP warnings use active task count and `board_columns.wip_limit`.
 - Due soon = active tasks due from today through the next 7 days.
 
+### GET /api/workspaces/:workspaceId/reports/weekly
+
+Query:
+
+```ts
+type WeeklyReportQuery = {
+  projectId?: ID;
+  weekStart?: "YYYY-MM-DD";
+};
+```
+
+Response:
+
+```ts
+type WeeklyReportResponse = ApiSuccess<{
+  workspaceId: ID;
+  projectId: ID | null;
+  generatedAt: string;
+  weekStart: string;
+  weekEnd: string;
+  newTasksCount: number;
+  completedTasksCount: number;
+  overdueTasksCount: number;
+  blockedTasksCount: number;
+  aiSuggestionsCount: number;
+  wipLimitWarnings: DashboardMetrics["wipLimitWarnings"];
+  dueSoonTasks: DashboardMetrics["dueSoonTasks"];
+  recentActivity: DashboardMetrics["recentActivity"];
+  summaryMarkdown: string;
+}>;
+```
+
+Rules:
+
+- User must be a member of the workspace.
+- Optional `projectId` must belong to the workspace.
+- The report is deterministic and DB-backed; it does not call OpenAI.
+- `summaryMarkdown` is copy-ready for weekly client/status updates.
+
 ## AI contracts
 
 ### POST /api/tasks/:taskId/ai/improve
@@ -781,6 +894,62 @@ Errors:
 - `SERVICE_UNAVAILABLE` if DB-backed routes are unavailable,
 - `VALIDATION_ERROR` if task is too short/invalid,
 - `RATE_LIMITED` if OpenAI reports rate/quota pressure.
+
+### POST /api/boards/:boardId/ai/next-actions
+
+Request:
+
+```ts
+type AiNextActionsRequest = {
+  focus?: string;
+  maxSuggestions?: number; // 1-5, defaults to 3
+};
+```
+
+Response:
+
+```ts
+type AiNextActionSuggestion = {
+  id: ID;
+  title: string;
+  description: string;
+  priority: TaskPriority;
+  targetColumnSystemKey: ColumnSystemKey;
+  acceptanceCriteria: string[];
+  checklistItems: string[];
+  riskNotes: string[];
+};
+
+type AiNextActionsResponse = ApiSuccess<{
+  boardId: ID;
+  model: string;
+  suggestions: AiNextActionSuggestion[];
+}>;
+```
+
+Rules:
+
+- User must be a member of the board workspace.
+- The frontend never calls OpenAI directly.
+- Suggestions are transient and are not saved until the user creates a task.
+- The UI creates tasks through the normal task API and then adds suggested checklist
+  items through the normal checklist API.
+
+### GET /api/tasks/:taskId/ai-suggestions
+
+Response:
+
+```ts
+type AiSuggestionsResponse = ApiSuccess<{
+  suggestions: AiSuggestion[];
+}>;
+```
+
+Rules:
+
+- User must be a member of the task workspace.
+- Returns suggestions for the requested task only, newest first.
+- This endpoint does not call OpenAI; it only reads persisted suggestions.
 
 ### POST /api/ai-suggestions/:suggestionId/apply
 

@@ -1,35 +1,35 @@
 {
   "app": {
-    "name": "AgentBoard",
-    "tagline": "Kanban wspierany AI dla agencji tworzących oprogramowanie AI",
-    "loading": "Ladowanie AgentBoard"
+    "name": "ScopePilot",
+    "tagline": "Klarowna dostawa dla zespołów AI software",
+    "loading": "Ładowanie ScopePilot"
   },
   "auth": {
     "login": {
-      "title": "Logowanie",
-      "description": "Uzyj konta AgentBoard albo rozpocznij odizolowana sesje demo.",
-      "submit": "Zaloguj",
+      "title": "Witaj ponownie",
+      "description": "Zaloguj się, aby kontynuować planowanie realnej pracy, albo otwórz świeżą przestrzeń demo.",
+      "submit": "Zaloguj się",
       "switchPrompt": "Nie masz jeszcze konta?",
-      "switchLink": "Utworz konto"
+      "switchLink": "Utwórz konto"
     },
     "register": {
-      "title": "Utworz konto",
-      "description": "Utworz workspace i zacznij od fundamentu podlaczonego do prawdziwego API.",
-      "submit": "Utworz konto",
-      "switchPrompt": "Masz juz konto?",
-      "switchLink": "Zaloguj"
+      "title": "Utwórz przestrzeń pracy",
+      "description": "Zacznij od prywatnego miejsca, w którym projekty, przepływy i zadania zapisują się od pierwszego dnia.",
+      "submit": "Utwórz konto",
+      "switchPrompt": "Masz już konto?",
+      "switchLink": "Zaloguj się"
     },
     "fields": {
-      "name": "Imie i nazwisko",
+      "name": "Imię i nazwisko",
       "email": "Email",
-      "password": "Haslo",
+      "password": "Hasło",
       "namePlaceholder": "Ada Lovelace",
       "emailPlaceholder": "ty@example.com",
-      "passwordPlaceholder": "Minimum 8 znakow"
+      "passwordPlaceholder": "Minimum 8 znaków"
     },
     "demo": {
-      "button": "Uruchom sesje demo",
-      "description": "Tworzy prawdziwa sesje demo, gdy baza danych jest dostepna."
+      "button": "Otwórz demo na żywych danych",
+      "description": "Uruchamia odizolowane demo z realnie zapisanymi projektami, zadaniami i stanem tablicy."
     },
     "logout": "Wyloguj",
     "protected": "Sprawdzanie sesji"
@@ -37,65 +37,79 @@
   "nav": {
     "home": "Start",
     "app": "Aplikacja",
-    "dashboard": "Dashboard",
-    "workspaces": "Workspace'y",
+    "dashboard": "Przegląd",
+    "workspaces": "Przestrzenie",
     "projects": "Projekty",
     "settings": "Ustawienia",
-    "openMenu": "Otworz nawigacje",
-    "closeMenu": "Zamknij nawigacje"
+    "openMenu": "Otwórz nawigację",
+    "closeMenu": "Zamknij nawigację"
   },
   "shell": {
-    "workspaceFallback": "Nie wybrano workspace'u",
-    "workspaceLabel": "Workspace",
-    "demoWorkspace": "Workspace demo",
-    "topbarTitle": "Workspace dostaw",
+    "workspaceFallback": "Nie wybrano przestrzeni dostaw",
+    "workspaceLabel": "Przestrzeń dostaw",
+    "demoWorkspace": "Przestrzeń demo",
+    "topbarTitle": "Centrum kontroli dostaw",
     "mobileMenu": "Nawigacja",
     "sessionLabel": "Sesja",
     "demoUser": "Demo"
   },
+  "command": {
+    "open": "Otwórz menu komend",
+    "label": "Komendy",
+    "title": "Szybkie akcje",
+    "shortcut": "Naciśnij Cmd/Ctrl+K, aby przejść do następnej przydatnej akcji.",
+    "dashboard": "Otwórz przegląd dostaw",
+    "projects": "Otwórz projekty",
+    "workspaces": "Otwórz przestrzeń dostaw",
+    "settings": "Otworz ustawienia",
+    "currentBoard": "Aktualny przepływ",
+    "createTask": "Dodaj zadanie do tego przepływu",
+    "focusSearch": "Przeszukaj ten przepływ",
+    "clearFilters": "Zresetuj filtry przepływu"
+  },
   "pages": {
     "home": {
-      "kicker": "Workspace dostaw AI gotowy do rekrutacyjnego przegladu",
-      "title": "AgentBoard",
-      "description": "Planuj prace AI software, wykrywaj ryzyka dostaw i zmieniaj surowe notatki zadan w jasniejsze briefy wdrozeniowe w jednym workflow z baza danych.",
-      "primaryAction": "Zaloguj",
-      "secondaryAction": "Utworz konto",
+      "kicker": "Mniej zgadywania. Jaśniejsza praca nad AI.",
+      "title": "ScopePilot",
+      "description": "Jedno miejsce, w którym zespół AI zamienia luźne pomysły w konkretne zadania, widzi ryzyko zanim urośnie i prowadzi projekty na podstawie realnie zapisanych danych.",
+      "primaryAction": "Zaloguj się",
+      "secondaryAction": "Utwórz przestrzeń",
       "proofBoard": {
-        "title": "Kanban z bazy danych",
-        "description": "Tworz, edytuj, przenos i archiwizuj zadania z utrwalonym stanem tablicy."
+        "title": "Przepływ, który pamięta kontekst",
+        "description": "Twórz, doprecyzowuj, przenoś i archiwizuj zadania bez gubienia operacyjnego tła."
       },
       "proofDashboard": {
-        "title": "Widocznosc dostaw",
-        "description": "Sledz aktywna prace, presje WIP, blokady, najblizsze terminy i ostatnia aktywnosc."
+        "title": "Czytelne sygnały dostawy",
+        "description": "Widzisz przeciążenie, blokady, poślizgi terminów i ostatnie ruchy przed kolejnym statusem."
       },
       "proofAi": {
-        "title": "Backendowa sciezka AI",
-        "description": "Ulepszaj surowe zadania przez API bez wystawiania kluczy OpenAI we frontendzie."
+        "title": "AI, które porządkuje zakres",
+        "description": "Zmieniaj niejasne notatki w briefy, kryteria akceptacji i kolejne kroki, trzymając sekrety po stronie serwera."
       }
     },
     "app": {
-      "title": "Przeglad workspace'u",
-      "description": "Uzyj tablicy i dashboardu, aby sprawdzic realny stan dostaw w tym workspace."
+      "title": "Przegląd przestrzeni dostaw",
+      "description": "Sprawdź obciążenie projektów, wróć do właściwego przepływu i podejmuj decyzje na aktualnych danych."
     },
     "workspaces": {
-      "title": "Workspace'y",
-      "description": "Lista workspace'ow zacznie sie w pozniejszym pionowym wycinku. Ta trasa jest celowo tylko powloka."
+      "title": "Przestrzenie dostaw",
+      "description": "To miejsce pokazuje aktywną przestrzeń zespołu lub sesji demo."
     },
     "projects": {
       "title": "Projekty",
-      "description": "Lista projektow zacznie sie w pozniejszym pionowym wycinku. Ta trasa jest celowo tylko powloka."
+      "description": "Twórz projekty klienckie lub wewnętrzne i otwieraj przepływ, który prowadzi pracę dalej."
     },
     "settings": {
       "title": "Ustawienia",
-      "description": "W Fazie 3 ustawienia ograniczaja sie do kontrolek powloki."
+      "description": "Dopasuj preferencje lokalne i sprawdź aktualny kontekst dostawy."
     },
     "boardPlaceholder": {
-      "title": "Tablica",
-      "description": "Modul tablicy zaczyna sie w Fazie 4."
+      "title": "Przepływ",
+      "description": "Otwórz przepływ projektu, aby planować, przenosić i doprecyzowywać zadania."
     },
     "notFound": {
       "title": "Nie znaleziono strony",
-      "description": "Ta trasa nie nalezy do aktualnej powloki."
+      "description": "Ta strona nie jest dostępna w aktualnym przepływie produktu."
     }
   },
   "theme": {
@@ -113,15 +127,26 @@
   "common": {
     "cancel": "Anuluj",
     "close": "Zamknij",
+    "delete": "Usun",
     "dismiss": "Zamknij wskazowke",
     "save": "Zapisz"
   },
   "board": {
-    "empty": "Brak danych tablicy.",
+    "empty": "Ten przepływ nie ma jeszcze zapisanych danych.",
     "version": "Wersja {{version}}",
     "column": {
-      "empty": "Brak zadan w tej kolumnie.",
+      "empty": "Nie ma tu jeszcze zadań.",
       "taskCount": "{{count}} zadan"
+    },
+    "columnSettings": {
+      "open": "Otworz ustawienia kolumny",
+      "title": "Ustawienia kolumny",
+      "description": "Zmień nazwę {{column}} albo ustaw limit pracy w toku.",
+      "name": "Nazwa kolumny",
+      "wipLimit": "Limit WIP",
+      "noWipLimit": "Bez limitu",
+      "wipHelp": "Zostaw puste, aby usunac limit WIP.",
+      "invalidWip": "Limit WIP musi byc liczba calkowita od 1 do 99."
     },
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
@@ -129,13 +154,15 @@
     },
     "filters": {
       "title": "Filtry tablicy",
+      "show": "Pokaz filtry",
+      "hide": "Ukryj filtry",
       "search": "Szukaj",
-      "searchPlaceholder": "Szukaj po tytule lub opisie",
+      "searchPlaceholder": "Szukaj po tytule lub szczegółach",
       "priority": "Priorytet",
       "allPriorities": "Wszystkie priorytety",
       "blocked": "Blokada",
       "blockedOptions": {
-        "all": "Cala praca",
+        "all": "Wszystkie zadania",
         "blocked": "Tylko zablokowane",
         "open": "Tylko otwarte"
       },
@@ -143,6 +170,8 @@
       "allAssignees": "Wszyscy przypisani",
       "label": "Etykieta",
       "allLabels": "Wszystkie etykiety",
+      "column": "Kolumna",
+      "allColumns": "Wszystkie kolumny",
       "due": "Termin",
       "dueOptions": {
         "all": "Dowolny termin",
@@ -153,21 +182,44 @@
       },
       "resultCount": "Pokazano {{count}} z {{total}} zadan",
       "reset": "Resetuj filtry",
-      "empty": "Zadne zadania nie pasuja do aktualnych filtrow."
+      "empty": "Żadne zadania nie pasują do tych filtrów."
+    },
+    "savedViews": {
+      "title": "Zapisane widoki",
+      "description": "Uzyj szybkich filtrow albo zapisz zestaw filtrow tej tablicy w tej przegladarce.",
+      "name": "Nazwa widoku",
+      "save": "Zapisz widok",
+      "delete": "Usun zapisany widok {{name}}",
+      "presets": {
+        "myWork": "Moja praca",
+        "blocked": "Zablokowane",
+        "dueSoon": "Termin wkrotce",
+        "overdue": "Po terminie",
+        "highPriority": "Wysoki priorytet",
+        "inProgress": "W toku"
+      }
+    },
+    "aiNext": {
+      "title": "Kolejne kroki AI",
+      "description": "Popros backendowy tor AI o sugestie kolejnych zadan. Nic nie zapisze sie, dopoki nie utworzysz zadania.",
+      "focusPlaceholder": "Opcjonalny fokus, np. odblokuj QA przed przekazaniem",
+      "suggest": "Zasugeruj",
+      "createTask": "Utworz zadanie",
+      "created": "Utworzone"
     },
     "tips": {
-      "title": "Wskazowki tablicy",
+      "title": "Wskazówki przepływu",
       "welcome": {
-        "title": "Zacznij od prawdziwej tablicy dostaw",
-        "body": "Uzyj filtrow, aby sprawdzac aktywna prace bez opuszczania stanu tablicy z API."
+        "title": "Zacznij od żywego przepływu dostaw",
+        "body": "Użyj filtrów, aby przejrzeć aktywną pracę bez odchodzenia od zapisanego stanu projektu."
       },
       "wip": {
-        "title": "Limity WIP pokazuja presje dostaw",
-        "body": "Gdy kolumna przekracza limit, ogranicz aktywna prace przed pobraniem kolejnych zadan."
+        "title": "Limity WIP pokazują presję dostawy",
+        "body": "Gdy kolumna przekracza limit, domknij lub odblokuj aktywną pracę przed wciąganiem kolejnych zadań."
       },
       "ai": {
-        "title": "AI Improve zostaje review-first",
-        "body": "Panel szczegolow moze przygotowac jasniejszy brief, ale zmiany sa stosowane dopiero po sprawdzeniu."
+        "title": "Sugestie AI zostają do decyzji zespołu",
+        "body": "ScopePilot może przygotować jaśniejszy brief, ale to zespół wybiera, co zostanie zastosowane."
       }
     },
     "shortcuts": {
@@ -175,18 +227,18 @@
       "newTask": "Skrot: N tworzy zadanie"
     },
     "create": {
-      "button": "Utworz zadanie",
-      "title": "Utworz zadanie",
+      "button": "Dodaj zadanie",
+      "title": "Dodaj zadanie",
       "column": "Nowe zadanie w {{column}}",
-      "submit": "Utworz"
+      "submit": "Dodaj zadanie"
     },
     "detail": {
-      "title": "Szczegoly zadania",
-      "description": "Sprawdzaj i edytuj pola zadania, wlascicieli, komentarze, checkliste, aktywnosc i sugestie AI.",
-      "loading": "Ladowanie szczegolow zadania",
+      "title": "Szczegóły zadania",
+      "description": "Doprecyzuj brief, odpowiedzialność, checklistę, dyskusję, aktywność i sugestie AI w jednym miejscu.",
+      "loading": "Ładowanie szczegółów zadania",
       "retry": "Ponow",
       "saving": "Zapisywanie zmian...",
-      "saveHint": "Zmiany zapisujesz z tego panelu szczegolow.",
+      "saveHint": "Każda zmiana tutaj aktualizuje zapisane zadanie.",
       "status": "Status",
       "assignees": "Przypisani",
       "labels": "Etykiety",
@@ -206,37 +258,48 @@
       "noDueDate": "Brak terminu",
       "blockedYes": "Tak",
       "blockedNo": "Nie",
-      "emptyAssignees": "Brak czlonkow workspace'u do przypisania.",
-      "emptyLabels": "Brak etykiet w tym workspace.",
-      "emptyDescription": "Brak opisu.",
-      "emptyChecklist": "Brak elementow checklisty.",
-      "emptyComments": "Brak komentarzy.",
-      "emptyActivity": "Brak aktywnosci.",
+      "emptyAssignees": "Brak osób z tej przestrzeni do przypisania.",
+      "emptyLabels": "Brak etykiet w tej przestrzeni dostaw.",
+      "emptyDescription": "Dodaj kontekst, żeby kolejna osoba wiedziała, jak wygląda dobra realizacja.",
+      "emptyChecklist": "Dodaj punkty checklisty, aby łatwiej domknąć pracę.",
+      "emptyComments": "Nie ma jeszcze dyskusji.",
+      "emptyActivity": "Nie ma jeszcze aktywności zadania.",
       "addChecklist": "Dodaj element",
       "addChecklistLabel": "Nowy element checklisty",
       "addChecklistPlaceholder": "Dodaj element checklisty",
+      "editChecklist": "Edytuj element checklisty",
+      "editChecklistLabel": "Tytul elementu checklisty",
+      "deleteChecklist": "Usun element checklisty",
+      "moveChecklistUp": "Przenies element checklisty wyzej",
+      "moveChecklistDown": "Przenies element checklisty nizej",
       "markChecklistDone": "Oznacz element checklisty jako gotowy",
       "markChecklistOpen": "Otworz ponownie element checklisty",
       "commentCount": "{{count}} komentarzy",
       "addComment": "Dodaj komentarz",
       "addCommentLabel": "Nowy komentarz",
-      "addCommentPlaceholder": "Napisz komentarz"
+      "addCommentPlaceholder": "Napisz komentarz",
+      "editComment": "Edytuj komentarz",
+      "editCommentLabel": "Tresc komentarza",
+      "deleteComment": "Usuń komentarz"
     },
     "ai": {
-      "title": "Ulepsz z AI",
+      "title": "Doprecyzuj z AI",
       "powered": "Wspierane przez AI",
-      "description": "Zmien surowe zadanie w jasniejszy brief wdrozeniowy z kryteriami akceptacji i podzadaniami.",
-      "improve": "Ulepsz z AI",
-      "loading": "AI poprawia klarownosc zadania...",
-      "original": "Oryginal",
-      "improved": "Ulepszone przez AI",
+      "description": "Zamień surowe zadanie w ostrzejszy brief z kryteriami akceptacji, kolejnymi krokami i ryzykami.",
+      "improve": "Doprecyzuj z AI",
+      "loading": "Tworzenie jaśniejszego zadania...",
+      "original": "Oryginał",
+      "improved": "Sugerowany brief",
       "acceptanceCriteria": "Kryteria akceptacji",
-      "suggestedChecklist": "Sugerowana checklista",
+      "suggestedChecklist": "Sugerowane kolejne kroki",
       "riskNotes": "Notatki o ryzykach",
       "recommendedPriority": "Rekomendowany priorytet",
+      "history": "Historia sugestii",
+      "historyCount": "{{count}} sugestii",
+      "emptyHistory": "Nie ma jeszcze sugestii AI.",
       "apply": "Zastosuj sugestie",
       "reject": "Odrzuc sugestie",
-      "titleRequired": "Zadanie potrzebuje co najmniej tytulu, zanim AI je ulepszy.",
+      "titleRequired": "Dodaj tytuł zadania, zanim poprosisz AI o doprecyzowanie.",
       "emptyAcceptanceCriteria": "AI nie zaproponowalo kryteriow akceptacji.",
       "emptyChecklist": "AI nie zaproponowalo elementow checklisty.",
       "emptyRiskNotes": "AI nie zaproponowalo notatek o ryzykach.",
@@ -248,11 +311,11 @@
         "failed": "Nieudana"
       },
       "reviewed": {
-        "accepted": "Ta sugestia AI zostala zastosowana.",
-        "rejected": "Ta sugestia AI zostala odrzucona.",
-        "partially_applied": "Ta sugestia AI zostala czesciowo zastosowana.",
-        "failed": "Ta sugestia AI nie powiodla sie.",
-        "pending": "Ta sugestia AI czeka na sprawdzenie."
+        "accepted": "Ta sugestia została zastosowana.",
+        "rejected": "Ta sugestia została odrzucona.",
+        "partially_applied": "Ta sugestia została częściowo zastosowana.",
+        "failed": "Ta sugestia się nie powiodła.",
+        "pending": "Ta sugestia czeka na sprawdzenie."
       }
     },
     "activity": {
@@ -273,12 +336,12 @@
     "delete": {
       "button": "Usun zadanie",
       "title": "Usun zadanie",
-      "description": "To archiwizuje zadanie i usuwa je z tablicy.",
+      "description": "To archiwizuje zadanie i usuwa je z aktywnego przepływu.",
       "confirm": "Usun"
     },
     "move": {
       "label": "Przenies do",
-      "mobileHint": "Na telefonie uzyj tej kontrolki zamiast przeciagania."
+      "mobileHint": "Na telefonie użyj tej kontrolki, gdy przeciąganie jest niewygodne."
     },
     "task": {
       "title": "Tytul",
@@ -302,55 +365,142 @@
       "dragHint": "Przeciagnij, aby przeniesc zadanie"
     }
   },
+  "projects": {
+    "eyebrow": "Portfolio projektów",
+    "title": "Projekty",
+    "subtitle": "Utwórz projekt, otwórz jego przepływ i utrzymuj przegląd dostaw zgodny z tym, co zespół naprawdę robi.",
+    "listLabel": "Lista projektów",
+    "updated": "Zaktualizowano {{date}}",
+    "openBoard": "Otwórz przepływ",
+    "emptyDescription": "Brak opisu.",
+    "status": {
+      "active": "Aktywny",
+      "archived": "Zarchiwizowany"
+    },
+    "fields": {
+      "name": "Nazwa projektu",
+      "namePlaceholder": "Wdrozenie automatyzacji klienta",
+      "description": "Opis",
+      "descriptionPlaceholder": "Zakres tego projektu dostaw",
+      "boardName": "Nazwa przepływu",
+      "boardNamePlaceholder": "Domyślnie nazwa projektu + Workflow"
+    },
+    "templates": {
+      "label": "Szablon projektu",
+      "description": "Wypelnij pierwszy przeplyw gotowymi zadaniami, etykietami i checklistami.",
+      "recommended": "Rekomendowany",
+      "taskCount": "{{count}} zadan"
+    },
+    "actions": {
+      "create": "Nowy projekt",
+      "edit": "Edytuj",
+      "archive": "Archiwizuj",
+      "restore": "Przywroc",
+      "openBoard": "Otwórz przepływ",
+      "dashboard": "Przegląd"
+    },
+    "dialog": {
+      "createTitle": "Nowy projekt",
+      "editTitle": "Edytuj projekt",
+      "description": "Zmiany projektu zapisują się w danych tej przestrzeni."
+    },
+    "create": {
+      "button": "Nowy projekt",
+      "title": "Nowy projekt",
+      "description": "Utwórz projekt z gotowym przepływem dostaw.",
+      "submit": "Utworz projekt"
+    },
+    "board": {
+      "taskCount": "{{count}} zadan, {{active}} aktywne",
+      "missing": "Ten projekt nie ma jeszcze przepływu."
+    },
+    "card": {
+      "noDescription": "Brak opisu.",
+      "updated": "Zaktualizowano {{date}}",
+      "board": "Przepływ",
+      "noBoard": "Brak przepływu",
+      "tasks": "Zadania",
+      "activeTasks": "Aktywne"
+    },
+    "sections": {
+      "active": "Aktywne projekty",
+      "archived": "Zarchiwizowane projekty"
+    },
+    "empty": {
+      "title": "Brak projektow",
+      "description": "Utwórz pierwszy projekt w tej przestrzeni, aby otworzyć przepływ i dodać zadania."
+    },
+    "errors": {
+      "noWorkspace": "Wybierz albo utwórz przestrzeń dostaw przed tworzeniem projektów."
+    }
+  },
+  "workspace": {
+    "title": "Przegląd przestrzeni dostaw",
+    "subtitle": "Sprawdź obciążenie projektów i przejdź do pierwszego aktywnego przepływu.",
+    "actions": {
+      "continueBoard": "Kontynuuj przepływ"
+    },
+    "metrics": {
+      "activeProjects": "Aktywne projekty",
+      "totalTasks": "Wszystkie zadania",
+      "activeTasks": "Aktywne zadania"
+    }
+  },
   "settings": {
-    "eyebrow": "Kontrolki workspace'u",
+    "eyebrow": "Preferencje produktu",
     "title": "Ustawienia",
-    "subtitle": "Dostosuj lokalne preferencje oraz sprawdz aktualny workspace i status wdrozenia.",
+    "subtitle": "Dopasuj interfejs w tej przeglądarce i sprawdź aktywną przestrzeń dostaw.",
     "preferences": {
       "title": "Preferencje",
-      "description": "Ustawienia przegladarki dla tej sesji AgentBoard.",
+      "description": "Ustawienia przeglądarki dla tej sesji ScopePilot.",
       "theme": "Motyw",
       "themeHelp": "Zapisywany lokalnie i stosowany od razu.",
       "language": "Jezyk",
       "languageHelp": "Aktualizuje widoczna tresc produktu w aplikacji."
     },
     "workspace": {
-      "title": "Workspace",
-      "description": "Kontekst aktualnej sesji z uwierzytelnionego API.",
-      "name": "Workspace",
+      "title": "Przestrzeń dostaw",
+      "description": "Kontekst aktualnej sesji z zalogowanego konta.",
+      "name": "Przestrzeń dostaw",
       "mode": "Tryb",
-      "none": "Nie wybrano workspace'u",
-      "demo": "Workspace demo",
-      "standard": "Standardowy workspace",
-      "demoNote": "Tryb demo uzywa prawdziwych utrwalonych danych w odizolowanym workspace demo."
+      "none": "Nie wybrano przestrzeni dostaw",
+      "demo": "Przestrzeń demo",
+      "standard": "Standardowa przestrzeń",
+      "demoNote": "Tryb demo używa realnie zapisanych danych w odizolowanej przestrzeni."
     },
     "deployment": {
-      "title": "Status wdrozenia",
-      "description": "Zasady operacyjne dla tego trybu dostarczania produktu.",
-      "status": "Wdrozenie produkcyjne pozostaje zaparkowane.",
-      "note": "W tym trybie nie wolno zmieniac live servera. Znany blocker Coolify/Traefik pozostaje opisany do pozniejszego passu deployment-readiness."
+      "title": "Status środowiska",
+      "description": "Notatki operacyjne dla aktualnego środowiska.",
+      "status": "Produkcja działa z odzyskanego runtime'u.",
+      "note": "Sekrety zostają po stronie serwera, a zmiany wdrożeniowe powinny przejść udokumentowane checki."
     }
   },
   "dashboard": {
-    "eyebrow": "Widok operacyjny agencji",
-    "title": "Dashboard",
-    "subtitle": "Kompaktowy widok z bazy danych: obciazenie dostaw, presja WIP, najblizsze ryzyka i ostatnia praca w workspace.",
-    "metrics": "Metryki dashboardu",
+    "eyebrow": "Przegląd dostaw",
+    "title": "Przegląd dostaw",
+    "subtitle": "Kompaktowy obraz obciążenia, presji WIP, najbliższych ryzyk i ostatnich ruchów w przestrzeni dostaw.",
+    "projectSubtitle": "Skupiony przegląd dostawy dla {{project}}.",
+    "projectFilter": {
+      "label": "Projekt",
+      "all": "Wszystkie projekty",
+      "openBoard": "Otwórz przepływ"
+    },
+    "metrics": "Metryki dostaw",
     "cards": {
       "totalActiveTasks": "Aktywne zadania",
-      "totalActiveTasksHelper": "Otwarta praca poza kolumnami ukonczenia",
+      "totalActiveTasksHelper": "Praca, która nadal wymaga ruchu",
       "completedTasks": "Ukonczone zadania",
-      "completedTasksHelper": "Zadania w kolumnach completes-work",
+      "completedTasksHelper": "Praca oznaczona jako ukończona",
       "overdueTasks": "Po terminie",
       "overdueTasksHelper": "Otwarte zadania po terminie",
       "blockedTasks": "Zablokowane",
-      "blockedTasksHelper": "Flaga blokady albo kolumna blokujaca",
+      "blockedTasksHelper": "Zadania oznaczone lub zaparkowane jako zablokowane",
       "completionRate": "Stopien ukonczenia",
       "completionRateHelper": "Ukonczone ze wszystkich sledzonych zadan"
     },
     "wip": {
       "title": "Ostrzezenia WIP",
-      "description": "Kolumny, w ktorych liczba aktywnych zadan przekracza limit WIP.",
+      "description": "Kolumny, w których aktywna praca przekracza uzgodniony limit.",
       "count": "{{count}} / {{limit}} aktywne",
       "context": "{{project}} / {{board}} przekracza limit o {{overBy}}.",
       "empty": "Zaden limit WIP nie jest teraz przekroczony."
@@ -360,10 +510,10 @@
       "description": "Aktywna praca pogrupowana wedlug priorytetu."
     },
     "columns": {
-      "title": "Zadania wedlug statusu",
-      "description": "Rozklad aktywnych zadan po kolumnach tablic.",
+      "title": "Zadania według etapu przepływu",
+      "description": "Rozkład aktywnych zadań po kolumnach przepływu.",
       "activeCount": "{{count}} aktywne",
-      "empty": "Brak dostepnych kolumn tablicy."
+      "empty": "Brak dostępnych kolumn przepływu."
     },
     "dueSoon": {
       "title": "Wkrotce termin",
@@ -373,17 +523,31 @@
     },
     "activity": {
       "title": "Ostatnia aktywnosc",
-      "description": "Najnowsze zdarzenia zadan w tym workspace.",
+      "description": "Najnowsze zdarzenia zadań w tej przestrzeni dostaw.",
       "empty": "Brak ostatniej aktywnosci zadan."
     },
+    "weekly": {
+      "title": "Raport tygodniowy",
+      "description": "Gotowe do skopiowania podsumowanie operacyjne tego tygodnia.",
+      "copy": "Kopiuj raport",
+      "copied": "Skopiowano",
+      "metrics": {
+        "newTasksCount": "Nowe",
+        "completedTasksCount": "Ukonczone",
+        "blockedTasksCount": "Zablokowane",
+        "overdueTasksCount": "Po terminie",
+        "aiSuggestionsCount": "Sugestie AI"
+      }
+    },
     "empty": {
-      "title": "Brak danych dashboardu",
-      "description": "Utworz prawdziwe zadania na tablicy w tym workspace, a dashboard wypelni sie danymi z bazy."
+      "title": "Brak danych dostawy",
+      "description": "Utwórz zadania projektu w tej przestrzeni, a przegląd uzupełni się automatycznie.",
+      "action": "Utwórz projekt"
     },
     "errors": {
-      "dbUnavailable": "Metryki dashboardu wymagaja bazy danych. Skonfiguruj bezpieczny lokalny PostgreSQL DATABASE_URL i sprobuj ponownie. ID zadania: {{requestId}}.",
-      "emptyResponse": "Odpowiedz dashboardu byla pusta.",
-      "noWorkspace": "Wybierz albo utworz workspace, aby zobaczyc metryki dashboardu."
+      "dbUnavailable": "Metryki dostaw wymagają działającego połączenia z bazą danych. Skonfiguruj bezpieczny lokalny PostgreSQL DATABASE_URL i spróbuj ponownie. ID żądania: {{requestId}}.",
+      "emptyResponse": "Odpowiedź przeglądu dostaw była pusta.",
+      "noWorkspace": "Wybierz albo utwórz przestrzeń dostaw, aby zobaczyć metryki."
     }
   },
   "states": {
@@ -396,7 +560,7 @@
     "aiUnavailable": "AI jest niedostepne. Zadanie nie zostalo zmienione. ID zadania: {{requestId}}.",
     "aiRateLimited": "Osiagnieto limit AI lub limit kosztow. Zadanie nie zostalo zmienione. ID zadania: {{requestId}}.",
     "conflict": "Takie konto lub zasob juz istnieje.",
-    "serviceUnavailable": "Trasy wymagajace bazy danych sa teraz niedostepne. Skonfiguruj bezpieczny lokalny DATABASE_URL PostgreSQL dla auth i sesji demo. ID zadania: {{requestId}}.",
+    "serviceUnavailable": "Ścieżki z zapisem danych są teraz niedostępne. Skonfiguruj bezpieczny lokalny PostgreSQL DATABASE_URL dla logowania i sesji demo. ID żądania: {{requestId}}.",
     "unauthorized": "Zaloguj sie, aby kontynuowac.",
     "unexpected": "Cos poszlo nie tak. Sprobuj ponownie.",
     "validation": "Sprawdz pola formularza i sprobuj ponownie."

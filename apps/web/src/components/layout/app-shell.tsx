@@ -1,12 +1,17 @@
 import type { SessionResponse } from "@agentboard/shared";
-import { Link, Outlet } from "@tanstack/react-router";
+import { Link, Outlet, useNavigate } from "@tanstack/react-router";
 import {
   BriefcaseBusiness,
+  Command,
   FolderKanban,
   KanbanSquare,
   LayoutDashboard,
+  type LucideIcon,
   Menu,
+  Plus,
+  Search,
   Settings,
+  SlidersHorizontal,
   X
 } from "lucide-react";
 import * as React from "react";
@@ -28,6 +33,12 @@ const navItems = [
   { to: "/app/projects", labelKey: "nav.projects", Icon: FolderKanban },
   { to: "/app/settings", labelKey: "nav.settings", Icon: Settings }
 ] as const;
+
+const boardCommandEvents = {
+  createTask: "agentboard:board-create-task",
+  focusSearch: "agentboard:board-focus-search",
+  clearFilters: "agentboard:board-clear-filters"
+} as const;
 
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation();
@@ -54,8 +65,11 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
 export function AppShell({ session }: AppShellProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [commandOpen, setCommandOpen] = React.useState(false);
   const mobileTitleId = React.useId();
+  const commandTitleId = React.useId();
   const activeWorkspace =
     session.workspaces.find((workspace) => workspace.id === session.activeWorkspaceId) ??
     session.workspaces[0] ??
@@ -75,6 +89,30 @@ export function AppShell({ session }: AppShellProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mobileOpen]);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setCommandOpen((current) => !current);
+      }
+
+      if (event.key === "Escape") {
+        setCommandOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const currentPath = typeof window === "undefined" ? "" : window.location.pathname;
+  const isBoardRoute = /^\/app\/boards\/[^/]+$/.test(currentPath);
+  const runCommand = (command: () => void) => {
+    command();
+    setCommandOpen(false);
+    setMobileOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-muted/20">
@@ -138,6 +176,7 @@ export function AppShell({ session }: AppShellProps) {
             <div className="mt-auto space-y-3 pt-6">
               <LanguageSwitch />
               <ThemeSwitch />
+              <UserSession session={session} />
             </div>
           </div>
         </div>
@@ -164,6 +203,16 @@ export function AppShell({ session }: AppShellProps) {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
+            <Button
+              aria-label={t("command.open")}
+              onClick={() => setCommandOpen(true)}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <Command className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">{t("command.label")}</span>
+            </Button>
             <div className="hidden md:block">
               <LanguageSwitch />
             </div>
@@ -177,6 +226,111 @@ export function AppShell({ session }: AppShellProps) {
           <Outlet />
         </main>
       </div>
+      {commandOpen ? (
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-foreground/35 p-3 pt-20 backdrop-blur-sm">
+          <section
+            aria-labelledby={commandTitleId}
+            aria-modal="true"
+            className="w-full max-w-xl overflow-hidden rounded-lg border border-border bg-card shadow-shell"
+            role="dialog"
+          >
+            <header className="flex items-center justify-between gap-3 border-b border-border p-4">
+              <div className="min-w-0">
+                <h2 className="text-base font-semibold" id={commandTitleId}>
+                  {t("command.title")}
+                </h2>
+                <p className="mt-1 text-xs text-muted-foreground">{t("command.shortcut")}</p>
+              </div>
+              <Button
+                aria-label={t("common.close")}
+                onClick={() => setCommandOpen(false)}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </Button>
+            </header>
+            <div className="grid gap-1 p-2">
+              <CommandButton
+                Icon={LayoutDashboard}
+                label={t("command.dashboard")}
+                onClick={() => runCommand(() => void navigate({ to: "/app/dashboard" }))}
+              />
+              <CommandButton
+                Icon={FolderKanban}
+                label={t("command.projects")}
+                onClick={() => runCommand(() => void navigate({ to: "/app/projects" }))}
+              />
+              <CommandButton
+                Icon={BriefcaseBusiness}
+                label={t("command.workspaces")}
+                onClick={() => runCommand(() => void navigate({ to: "/app/workspaces" }))}
+              />
+              <CommandButton
+                Icon={Settings}
+                label={t("command.settings")}
+                onClick={() => runCommand(() => void navigate({ to: "/app/settings" }))}
+              />
+              <div className="my-1 border-t border-border" />
+              <CommandButton
+                Icon={KanbanSquare}
+                disabled={!isBoardRoute}
+                label={t("command.currentBoard")}
+                onClick={() => runCommand(() => undefined)}
+              />
+              <CommandButton
+                Icon={Plus}
+                disabled={!isBoardRoute}
+                label={t("command.createTask")}
+                onClick={() =>
+                  runCommand(() => window.dispatchEvent(new Event(boardCommandEvents.createTask)))
+                }
+              />
+              <CommandButton
+                Icon={Search}
+                disabled={!isBoardRoute}
+                label={t("command.focusSearch")}
+                onClick={() =>
+                  runCommand(() => window.dispatchEvent(new Event(boardCommandEvents.focusSearch)))
+                }
+              />
+              <CommandButton
+                Icon={SlidersHorizontal}
+                disabled={!isBoardRoute}
+                label={t("command.clearFilters")}
+                onClick={() =>
+                  runCommand(() => window.dispatchEvent(new Event(boardCommandEvents.clearFilters)))
+                }
+              />
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
+  );
+}
+
+function CommandButton({
+  Icon,
+  label,
+  onClick,
+  disabled
+}: {
+  Icon: LucideIcon;
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      className="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-medium text-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:text-muted-foreground disabled:opacity-60"
+      disabled={disabled}
+      onClick={onClick}
+      type="button"
+    >
+      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+      <span className="min-w-0 break-words">{label}</span>
+    </button>
   );
 }

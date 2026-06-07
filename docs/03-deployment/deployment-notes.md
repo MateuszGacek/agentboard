@@ -89,6 +89,7 @@ redeploy.
 Optional future AI variables:
 
 ```txt
+AI_FEATURE_ENABLED=true
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-nano
 OPENAI_TIMEOUT_MS=20000

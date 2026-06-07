@@ -1,20 +1,20 @@
 {
   "app": {
-    "name": "AgentBoard",
-    "tagline": "AI Kanban pro agentury vyvijejici AI software",
-    "loading": "Nacitani AgentBoardu"
+    "name": "ScopePilot",
+    "tagline": "Jasnejsi dodavka pro AI software tymy",
+    "loading": "Nacitani ScopePilotu"
   },
   "auth": {
     "login": {
-      "title": "Prihlaseni",
-      "description": "Pouzijte ucet AgentBoard nebo spustte izolovanou demo relaci.",
+      "title": "Vitejte zpet",
+      "description": "Prihlaste se a pokracujte v planovani skutecne prace, nebo otevrite cisty demo prostor.",
       "submit": "Prihlasit se",
       "switchPrompt": "Jeste nemate ucet?",
       "switchLink": "Vytvorit ucet"
     },
     "register": {
-      "title": "Vytvorit ucet",
-      "description": "Vytvorte workspace a zacnete na zakladu napojenem na skutecne API.",
+      "title": "Vytvorit pracovni prostor",
+      "description": "Zacnete v soukromem delivery prostoru, kde se projekty, workflow a ukoly ukladaji od prvniho dne.",
       "submit": "Vytvorit ucet",
       "switchPrompt": "Uz mate ucet?",
       "switchLink": "Prihlasit se"
@@ -28,8 +28,8 @@
       "passwordPlaceholder": "Minimum 8 znaku"
     },
     "demo": {
-      "button": "Spustit demo relaci",
-      "description": "Vytvori skutecnou demo relaci, kdyz je databaze dostupna."
+      "button": "Otevrit zive demo",
+      "description": "Otevre izolovane demo se skutecne ulozenymi projekty, ukoly a stavem workflow."
     },
     "logout": "Odhlasit se",
     "protected": "Kontrola relace"
@@ -37,65 +37,79 @@
   "nav": {
     "home": "Uvod",
     "app": "Aplikace",
-    "dashboard": "Dashboard",
-    "workspaces": "Workspaces",
+    "dashboard": "Prehled",
+    "workspaces": "Prostory",
     "projects": "Projekty",
     "settings": "Nastaveni",
     "openMenu": "Otevrit navigaci",
     "closeMenu": "Zavrit navigaci"
   },
   "shell": {
-    "workspaceFallback": "Neni vybran workspace",
-    "workspaceLabel": "Workspace",
-    "demoWorkspace": "Demo workspace",
-    "topbarTitle": "Delivery workspace",
+    "workspaceFallback": "Neni vybran delivery prostor",
+    "workspaceLabel": "Delivery prostor",
+    "demoWorkspace": "Demo prostor",
+    "topbarTitle": "Ridici mistnost dodavky",
     "mobileMenu": "Navigace",
     "sessionLabel": "Relace",
     "demoUser": "Demo"
   },
+  "command": {
+    "open": "Otevrit prikazove menu",
+    "label": "Prikazy",
+    "title": "Rychle akce",
+    "shortcut": "Stisknete Cmd/Ctrl+K a prejdete k dalsi uzitecne akci.",
+    "dashboard": "Otevrit prehled dodavky",
+    "projects": "Otevrit projekty",
+    "workspaces": "Otevrit delivery prostor",
+    "settings": "Otevrit nastaveni",
+    "currentBoard": "Aktualni workflow",
+    "createTask": "Pridat ukol do tohoto workflow",
+    "focusSearch": "Prohledat toto workflow",
+    "clearFilters": "Resetovat filtry workflow"
+  },
   "pages": {
     "home": {
-      "kicker": "AI delivery workspace pripraveny pro recruiter review",
-      "title": "AgentBoard",
-      "description": "Planujte AI software praci, sledujte rizika dodavky a mente hrube poznamky k ukolum na jasnejsi implementacni zadani v jednom databazovem workflow.",
+      "kicker": "Mene hadani. Jasnejsi AI prace.",
+      "title": "ScopePilot",
+      "description": "Jedno misto, kde AI delivery tym meni volne napady na konkretni ukoly, vidi rizika driv, nez narostou, a vede projekty podle skutecne ulozenych dat.",
       "primaryAction": "Prihlasit se",
-      "secondaryAction": "Vytvorit ucet",
+      "secondaryAction": "Vytvorit prostor",
       "proofBoard": {
-        "title": "Kanban z databaze",
-        "description": "Vytvarejte, upravujte, presouvejte a archivujte ukoly s ulozenym stavem boardu."
+        "title": "Workflow, ktere si pamatuje kontext",
+        "description": "Vytvarejte, zpresnujte, presouvejte a archivujte ukoly bez ztraty operacniho kontextu."
       },
       "proofDashboard": {
-        "title": "Viditelnost dodavky",
-        "description": "Sledujte aktivni praci, WIP tlak, blokovane ukoly, blizka rizika a posledni aktivitu."
+        "title": "Citelne signaly dodavky",
+        "description": "Uvidite pretizeni, blokace, rizika terminu a posledni pohyb jeste pred dalsim statusem."
       },
       "proofAi": {
-        "title": "Backend-only AI cesta",
-        "description": "Vylepsujte hrube ukoly pres API bez vystaveni OpenAI klicu ve frontendu."
+        "title": "AI, ktera zpresnuje scope",
+        "description": "Mente nejasne poznamky na zadani, akceptacni kriteria a dalsi kroky, zatimco tajne klice zustavaji na serveru."
       }
     },
     "app": {
-      "title": "Prehled workspace",
-      "description": "Pouzijte board a dashboard pro kontrolu realneho stavu dodavky v tomto workspace."
+      "title": "Prehled delivery prostoru",
+      "description": "Zkontrolujte zatizeni projektu, vratte se do spravneho workflow a rozhodujte podle aktualnich dat."
     },
     "workspaces": {
-      "title": "Workspaces",
-      "description": "Seznam workspacu zacne v pozdejsim vertikalnim rezu. Tato trasa je zamerne jen shell."
+      "title": "Delivery prostory",
+      "description": "Tato cast ukazuje aktivni prostor tymu nebo demo relace."
     },
     "projects": {
       "title": "Projekty",
-      "description": "Seznam projektu zacne v pozdejsim vertikalnim rezu. Tato trasa je zamerne jen shell."
+      "description": "Vytvarejte klientské nebo interni projekty a otevirajte workflow, ktere posouva praci dal."
     },
     "settings": {
       "title": "Nastaveni",
-      "description": "Ve Fazi 3 jsou nastaveni omezena na ovladace shellu."
+      "description": "Upravte lokalni preference a zkontrolujte aktualni delivery kontext."
     },
     "boardPlaceholder": {
-      "title": "Board",
-      "description": "Modul boardu zacina ve Fazi 4."
+      "title": "Workflow",
+      "description": "Otevrete workflow projektu a planujte, presouvejte a zpresnujte ukoly."
     },
     "notFound": {
       "title": "Stranka nenalezena",
-      "description": "Pozadovana trasa neni soucasti aktualniho shellu."
+      "description": "Tato stranka neni dostupna v aktualnim produktovem toku."
     }
   },
   "theme": {
@@ -113,29 +127,42 @@
   "common": {
     "cancel": "Zrusit",
     "close": "Zavrit",
+    "delete": "Smazat",
     "dismiss": "Zavrit tip",
     "save": "Ulozit"
   },
   "board": {
-    "empty": "Data boardu nejsou dostupna.",
+    "empty": "Toto workflow zatim nema zadna ulozena data.",
     "version": "Verze {{version}}",
     "column": {
-      "empty": "V tomto sloupci nejsou zadne ukoly.",
+      "empty": "Zatim zde nejsou zadne ukoly.",
       "taskCount": "{{count}} ukolu"
+    },
+    "columnSettings": {
+      "open": "Otevrit nastaveni sloupce",
+      "title": "Nastaveni sloupce",
+      "description": "Prejmenujte {{column}} nebo nastavte limit rozpracovane prace.",
+      "name": "Nazev sloupce",
+      "wipLimit": "WIP limit",
+      "noWipLimit": "Bez limitu",
+      "wipHelp": "Nechte prazdne pro odstraneni WIP limitu.",
+      "invalidWip": "WIP limit musi byt cele cislo od 1 do 99."
     },
     "wip": {
       "count": "WIP {{count}} / {{limit}}",
       "warning": "Limit prekrocen"
     },
     "filters": {
-      "title": "Filtry boardu",
+      "title": "Filtry workflow",
+      "show": "Zobrazit filtry",
+      "hide": "Skryt filtry",
       "search": "Hledat",
-      "searchPlaceholder": "Hledat podle nazvu nebo popisu",
+      "searchPlaceholder": "Hledat podle nazvu nebo detailu",
       "priority": "Priorita",
       "allPriorities": "Vsechny priority",
       "blocked": "Blokace",
       "blockedOptions": {
-        "all": "Vsechna prace",
+        "all": "Vsechny ukoly",
         "blocked": "Jen blokovane",
         "open": "Jen otevrene"
       },
@@ -143,6 +170,8 @@
       "allAssignees": "Vsichni resitele",
       "label": "Stitek",
       "allLabels": "Vsechny stitky",
+      "column": "Sloupec",
+      "allColumns": "Vsechny sloupce",
       "due": "Termin",
       "dueOptions": {
         "all": "Libovolny termin",
@@ -153,21 +182,44 @@
       },
       "resultCount": "Zobrazeno {{count}} z {{total}} ukolu",
       "reset": "Resetovat filtry",
-      "empty": "Aktualnim filtrum neodpovidaji zadne ukoly."
+      "empty": "Temto filtrum neodpovidaji zadne ukoly."
+    },
+    "savedViews": {
+      "title": "Ulozene pohledy",
+      "description": "Pouzijte rychle filtry nebo ulozte sadu filtru tohoto workflow v tomto prohlizeci.",
+      "name": "Nazev pohledu",
+      "save": "Ulozit pohled",
+      "delete": "Smazat ulozeny pohled {{name}}",
+      "presets": {
+        "myWork": "Moje prace",
+        "blocked": "Blokovane",
+        "dueSoon": "Brzy termin",
+        "overdue": "Po terminu",
+        "highPriority": "Vysoka priorita",
+        "inProgress": "Rozpracovane"
+      }
+    },
+    "aiNext": {
+      "title": "Dalsi kroky AI",
+      "description": "Pozadejte backendovou AI cestu o navrhy dalsich ukolu. Nic se neulozi, dokud nevytvorite ukol.",
+      "focusPlaceholder": "Volitelne zamerani, napr. odblokovat QA pred predanim",
+      "suggest": "Navrhnout",
+      "createTask": "Vytvorit ukol",
+      "created": "Vytvoreno"
     },
     "tips": {
-      "title": "Napoveda boardu",
+      "title": "Napoveda workflow",
       "welcome": {
-        "title": "Zacnete na skutecnem delivery boardu",
-        "body": "Pouzijte filtry ke kontrole aktivni prace, aniz opustite stav boardu z API."
+        "title": "Zacnete v zivem delivery workflow",
+        "body": "Pouzijte filtry ke kontrole aktivni prace a zustante pritom u ulozeneho stavu projektu."
       },
       "wip": {
-        "title": "WIP limity ukazuji delivery tlak",
-        "body": "Kdyz sloupec prekroci limit, omezte aktivni praci pred nabrnim dalsich ukolu."
+        "title": "WIP limity ukazuji tlak na dodavku",
+        "body": "Kdyz sloupec prekroci limit, dokoncete nebo odblokujte aktivni praci pred pridanim dalsich ukolu."
       },
       "ai": {
-        "title": "AI Improve zustava review-first",
-        "body": "Panel detailu muze navrhnout jasnejsi zadani, ale zmeny se pouziji az po kontrole."
+        "title": "AI navrhy zustavaji ke kontrole",
+        "body": "ScopePilot muze pripravit jasnejsi zadani, ale tym rozhoduje, co se opravdu pouzije."
       }
     },
     "shortcuts": {
@@ -175,18 +227,18 @@
       "newTask": "Zkratka: N vytvori ukol"
     },
     "create": {
-      "button": "Vytvorit ukol",
-      "title": "Vytvorit ukol",
+      "button": "Pridat ukol",
+      "title": "Pridat ukol",
       "column": "Novy ukol ve sloupci {{column}}",
-      "submit": "Vytvorit"
+      "submit": "Pridat ukol"
     },
     "detail": {
       "title": "Detail ukolu",
-      "description": "Kontrolujte a upravujte pole ukolu, vlastniky, komentare, checklist, aktivitu a AI navrhy.",
+      "description": "Zpresnete zadani, odpovednost, checklist, diskuzi, aktivitu i AI navrhy na jednom miste.",
       "loading": "Nacitani detailu ukolu",
       "retry": "Zkusit znovu",
       "saving": "Ukladani zmen...",
-      "saveHint": "Zmeny ulozite z tohoto panelu detailu.",
+      "saveHint": "Kazda zmena zde aktualizuje ulozeny ukol.",
       "status": "Stav",
       "assignees": "Resitele",
       "labels": "Stitky",
@@ -206,37 +258,48 @@
       "noDueDate": "Bez terminu",
       "blockedYes": "Ano",
       "blockedNo": "Ne",
-      "emptyAssignees": "Nejsou dostupni clenove workspace pro prirazeni.",
-      "emptyLabels": "V tomto workspace nejsou dostupne stitky.",
-      "emptyDescription": "Zatim bez popisu.",
-      "emptyChecklist": "Zatim zadne polozky checklistu.",
-      "emptyComments": "Zatim zadne komentare.",
-      "emptyActivity": "Zatim zadna aktivita.",
+      "emptyAssignees": "Nejsou dostupni clenove delivery prostoru pro prirazeni.",
+      "emptyLabels": "V tomto delivery prostoru nejsou dostupne stitky.",
+      "emptyDescription": "Doplnte kontext, aby dalsi vlastnik vedel, jak vypada dobre hotova prace.",
+      "emptyChecklist": "Pridejte checklist, aby slo praci snaz dokoncit.",
+      "emptyComments": "Zatim zde neni zadna diskuze.",
+      "emptyActivity": "Zatim zde neni zadna aktivita ukolu.",
       "addChecklist": "Pridat polozku",
       "addChecklistLabel": "Nova polozka checklistu",
       "addChecklistPlaceholder": "Pridat polozku checklistu",
+      "editChecklist": "Upravit polozku checklistu",
+      "editChecklistLabel": "Nazev polozky checklistu",
+      "deleteChecklist": "Smazat polozku checklistu",
+      "moveChecklistUp": "Posunout polozku checklistu nahoru",
+      "moveChecklistDown": "Posunout polozku checklistu dolu",
       "markChecklistDone": "Oznacit polozku checklistu jako hotovou",
       "markChecklistOpen": "Znovu otevrit polozku checklistu",
       "commentCount": "{{count}} komentaru",
       "addComment": "Pridat komentar",
       "addCommentLabel": "Novy komentar",
-      "addCommentPlaceholder": "Napsat komentar"
+      "addCommentPlaceholder": "Napsat komentar",
+      "editComment": "Upravit komentar",
+      "editCommentLabel": "Text komentare",
+      "deleteComment": "Smazat komentar"
     },
     "ai": {
-      "title": "Vylepsit pomoci AI",
+      "title": "Zpresnit pomoci AI",
       "powered": "Pohani AI",
-      "description": "Premente hruby ukol na jasnejsi implementacni zadani s akceptacnimi kriterii a podukoly.",
-      "improve": "Vylepsit pomoci AI",
-      "loading": "AI zlepsuje srozumitelnost ukolu...",
+      "description": "Premente hruby ukol na ostrejsi zadani s akceptacnimi kriterii, dalsimi kroky a riziky.",
+      "improve": "Zpresnit pomoci AI",
+      "loading": "Priprava jasnejsiho ukolu...",
       "original": "Puvodni",
-      "improved": "Vylepseno AI",
+      "improved": "Navrzene zadani",
       "acceptanceCriteria": "Akceptacni kriteria",
-      "suggestedChecklist": "Navrzeny checklist",
+      "suggestedChecklist": "Navrzene dalsi kroky",
       "riskNotes": "Poznamky k rizikum",
       "recommendedPriority": "Doporucena priorita",
+      "history": "Historie navrhu",
+      "historyCount": "{{count}} navrhu",
+      "emptyHistory": "Zatim nebyly vytvoreny zadne AI navrhy.",
       "apply": "Pouzit navrh",
       "reject": "Odmitnout navrh",
-      "titleRequired": "Ukol potrebuje alespon nazev, nez ho AI muze vylepsit.",
+      "titleRequired": "Nejprve pridejte nazev ukolu, potom ho muze AI zpresnit.",
       "emptyAcceptanceCriteria": "AI nenavrhla zadna akceptacni kriteria.",
       "emptyChecklist": "AI nenavrhla zadne polozky checklistu.",
       "emptyRiskNotes": "AI nenavrhla zadne poznamky k rizikum.",
@@ -248,11 +311,11 @@
         "failed": "Selhalo"
       },
       "reviewed": {
-        "accepted": "Tento AI navrh byl pouzit.",
-        "rejected": "Tento AI navrh byl odmitnut.",
-        "partially_applied": "Tento AI navrh byl castecne pouzit.",
-        "failed": "Tento AI navrh selhal.",
-        "pending": "Tento AI navrh ceka na kontrolu."
+        "accepted": "Tento navrh byl pouzit.",
+        "rejected": "Tento navrh byl odmitnut.",
+        "partially_applied": "Tento navrh byl castecne pouzit.",
+        "failed": "Tento navrh selhal.",
+        "pending": "Tento navrh ceka na kontrolu."
       }
     },
     "activity": {
@@ -273,12 +336,12 @@
     "delete": {
       "button": "Smazat ukol",
       "title": "Smazat ukol",
-      "description": "Ukol se archivuje a zmizi z boardu.",
+      "description": "Ukol se archivuje a zmizi z aktivniho workflow.",
       "confirm": "Smazat"
     },
     "move": {
       "label": "Presunout do",
-      "mobileHint": "Na telefonu pouzijte tento ovladac misto pretahovani."
+      "mobileHint": "Na telefonu pouzijte tento ovladac, kdyz pretahovani neni pohodlne."
     },
     "task": {
       "title": "Nazev",
@@ -302,55 +365,142 @@
       "dragHint": "Pretahnutim presunete ukol"
     }
   },
+  "projects": {
+    "eyebrow": "Portfolio projektu",
+    "title": "Projekty",
+    "subtitle": "Vytvorte projekt, otevrite jeho workflow a udrzujte prehled dodavky v souladu s tim, co tym skutecne dela.",
+    "listLabel": "Seznam projektu",
+    "updated": "Aktualizovano {{date}}",
+    "openBoard": "Otevrit workflow",
+    "emptyDescription": "Zatim bez popisu.",
+    "status": {
+      "active": "Aktivni",
+      "archived": "Archivovany"
+    },
+    "fields": {
+      "name": "Nazev projektu",
+      "namePlaceholder": "Nasazeni klientské automatizace",
+      "description": "Popis",
+      "descriptionPlaceholder": "Co tento delivery projekt pokryva",
+      "boardName": "Nazev workflow",
+      "boardNamePlaceholder": "Vychozi je nazev projektu + Workflow"
+    },
+    "templates": {
+      "label": "Sablona projektu",
+      "description": "Naplnte prvni workflow pripravenymi ukoly, stitky a checklisty.",
+      "recommended": "Doporuceno",
+      "taskCount": "{{count}} ukolu"
+    },
+    "actions": {
+      "create": "Novy projekt",
+      "edit": "Upravit",
+      "archive": "Archivovat",
+      "restore": "Obnovit",
+      "openBoard": "Otevrit workflow",
+      "dashboard": "Prehled"
+    },
+    "dialog": {
+      "createTitle": "Novy projekt",
+      "editTitle": "Upravit projekt",
+      "description": "Zmeny projektu se ukladaji do dat tohoto prostoru."
+    },
+    "create": {
+      "button": "Novy projekt",
+      "title": "Novy projekt",
+      "description": "Vytvorit projekt s pripravenym delivery workflow.",
+      "submit": "Vytvorit projekt"
+    },
+    "board": {
+      "taskCount": "{{count}} ukolu, {{active}} aktivni",
+      "missing": "Tento projekt zatim nema workflow."
+    },
+    "card": {
+      "noDescription": "Zatim bez popisu.",
+      "updated": "Aktualizovano {{date}}",
+      "board": "Workflow",
+      "noBoard": "Bez workflow",
+      "tasks": "Ukoly",
+      "activeTasks": "Aktivni"
+    },
+    "sections": {
+      "active": "Aktivni projekty",
+      "archived": "Archivovane projekty"
+    },
+    "empty": {
+      "title": "Zatim zadne projekty",
+      "description": "Vytvorte prvni projekt v tomto prostoru, abyste otevreli workflow a pridali ukoly."
+    },
+    "errors": {
+      "noWorkspace": "Vyberte nebo vytvorte delivery prostor pred vytvarenim projektu."
+    }
+  },
+  "workspace": {
+    "title": "Prehled delivery prostoru",
+    "subtitle": "Zkontrolujte projektovou zatez a pokracujte do prvniho aktivniho workflow.",
+    "actions": {
+      "continueBoard": "Pokracovat do workflow"
+    },
+    "metrics": {
+      "activeProjects": "Aktivni projekty",
+      "totalTasks": "Vsechny ukoly",
+      "activeTasks": "Aktivni ukoly"
+    }
+  },
   "settings": {
-    "eyebrow": "Ovladace workspace",
+    "eyebrow": "Produktove preference",
     "title": "Nastaveni",
-    "subtitle": "Upravte lokalni preference a zkontrolujte aktualni workspace i stav nasazeni.",
+    "subtitle": "Upravte rozhrani v tomto prohlizeci a zkontrolujte aktivni delivery prostor.",
     "preferences": {
       "title": "Preference",
-      "description": "Nastaveni prohlizece pro tuto relaci AgentBoard.",
+      "description": "Nastaveni prohlizece pro tuto relaci ScopePilot.",
       "theme": "Motiv",
       "themeHelp": "Uklada se lokalne a plati okamzite.",
       "language": "Jazyk",
       "languageHelp": "Aktualizuje viditelny text produktu v aplikaci."
     },
     "workspace": {
-      "title": "Workspace",
-      "description": "Kontext aktualni relace z autentizovaneho API.",
-      "name": "Workspace",
+      "title": "Delivery prostor",
+      "description": "Kontext aktualni relace z prihlaseneho uctu.",
+      "name": "Delivery prostor",
       "mode": "Rezim",
-      "none": "Neni vybran workspace",
-      "demo": "Demo workspace",
-      "standard": "Standardni workspace",
-      "demoNote": "Demo rezim pouziva skutecna ulozena data v izolovanem demo workspace."
+      "none": "Neni vybran delivery prostor",
+      "demo": "Demo prostor",
+      "standard": "Standardni prostor",
+      "demoNote": "Demo rezim pouziva skutecne ulozena data v izolovanem prostoru."
     },
     "deployment": {
-      "title": "Stav nasazeni",
-      "description": "Operacni pravidla pro tento rezim dodavky produktu.",
-      "status": "Produkci nasazeni zustava pozastavene.",
-      "note": "V tomto rezimu nejsou povolene zmeny live serveru. Znamy blocker Coolify/Traefik zustava popsany pro pozdejsi deployment-readiness pass."
+      "title": "Stav prostredi",
+      "description": "Operacni poznamky pro aktualni prostredi.",
+      "status": "Produkce bezi z obnoveneho runtime.",
+      "note": "Tajne klice zustavaji na serveru a nasazovaci zmeny maji projit dokumentovanymi kontrolami."
     }
   },
   "dashboard": {
-    "eyebrow": "Operacni pohled agentury",
-    "title": "Dashboard",
-    "subtitle": "Kompaktni databazovy pohled na zatizeni dodavek, tlak WIP, blizka rizika a posledni praci ve workspace.",
-    "metrics": "Metriky dashboardu",
+    "eyebrow": "Prehled dodavky",
+    "title": "Prehled dodavky",
+    "subtitle": "Kompaktni pohled na zatizeni, tlak WIP, blizka rizika a posledni pohyb v delivery prostoru.",
+    "projectSubtitle": "Soustredeny prehled dodavky pro {{project}}.",
+    "projectFilter": {
+      "label": "Projekt",
+      "all": "Vsechny projekty",
+      "openBoard": "Otevrit workflow"
+    },
+    "metrics": "Metriky dodavky",
     "cards": {
       "totalActiveTasks": "Aktivni ukoly",
-      "totalActiveTasksHelper": "Otevrena prace mimo dokoncovaci sloupce",
+      "totalActiveTasksHelper": "Prace, ktera se jeste musi posunout",
       "completedTasks": "Dokoncene ukoly",
-      "completedTasksHelper": "Ukoly ve sloupcich completes-work",
+      "completedTasksHelper": "Prace oznacena jako hotova",
       "overdueTasks": "Po terminu",
       "overdueTasksHelper": "Otevrene ukoly po terminu",
       "blockedTasks": "Blokovane",
-      "blockedTasksHelper": "Priznak blokace nebo blokujici sloupec",
+      "blockedTasksHelper": "Ukoly oznacene nebo zaparkovane jako blokovane",
       "completionRate": "Mira dokonceni",
       "completionRateHelper": "Dokoncene ze vsech sledovanych ukolu"
     },
     "wip": {
       "title": "WIP varovani",
-      "description": "Sloupce, kde pocet aktivnich ukolu prekrocil nastaveny WIP limit.",
+      "description": "Sloupce, kde aktivni prace prekrocila dohodnuty limit.",
       "count": "{{count}} / {{limit}} aktivni",
       "context": "{{project}} / {{board}} prekrocil limit o {{overBy}}.",
       "empty": "Zadny WIP limit ted neni prekrocen."
@@ -360,10 +510,10 @@
       "description": "Aktivni prace seskupena podle priority."
     },
     "columns": {
-      "title": "Ukoly podle statusu",
-      "description": "Rozlozeni aktivnich ukolu podle sloupcu boardu.",
+      "title": "Ukoly podle faze workflow",
+      "description": "Rozlozeni aktivnich ukolu podle sloupcu workflow.",
       "activeCount": "{{count}} aktivni",
-      "empty": "Zatim nejsou dostupne zadne sloupce boardu."
+      "empty": "Zatim nejsou dostupne zadne sloupce workflow."
     },
     "dueSoon": {
       "title": "Brzy termin",
@@ -373,17 +523,31 @@
     },
     "activity": {
       "title": "Nedavna aktivita",
-      "description": "Nejnovejsi udalosti ukolu v tomto workspace.",
+      "description": "Nejnovejsi udalosti ukolu v tomto delivery prostoru.",
       "empty": "Zatim zadna nedavna aktivita ukolu."
     },
+    "weekly": {
+      "title": "Tydenni report",
+      "description": "Operativni shrnuti tohoto tydne pripravene ke zkopirovani.",
+      "copy": "Kopirovat report",
+      "copied": "Zkopirovano",
+      "metrics": {
+        "newTasksCount": "Nove",
+        "completedTasksCount": "Dokoncene",
+        "blockedTasksCount": "Blokovane",
+        "overdueTasksCount": "Po terminu",
+        "aiSuggestionsCount": "AI navrhy"
+      }
+    },
     "empty": {
-      "title": "Zatim zadna data dashboardu",
-      "description": "Vytvorte skutecne ukoly na boardu v tomto workspace a dashboard se naplni z databaze."
+      "title": "Zatim zadna data dodavky",
+      "description": "Vytvorte projektove ukoly v tomto prostoru a prehled se automaticky naplni.",
+      "action": "Vytvorit projekt"
     },
     "errors": {
-      "dbUnavailable": "Metriky dashboardu vyzaduji databazi. Nastavte bezpecny lokalni PostgreSQL DATABASE_URL a zkuste to znovu. ID pozadavku: {{requestId}}.",
-      "emptyResponse": "Odpoved dashboardu byla prazdna.",
-      "noWorkspace": "Vyberte nebo vytvorte workspace pro zobrazeni metrik dashboardu."
+      "dbUnavailable": "Metriky dodavky vyzaduji funkcni pripojeni k databazi. Nastavte bezpecny lokalni PostgreSQL DATABASE_URL a zkuste to znovu. ID pozadavku: {{requestId}}.",
+      "emptyResponse": "Odpoved prehledu dodavky byla prazdna.",
+      "noWorkspace": "Vyberte nebo vytvorte delivery prostor pro zobrazeni metrik."
     }
   },
   "states": {
@@ -396,7 +560,7 @@
     "aiUnavailable": "AI neni dostupna. Ukol nebyl zmenen. ID pozadavku: {{requestId}}.",
     "aiRateLimited": "Byl dosazen limit AI nebo kvoty. Ukol nebyl zmenen. ID pozadavku: {{requestId}}.",
     "conflict": "Tento ucet nebo zdroj uz existuje.",
-    "serviceUnavailable": "Trasy zavisle na databazi nejsou prave dostupne. Nastavte bezpecny lokalni PostgreSQL DATABASE_URL pro auth a demo relace. ID pozadavku: {{requestId}}.",
+    "serviceUnavailable": "Trasy s ulozenymi daty nejsou prave dostupne. Nastavte bezpecny lokalni PostgreSQL DATABASE_URL pro prihlaseni a demo relace. ID pozadavku: {{requestId}}.",
     "unauthorized": "Pro pokracovani se prihlaste.",
     "unexpected": "Neco se pokazilo. Zkuste to znovu.",
     "validation": "Zkontrolujte pole formulare a zkuste to znovu."

@@ -44,7 +44,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
       await tx
         .insert(users)
         .values({
-          name: "Demo Reviewer",
+          name: "Demo Lead",
           email: `demo-${suffix}@agentboard.local`,
           passwordHash: null,
           avatarUrl: null,
@@ -61,7 +61,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
       await tx
         .insert(workspaces)
         .values({
-          name: "Scale Software Demo",
+          name: "ScopePilot Demo",
           slug: `scale-software-demo-${suffix}`,
           createdBy: demoUser.id,
           isDemo: true,
@@ -83,8 +83,8 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
         .values({
           workspaceId: demoWorkspace.id,
           slug: `ai-delivery-${suffix}`,
-          name: "AI Delivery Pipeline",
-          description: "Demo project for AI agency delivery work.",
+          name: "Client Intake Automation",
+          description: "Demo project for turning a broad AI delivery idea into scoped work.",
           status: "active",
           createdBy: demoUser.id,
           updatedAt: now
@@ -100,8 +100,8 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
           workspaceId: demoWorkspace.id,
           projectId: demoProject.id,
           slug: `delivery-board-${suffix}`,
-          name: "Delivery Board",
-          description: "Demo Kanban board backed by PostgreSQL.",
+          name: "Scope Workflow",
+          description: "Demo delivery workflow with saved tasks, blockers, and review signals.",
           version: 1,
           updatedAt: now
         })
@@ -207,8 +207,8 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
           projectId: demoProject.id,
           boardId: demoBoard.id,
           columnId: backlog.id,
-          title: "Clarify AI onboarding scope",
-          description: "Turn broad onboarding notes into acceptance criteria.",
+          title: "Clarify AI intake scope",
+          description: "Turn broad client intake notes into acceptance criteria.",
           priority: "medium",
           position: 1000,
           createdBy: demoUser.id,
@@ -220,7 +220,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
           projectId: demoProject.id,
           boardId: demoBoard.id,
           columnId: inProgress.id,
-          title: "Implement retrieval quality checks",
+          title: "Implement answer quality checks",
           description: "Compare generated answers against source snippets before client review.",
           priority: "high",
           position: 1000,
@@ -233,7 +233,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
           projectId: demoProject.id,
           boardId: demoBoard.id,
           columnId: inProgress.id,
-          title: "Fix blocked billing handoff",
+          title: "Unblock billing handoff",
           description: "Waiting for finance contact details from the client.",
           priority: "urgent",
           position: 2000,
@@ -249,7 +249,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
           projectId: demoProject.id,
           boardId: demoBoard.id,
           columnId: review.id,
-          title: "Review prompt evaluation report",
+          title: "Review prompt quality report",
           description: "Check regression notes before sharing with stakeholders.",
           priority: "medium",
           position: 1000,
@@ -262,8 +262,8 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
           projectId: demoProject.id,
           boardId: demoBoard.id,
           columnId: done.id,
-          title: "Ship first demo workspace",
-          description: "Seeded board is ready for recruiter review.",
+          title: "Ship first ScopePilot demo space",
+          description: "Seeded workflow is ready for product review.",
           priority: "low",
           position: 1000,
           createdBy: demoUser.id,
@@ -288,7 +288,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
       {
         workspaceId: demoWorkspace.id,
         taskId: firstTask.id,
-        title: "Confirm desired outcome",
+        title: "Confirm the desired outcome",
         isDone: true,
         position: 1000,
         completedAt: now
@@ -306,7 +306,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
       workspaceId: demoWorkspace.id,
       taskId: firstTask.id,
       authorId: demoUser.id,
-      body: "This task is intentionally vague enough for the future Improve with AI flow.",
+      body: "This task is intentionally broad enough for the AI clarification flow.",
       updatedAt: now
     });
 

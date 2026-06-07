@@ -97,14 +97,14 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
     if (mode === "login") {
       login.mutate(
         { email: form.email, password: form.password },
-        { onSuccess: () => void navigate({ to: "/app" }) }
+        { onSuccess: () => void navigate({ to: "/app/projects" }) }
       );
       return;
     }
 
     register.mutate(
       { name: form.name, email: form.email, password: form.password },
-      { onSuccess: () => void navigate({ to: "/app" }) }
+      { onSuccess: () => void navigate({ to: "/app/projects" }) }
     );
   };
 

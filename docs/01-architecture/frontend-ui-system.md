@@ -179,8 +179,14 @@ LanguageSwitch
 WorkspaceSwitcher
 ProjectSwitcher
 PageHeader
+ProjectsPage
+ProjectCreateDialog
+ProjectTemplatePicker
 MetricCard
+WeeklyReportPanel
 BoardToolbar
+BoardSavedViews
+BoardAiNextActionsPanel
 KanbanBoard
 KanbanColumn
 TaskCard
@@ -202,17 +208,23 @@ LoadingState
 
 Use overlays intentionally:
 
-| UI need                        | Component                                                   |
-| ------------------------------ | ----------------------------------------------------------- |
-| Create task                    | Dialog on desktop, full-screen-ish dialog/sheet on mobile   |
-| Task detail                    | Sheet/drawer                                                |
-| Confirm delete                 | AlertDialog                                                 |
-| Filters mobile                 | Sheet                                                       |
-| Language/theme compact actions | DropdownMenu                                                |
-| AI comparison                  | Panel inside task sheet; modal only if space is constrained |
-| Command/search                 | Command dialog if implemented                               |
+| UI need                        | Component                                                    |
+| ------------------------------ | ------------------------------------------------------------ |
+| Create project                 | Dialog from Projects page                                    |
+| Create task                    | Dialog on desktop, full-screen-ish dialog/sheet on mobile    |
+| Task detail                    | Sheet/drawer                                                 |
+| Confirm delete                 | AlertDialog                                                  |
+| Filters mobile                 | Sheet                                                        |
+| Language/theme compact actions | DropdownMenu                                                 |
+| AI comparison                  | Panel inside task sheet; modal only if space is constrained  |
+| AI next actions                | Panel on board; creates task only after explicit user action |
+| Command/search                 | Command dialog if implemented                                |
 
 Avoid nested modals where possible. If unavoidable, close child before parent action.
+
+Saved board views are browser-local, scoped to `agentboard.boardViews.${boardId}`, and
+must only store the existing URL filter state. Shared DB-backed saved views are outside
+the current scope.
 
 ## Task card design
 

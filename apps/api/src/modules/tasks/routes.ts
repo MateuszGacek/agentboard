@@ -18,6 +18,7 @@ import {
   idSchema,
   moveTaskRequestSchema,
   updateChecklistItemRequestSchema,
+  updateCommentRequestSchema,
   updateTaskRequestSchema
 } from "@agentboard/shared";
 import type { MoveTaskRequest, TaskPriority } from "@agentboard/shared";
@@ -29,7 +30,7 @@ import { parseJsonBody } from "../../lib/body";
 import { notFound, validationError } from "../../lib/errors";
 import { success } from "../../lib/responses";
 import type { AppBindings } from "../../types";
-import { improveTaskWithAi } from "../ai/service";
+import { improveTaskWithAi, listTaskAiSuggestions } from "../ai/service";
 import { requireAuth } from "../auth/sessions";
 import { getBoardSnapshot } from "../boards/snapshot";
 import { assertWorkspaceMember } from "../workspaces/ownership";
@@ -161,6 +162,21 @@ async function compactColumnPositions(db: TaskMutationClient, columnId: string) 
       .update(tasks)
       .set({ position: (index + 1) * 1000 })
       .where(eq(tasks.id, task.id));
+  }
+}
+
+async function compactChecklistPositions(db: TaskMutationClient, taskId: string) {
+  const items = await db
+    .select({ id: taskChecklistItems.id })
+    .from(taskChecklistItems)
+    .where(eq(taskChecklistItems.taskId, taskId))
+    .orderBy(asc(taskChecklistItems.position), asc(taskChecklistItems.createdAt));
+
+  for (const [index, item] of items.entries()) {
+    await db
+      .update(taskChecklistItems)
+      .set({ position: (index + 1) * 1000, updatedAt: new Date() })
+      .where(eq(taskChecklistItems.id, item.id));
   }
 }
 
@@ -555,6 +571,24 @@ export function createTaskRoutes(db: DatabaseClient, env: ApiEnv) {
     });
   });
 
+  taskRoute.get("/:taskId/ai-suggestions", requireAuth(db), async (c) => {
+    const parsedTaskId = idSchema.safeParse(c.req.param("taskId"));
+
+    if (!parsedTaskId.success) {
+      throw validationError("Task ID must be a valid UUID.", parsedTaskId.error.flatten());
+    }
+
+    const user = c.get("user");
+
+    return success(c, {
+      suggestions: await listTaskAiSuggestions({
+        db,
+        userId: user.id,
+        taskId: parsedTaskId.data
+      })
+    });
+  });
+
   taskRoute.post("/:taskId/checklist-items", requireAuth(db), async (c) => {
     const parsedTaskId = idSchema.safeParse(c.req.param("taskId"));
 
@@ -690,6 +724,66 @@ export function createTaskRoutes(db: DatabaseClient, env: ApiEnv) {
     });
   });
 
+  taskRoute.delete("/checklist-items/:itemId", requireAuth(db), async (c) => {
+    const parsedItemId = idSchema.safeParse(c.req.param("itemId"));
+
+    if (!parsedItemId.success) {
+      throw validationError(
+        "Checklist item ID must be a valid UUID.",
+        parsedItemId.error.flatten()
+      );
+    }
+
+    const user = c.get("user");
+
+    const deleted = await db.transaction(async (tx) => {
+      const [item] = await tx
+        .select()
+        .from(taskChecklistItems)
+        .where(eq(taskChecklistItems.id, parsedItemId.data))
+        .limit(1);
+
+      if (!item) {
+        throw notFound("Checklist item was not found.");
+      }
+
+      const [task] = await tx
+        .select()
+        .from(tasks)
+        .where(and(eq(tasks.id, item.taskId), isNull(tasks.archivedAt)))
+        .limit(1);
+
+      if (!task || task.workspaceId !== item.workspaceId) {
+        throw notFound("Task was not found.");
+      }
+
+      await assertWorkspaceMember(tx, user.id, task.workspaceId);
+      await tx.delete(taskChecklistItems).where(eq(taskChecklistItems.id, item.id));
+      await compactChecklistPositions(tx, task.id);
+
+      await insertActivity({
+        db: tx,
+        workspaceId: task.workspaceId,
+        taskId: task.id,
+        actorId: user.id,
+        type: "task.updated",
+        message: "Checklist item deleted.",
+        metadata: { itemId: item.id, title: item.title }
+      });
+      await tx
+        .update(boards)
+        .set({ version: sql`${boards.version} + 1`, updatedAt: new Date() })
+        .where(eq(boards.id, task.boardId));
+
+      return { taskId: task.id, boardId: task.boardId };
+    });
+
+    return success(c, {
+      task: await getTaskDetail(db, user.id, deleted.taskId),
+      board: await getBoardSnapshot(db, user.id, deleted.boardId)
+    });
+  });
+
   taskRoute.post("/:taskId/comments", requireAuth(db), async (c) => {
     const parsedTaskId = idSchema.safeParse(c.req.param("taskId"));
 
@@ -741,6 +835,125 @@ export function createTaskRoutes(db: DatabaseClient, env: ApiEnv) {
     return success(c, {
       task: await getTaskDetail(db, user.id, taskId),
       board: await getBoardSnapshot(db, user.id, boardId)
+    });
+  });
+
+  taskRoute.patch("/comments/:commentId", requireAuth(db), async (c) => {
+    const parsedCommentId = idSchema.safeParse(c.req.param("commentId"));
+
+    if (!parsedCommentId.success) {
+      throw validationError("Comment ID must be a valid UUID.", parsedCommentId.error.flatten());
+    }
+
+    const body = await parseJsonBody(c.req.raw, updateCommentRequestSchema);
+    const user = c.get("user");
+
+    const updated = await db.transaction(async (tx) => {
+      const [comment] = await tx
+        .select()
+        .from(taskComments)
+        .where(and(eq(taskComments.id, parsedCommentId.data), isNull(taskComments.deletedAt)))
+        .limit(1);
+
+      if (!comment) {
+        throw notFound("Comment was not found.");
+      }
+
+      const [task] = await tx
+        .select()
+        .from(tasks)
+        .where(and(eq(tasks.id, comment.taskId), isNull(tasks.archivedAt)))
+        .limit(1);
+
+      if (!task || task.workspaceId !== comment.workspaceId) {
+        throw notFound("Task was not found.");
+      }
+
+      await assertWorkspaceMember(tx, user.id, task.workspaceId);
+      await tx
+        .update(taskComments)
+        .set({ body: body.body, updatedAt: new Date() })
+        .where(eq(taskComments.id, comment.id));
+
+      await insertActivity({
+        db: tx,
+        workspaceId: task.workspaceId,
+        taskId: task.id,
+        actorId: user.id,
+        type: "task.updated",
+        message: "Comment updated.",
+        metadata: { commentId: comment.id }
+      });
+      await tx
+        .update(boards)
+        .set({ version: sql`${boards.version} + 1`, updatedAt: new Date() })
+        .where(eq(boards.id, task.boardId));
+
+      return { taskId: task.id, boardId: task.boardId };
+    });
+
+    return success(c, {
+      task: await getTaskDetail(db, user.id, updated.taskId),
+      board: await getBoardSnapshot(db, user.id, updated.boardId)
+    });
+  });
+
+  taskRoute.delete("/comments/:commentId", requireAuth(db), async (c) => {
+    const parsedCommentId = idSchema.safeParse(c.req.param("commentId"));
+
+    if (!parsedCommentId.success) {
+      throw validationError("Comment ID must be a valid UUID.", parsedCommentId.error.flatten());
+    }
+
+    const user = c.get("user");
+
+    const deleted = await db.transaction(async (tx) => {
+      const [comment] = await tx
+        .select()
+        .from(taskComments)
+        .where(and(eq(taskComments.id, parsedCommentId.data), isNull(taskComments.deletedAt)))
+        .limit(1);
+
+      if (!comment) {
+        throw notFound("Comment was not found.");
+      }
+
+      const [task] = await tx
+        .select()
+        .from(tasks)
+        .where(and(eq(tasks.id, comment.taskId), isNull(tasks.archivedAt)))
+        .limit(1);
+
+      if (!task || task.workspaceId !== comment.workspaceId) {
+        throw notFound("Task was not found.");
+      }
+
+      await assertWorkspaceMember(tx, user.id, task.workspaceId);
+      await tx
+        .update(taskComments)
+        .set({ deletedAt: new Date(), updatedAt: new Date() })
+        .where(eq(taskComments.id, comment.id));
+
+      await insertActivity({
+        db: tx,
+        workspaceId: task.workspaceId,
+        taskId: task.id,
+        actorId: user.id,
+        type: "task.updated",
+        message: "Comment deleted.",
+        metadata: { commentId: comment.id }
+      });
+      await tx
+        .update(boards)
+        .set({ version: sql`${boards.version} + 1`, updatedAt: new Date() })
+        .where(eq(boards.id, task.boardId));
+
+      return { taskId: task.id, boardId: task.boardId };
+    });
+
+    return success(c, {
+      task: await getTaskDetail(db, user.id, deleted.taskId),
+      board: await getBoardSnapshot(db, user.id, deleted.boardId)
     });
   });
 
