@@ -6,21 +6,30 @@ AgentBoard Deploy Operator Mode: production runtime fix in progress.
 
 Deploy operator date: June 7, 2026
 
-Deploy operator status: RUNTIME_FIX_IN_PROGRESS. Local validation previously passed
-(`pnpm predeploy:check` and `docker build -t agentboard-local .`). Dockerfile was
+Deploy operator status: PRODUCTION_RECOVERED_MANUAL_RUNTIME. Local validation previously
+passed (`pnpm predeploy:check` and `docker build -t agentboard-local .`). Dockerfile was
 hardened in commit `7988487` so deps/build stages force development dependency
 installation even if Coolify exposes `NODE_ENV=production` during build, while runtime
-remains production-oriented. Coolify runtime logs later confirmed the current production
+remains production-oriented. Coolify runtime logs later confirmed the first production
 blocker: `DATABASE_URL` was assembled with a raw Postgres password containing
-URL-reserved characters, so `scripts/wait-for-db.mjs` throws `ERR_INVALID_URL` before
-the API starts and `https://scalesoftware.matgac.pl/api/health` returns `HTTP 503 no
+URL-reserved characters, so `scripts/wait-for-db.mjs` threw `ERR_INVALID_URL` before the
+API started and `https://scalesoftware.matgac.pl/api/health` returned `HTTP 503 no
 available server`. The repo-side fix requires explicit `DATABASE_URL`, URL-encodes the
-password in the Coolify helper, and redacts invalid URL startup errors. Next required
-action is validation, push, Coolify env update, redeploy, and live smoke. A later
-Coolify host inspection showed the app became healthy but Traefik still returned `503`
-because the app container was not attached to the external `coolify` proxy network; the
-Compose app service now joins both `default` and `coolify`. See
-`DEPLOY_OPERATOR_REPORT.md`.
+password in the Coolify helper, and redacts invalid URL startup errors. A later Coolify
+host inspection showed the app became healthy but Traefik still returned `503` because
+the app container was not attached to the external `coolify` proxy network; the Compose
+app service now joins both `default` and `coolify`.
+
+Production recovery completed on June 7, 2026 at 11:08 UTC. Because preserving the
+database was not required, the old Coolify app/Postgres containers and disposable
+Postgres volume were removed on the host, a fresh `agentboard-postgres` container was
+started with a new alphanumeric password, and `agentboard-app` was started from image
+`cnlemhsfin1p0malfvchgf25_app:f899a051633f6ea41dfb9817f65288aa703cb91d`. The app joins
+the private `agentboard_internal` network for Postgres and the external `coolify`
+network for Traefik. Runtime secrets were generated on the server and stored only in
+`/root/agentboard-runtime-secrets.txt` with `600` permissions. Live verification from
+both the server and local shell returned `HTTP/2 200` for `/api/health` and `/login`.
+See `DEPLOY_OPERATOR_REPORT.md`.
 
 Latest deployment fix validation:
 
@@ -34,6 +43,17 @@ Latest deployment fix validation:
 | `pnpm build`                                | PASS   | Workspace production build passed.                                |
 | `pnpm format:check`                         | PASS   | Prettier check passed.                                            |
 | `docker build -t agentboard-local .`        | PASS   | Local Docker image build completed.                               |
+
+Latest production runtime verification:
+
+| Check                                                | Result | Notes                                                              |
+| ---------------------------------------------------- | ------ | ------------------------------------------------------------------ |
+| Fresh disposable Postgres                            | PASS   | New `agentboard-postgres` container became healthy.                |
+| App startup, migrations, seed                        | PASS   | `agentboard-api listening on http://0.0.0.0:3000/api` in app logs. |
+| App container health                                 | PASS   | Manual `agentboard-app` container reached `running/healthy`.       |
+| In-container `/api/health`                           | PASS   | Returned `200 {"ok":true,"service":"agentboard-api",...}`.         |
+| `curl -i https://scalesoftware.matgac.pl/api/health` | PASS   | Returned `HTTP/2 200` and JSON health payload.                     |
+| `curl -I https://scalesoftware.matgac.pl/login`      | PASS   | Returned `HTTP/2 200` and `text/html; charset=UTF-8`.              |
 
 Implementation date: June 6, 2026
 
@@ -125,9 +145,9 @@ the Coolify checklist and live smoke pass. See `MORNING_HANDOFF.md`.
 Current product status: the local foundation, API, frontend shell, DB-backed board
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
 recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
-static validation, and now pass local DB-backed runtime smoke. Production deployment
-verification is blocked because the live domain currently serves Traefik's default
-self-signed certificate and returns `503 no available server`.
+static validation, and now pass local DB-backed runtime smoke. Production is currently
+live at `https://scalesoftware.matgac.pl` through the recovered manual Docker runtime;
+`/api/health` and `/login` both return `HTTP/2 200`.
 
 Task detail polish status: PASS as code. The task detail sheet now renders deeper
 API-backed task data and supports narrow DB-backed checklist/comment mutations plus
@@ -188,7 +208,7 @@ Runtime command results:
 | API + web dev servers                      | PASS            | API on `3000`, Vite on `5173`.                                                          |
 | Local browser smoke                        | PASS            | Demo, board, task detail, WIP, dashboard, AI unavailable, and responsive widths passed. |
 
-Current decision: `COOLIFY_DEPLOY_BLOCKED`.
+Current decision: `PRODUCTION_RECOVERED_MANUAL_RUNTIME`.
 
 Latest command results after DB/API hardening:
 
@@ -396,15 +416,18 @@ not add dashboard, AI, or new product UI scope and must remain parked.
 
 ## Incomplete
 
-- Production deployment at `https://scalesoftware.matgac.pl` is blocked: the domain
-  presents `TRAEFIK DEFAULT CERT` and `/api/health` returns `503 no available server`.
+- Production is live through manual recovery containers (`agentboard-app` and
+  `agentboard-postgres`), but Coolify's saved app env/config should be synchronized or
+  recreated before the next Coolify UI redeploy.
 - Checklist deletion/reordering and comment edit/delete remain future task-detail
   refinements.
 - Real AI endpoint smoke test still requires a backend-only `OPENAI_API_KEY`; the
   missing-key unavailable path passes locally.
 - Search/filter, realtime, file uploads, and billing remain future product phases.
-- Coolify/Traefik service routing and certificate setup are the next operational step.
-- Public recruiter sharing remains pending until Coolify deployment and live smoke pass.
+- A browser-level production product smoke is still recommended after the runtime
+  recovery; endpoint smoke is passing.
+- Public recruiter sharing should wait until browser-level production smoke is complete,
+  even though endpoint smoke now passes.
 
 ## Files Changed In Dashboard Implementation
 
@@ -636,23 +659,22 @@ Final recruiter polish validation completed on June 6, 2026.
 
 ## Next Recommended Action
 
-Fix Coolify routing and rerun live smoke:
+Sync Coolify config with the recovered runtime and run browser-level live smoke:
 
 ```txt
 Continue the AgentBoard project from the current repository state.
 
-Decision from STATUS.md and LOCAL_RUNTIME_SMOKE.md: COOLIFY_DEPLOY_BLOCKED.
+Decision from STATUS.md and DEPLOY_OPERATOR_REPORT.md: PRODUCTION_RECOVERED_MANUAL_RUNTIME.
 
-Local DB-backed runtime smoke passed on June 6, 2026. main was pushed to origin. Live verification is blocked because https://scalesoftware.matgac.pl presents TRAEFIK DEFAULT CERT and /api/health returns 503 no available server. Do not add new features. Do not rewrite dashboard. Keep OPENAI_API_KEY backend-only.
+Local DB-backed runtime smoke passed on June 6, 2026. main was pushed to origin. Production recovery on June 7, 2026 started fresh manual containers with disposable Postgres and https://scalesoftware.matgac.pl/api/health plus /login now return HTTP/2 200. Do not add new features. Do not rewrite dashboard. Keep OPENAI_API_KEY backend-only.
 
 First read AGENTS.md, STATUS.md, LOCAL_RUNTIME_SMOKE.md, README.md, docs/index.md, docs/03-deployment/deployment-notes.md, docs/03-deployment/coolify-deployment.md, and docs/03-deployment/ovh-cloudflare-coolify-prep.md.
 
-Fix the Coolify deployment path:
-- Confirm Coolify pulled commit 6f01958 from main.
-- Confirm the app service is built, running, and healthy.
-- Assign scalesoftware.matgac.pl to the app service, not postgres.
-- Confirm the app service target port is 3000.
-- Ensure Traefik/Coolify issues a real certificate for scalesoftware.matgac.pl.
+Stabilize the deployment path:
+- Confirm origin/main includes commits fba6c3e and f899a05.
+- Sync or recreate Coolify app envs before the next Coolify UI redeploy.
+- Keep POSTGRES_PASSWORD alphanumeric or ensure DATABASE_URL uses URL-encoded credentials.
+- Confirm the app service target port is 3000 and the app service joins the external coolify network.
 - Verify https://scalesoftware.matgac.pl/api/health returns the AgentBoard health JSON.
 - Verify app root, demo login, board load, task create/edit/move, task detail checklist/comment, dashboard metrics, and AI unavailable or backend-only AI behavior.
 

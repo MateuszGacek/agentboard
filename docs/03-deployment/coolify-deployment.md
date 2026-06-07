@@ -68,6 +68,10 @@ For the Compose Postgres service, set `DATABASE_URL` with the `postgres` hostnam
 URL-encoded password segment:
 `postgres://agentboard:<url-encoded-password>@postgres:5432/agentboard`.
 
+For new disposable databases, prefer an alphanumeric `POSTGRES_PASSWORD` to avoid URL
+reserved-character mistakes. Still keep `DATABASE_URL` explicit so the app service and
+Postgres service cannot drift.
+
 Optional:
 
 ```txt
@@ -102,6 +106,25 @@ Recommended Postgres behavior:
 - persistent volume,
 - healthcheck using `pg_isready`,
 - credentials through env vars.
+
+## Clean Recovery
+
+If production data is disposable and the app is blocked by stale database credentials,
+the safe recovery path is:
+
+1. remove only the affected app/Postgres containers,
+2. remove the affected Postgres volume after explicit approval,
+3. generate a new alphanumeric `POSTGRES_PASSWORD` and `SESSION_SECRET`,
+4. update `POSTGRES_PASSWORD` and `DATABASE_URL` together,
+5. redeploy from a commit containing the encoded `DATABASE_URL` and `coolify` network
+   fixes,
+6. verify `/api/health` and `/login` return non-503 responses.
+
+The June 7, 2026 emergency recovery used manual containers named `agentboard-postgres`
+and `agentboard-app` from image
+`cnlemhsfin1p0malfvchgf25_app:f899a051633f6ea41dfb9817f65288aa703cb91d`. Before the
+next Coolify UI redeploy, sync or recreate the Coolify app configuration so it does not
+replace the recovered runtime with stale environment values.
 
 ## Idempotent startup
 

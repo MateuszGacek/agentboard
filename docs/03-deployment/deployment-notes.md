@@ -69,6 +69,10 @@ SESSION_SECRET=<at least 32 random characters>
 SEED_DEMO_DATA=true
 ```
 
+The safest operational pattern is to generate `POSTGRES_PASSWORD` as alphanumeric only
+and still set `DATABASE_URL` explicitly. If the password contains reserved URL
+characters, encode only the password segment before placing it in the URL.
+
 PostgreSQL service variables:
 
 ```txt
@@ -76,6 +80,11 @@ POSTGRES_DB=agentboard
 POSTGRES_USER=agentboard
 POSTGRES_PASSWORD=<strong password>
 ```
+
+If database contents are disposable during recovery, it is acceptable to remove the old
+Postgres volume only after explicit approval, create a fresh Postgres service with a new
+alphanumeric password, update `POSTGRES_PASSWORD` and `DATABASE_URL` together, and then
+redeploy.
 
 Optional future AI variables:
 
@@ -170,6 +179,12 @@ for the domain. Check these in order:
 - `SESSION_SECRET` is set to at least 32 non-placeholder characters.
 - Migration/seed did not fail before the API server started.
 - Coolify proxy logs do not show a stale route or upstream service mismatch.
+
+June 7, 2026 production recovery note: the live site was recovered by replacing the
+stale runtime with fresh manual containers, `agentboard-postgres` and `agentboard-app`,
+using a new alphanumeric Postgres password and the `f899a05` app image. Before the next
+Coolify UI redeploy, sync or recreate Coolify envs so its saved configuration matches
+the intended production database and app secrets.
 
 ### Traefik default certificate
 
