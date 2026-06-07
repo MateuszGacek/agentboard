@@ -56,7 +56,7 @@ function requiredVariables() {
     ["POSTGRES_PASSWORD", postgresPassword, true],
     [
       "DATABASE_URL",
-      `postgres://agentboard:${encodedPostgresPassword}@postgres:5432/agentboard`,
+      `postgres://agentboard:${encodedPostgresPassword}@agentboard-postgres-db:5432/agentboard`,
       true
     ],
     ["SESSION_SECRET", sessionSecret, true],

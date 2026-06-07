@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      postgres:
+      agentboard-postgres-db:
         condition: service_healthy
     environment:
       NODE_ENV: production
@@ -42,7 +42,7 @@ services:
       start_period: 30s
     restart: unless-stopped
 
-  postgres:
+  agentboard-postgres-db:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-agentboard}

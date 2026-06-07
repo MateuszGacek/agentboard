@@ -66,7 +66,7 @@ SEED_DEMO_DATA=true
 
 For the Compose Postgres service, set `DATABASE_URL` with the `postgres` hostname and a
 URL-encoded password segment:
-`postgres://agentboard:<url-encoded-password>@postgres:5432/agentboard`.
+`postgres://agentboard:<url-encoded-password>@agentboard-postgres-db:5432/agentboard`.
 
 For new disposable databases, prefer an alphanumeric `POSTGRES_PASSWORD` to avoid URL
 reserved-character mistakes. Still keep `DATABASE_URL` explicit so the app service and

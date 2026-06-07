@@ -64,7 +64,7 @@ NODE_ENV=production
 PORT=3000
 APP_URL=https://scalesoftware.matgac.pl
 WEB_DIST_DIR=/app/apps/web/dist
-DATABASE_URL=postgres://agentboard:<url-encoded-password>@postgres:5432/agentboard
+DATABASE_URL=postgres://agentboard:<url-encoded-password>@agentboard-postgres-db:5432/agentboard
 SESSION_SECRET=<at least 32 random characters>
 SEED_DEMO_DATA=true
 ```
@@ -307,7 +307,7 @@ Before the next manual deploy attempt:
    - `PORT=3000`
    - `APP_URL=https://scalesoftware.matgac.pl`
    - `WEB_DIST_DIR=/app/apps/web/dist`
-   - `DATABASE_URL=postgres://agentboard:<url-encoded-password>@postgres:5432/agentboard`
+   - `DATABASE_URL=postgres://agentboard:<url-encoded-password>@agentboard-postgres-db:5432/agentboard`
    - `SESSION_SECRET=<at least 32 random characters>`
    - `SEED_DEMO_DATA=true`
 4. Deploy manually in Coolify.
