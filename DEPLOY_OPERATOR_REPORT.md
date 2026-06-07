@@ -6,10 +6,17 @@ Mode: AgentBoard Deploy Operator Mode
 
 ## Summary
 
-Deployment path is no longer blocked by the previously reported public 503/default
-certificate symptom. The production URL returned healthy API and SPA responses, and a
-non-UI production smoke passed for demo login, board snapshot, dashboard metrics, and
-the expected AI unavailable path.
+Current production blocker: the Docker build succeeds, but the Coolify application
+runtime is unavailable through Traefik with `HTTP 503 no available server`. Coolify UI
+reported the app container as restarting after deployment. SSH to the server is
+unavailable from this environment, so active debugging must use Coolify Application
+runtime logs or the Coolify Terminal.
+
+Earlier in this session the production URL briefly returned healthy API and SPA
+responses, including a non-UI production smoke for demo login, board snapshot,
+dashboard metrics, and the expected AI unavailable path. After the later Coolify
+deployment, production returned to `503`, so the latest state is runtime deployment
+blocked.
 
 A low-risk Dockerfile hardening patch was made so the dependency and build stages
 install devDependencies even if the build environment exposes `NODE_ENV=production`.
@@ -27,6 +34,8 @@ Runtime remains production-oriented.
 - Attempted safe read-only SSH diagnostics against the deployment server.
 - Ran public production HTTP smoke checks.
 - Ran production API smoke for demo auth, board snapshot, dashboard, and AI state.
+- Re-checked deployment without SSH after Coolify showed the app as restarting.
+- Confirmed current production `/api/health` returns `HTTP 503 no available server`.
 
 ## Commands Run
 
@@ -38,6 +47,7 @@ pnpm build
 pnpm format:check
 docker build -t agentboard-local .
 docker build --no-cache -t agentboard-local .
+pnpm predeploy:check
 curl -i --max-time 30 https://scalesoftware.matgac.pl/api/health
 curl -I --max-time 30 https://scalesoftware.matgac.pl/login
 ```
@@ -58,6 +68,8 @@ PASS.
 - `pnpm lint`: PASS
 - `pnpm build`: PASS
 - `pnpm format:check`: PASS
+- `pnpm check:i18n`: PASS
+- `pnpm predeploy:check`: PASS
 - `docker build -t agentboard-local .`: PASS
 - `docker build --no-cache -t agentboard-local .`: PASS
 
@@ -108,18 +120,28 @@ modified.
 
 ## Deployment Result
 
-No redeploy was triggered from this session because:
+Build passed in Coolify for commit `7988487`, then the app container entered a
+restarting state. No redeploy was triggered from this local session because:
 
 - Coolify API variables were unavailable locally,
 - SSH access timed out,
-- the public production URL was already healthy during smoke checks.
+- current debugging requires the runtime application logs from Coolify UI.
 
-The Docker build robustness fix is ready to push and should make the next Coolify build
-less sensitive to build-time `NODE_ENV=production`.
+The Docker build robustness fix was pushed to `origin/main` in commit `7988487` and
+should make the next Coolify build less sensitive to build-time `NODE_ENV=production`.
 
 ## Production Smoke Result
 
-PASS.
+LATEST RESULT: FAILING AFTER REDEPLOY.
+
+Current live check:
+
+```txt
+HTTP/2 503
+no available server
+```
+
+Historical earlier check before the later restart loop:
 
 `curl -i https://scalesoftware.matgac.pl/api/health` returned:
 
@@ -142,23 +164,53 @@ Production API smoke passed:
 Production smoke PASS: health, demo auth, board snapshot (5 tasks), dashboard (4 active tasks), AI unavailable.
 ```
 
+Post-push health polling remained healthy:
+
+```txt
+attempt 1 200 application/json
+attempt 2 200 application/json
+attempt 3 200 application/json
+```
+
 ## Remaining Blockers
 
 - Coolify environment verification could not be performed from this local shell.
 - SSH diagnostics could not be performed because port 22 timed out.
-- No Coolify redeploy was triggered from this session.
-- Browser/UI smoke was not automated here; API-level production smoke passed.
+- Current production returns `HTTP 503 no available server`.
+- Coolify reports the app container as restarting.
+- The next required evidence is the first runtime error from Coolify
+  Application -> Logs, not the Deployment Log.
+- If Coolify Terminal is available, `docker ps -a` and `docker logs <app-container>`
+  can provide the same evidence without external SSH.
+- Browser/UI smoke is blocked until `/api/health` is back to HTTP 200.
 
 ## Exact Next Action
 
-Push the Dockerfile hardening patch to `origin/main`. If Coolify is configured for
-automatic deploys from `main`, watch the next Coolify build. If manual deploy is
-required, trigger it from the Coolify UI, then rerun:
+Open Coolify -> Application -> Logs and copy the first 30-80 runtime log lines after
+the app container starts. Do not use Deployment Log for this step.
+
+If Coolify Terminal is easier, run:
+
+```bash
+docker ps -a --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | head -80
+docker logs <app-container-name> --tail=200 2>&1
+```
+
+Then rerun:
 
 ```bash
 curl -i https://scalesoftware.matgac.pl/api/health
 curl -I https://scalesoftware.matgac.pl/login
 ```
 
-Then run a browser smoke for `/login`, demo session creation, board, task detail, and
-dashboard.
+Likely runtime causes to identify from logs:
+
+- `SESSION_SECRET`: update only `SESSION_SECRET` to at least 32 random characters.
+- `DATABASE_URL`: fix the app `DATABASE_URL`.
+- `password authentication failed`: Postgres password and existing volume likely do not
+  match; do not delete the volume without explicit approval.
+- `WEB_DIST_DIR` or missing `index.html`: verify `/app/apps/web/dist`.
+- `Cannot find module`: fix runtime dependencies or Docker copy path.
+- app running but healthcheck failing: verify port `3000` and `/api/health`.
+- app healthy but Traefik 503: verify domain is attached to service `app` on port
+  `3000`.
