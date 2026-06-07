@@ -82,6 +82,32 @@ pnpm coolify:env:verify
 
 The helper does not deploy the application.
 
+## API Payload Notes
+
+For Coolify application environment variables, the helper uses application env endpoints:
+
+```txt
+GET /api/v1/applications/{uuid}/envs
+POST /api/v1/applications/{uuid}/envs
+PATCH /api/v1/applications/{uuid}/envs
+```
+
+Create and update requests send non-preview env variables with:
+
+```txt
+key
+value
+is_buildtime=true
+is_runtime=true
+is_literal=false
+is_multiline=false
+is_preview=false
+is_required=true|false
+```
+
+Preview env variables are ignored by this helper. `OPENAI_API_KEY` is optional and is
+sent with `is_required=false`.
+
 ## Manual Coolify Checks Before Deploy
 
 Confirm these settings in Coolify before clicking Deploy:

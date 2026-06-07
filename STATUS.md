@@ -12,6 +12,20 @@ Delivery state check date: June 6, 2026
 
 Coolify environment setup helper date: June 7, 2026
 
+Coolify environment setup helper patch date: June 7, 2026
+
+Coolify environment setup helper patch status: BLOCKED_ON_LOCAL_ENV. Patched the helper
+for Coolify v4.1.1 env payload validation after `POST /api/v1/applications/{uuid}/envs`
+returned HTTP 422 with the original create payload. The patched helper targets
+non-preview env vars only, uses `is_buildtime`/`is_runtime` flags, updates existing
+non-preview vars through `PATCH /api/v1/applications/{uuid}/envs`, and prints sanitized
+response-body diagnostics on create/update failures. `pnpm typecheck`, `pnpm lint`,
+`pnpm build`, and `pnpm format:check` passed after patching. `pnpm coolify:env:dry-run`,
+`pnpm coolify:env:push`, and `pnpm coolify:env:verify` stopped safely before API calls
+because this shell could not see `COOLIFY_URL`, `COOLIFY_TOKEN`, `COOLIFY_APP_UUID`,
+`AGENTBOARD_POSTGRES_PASSWORD`, or `AGENTBOARD_SESSION_SECRET`. Deployment remains
+parked.
+
 Coolify environment setup helper status: BLOCKED_ON_LOCAL_ENV. Added a local
 secret-safe Coolify API helper and documentation for application environment variable
 setup. The helper validates required local shell variables, supports dry-run/push/verify,
