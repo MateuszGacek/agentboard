@@ -42,9 +42,11 @@ When using Docker Compose in Coolify:
 - `docker-compose.yml` is the source of truth,
 - environment variables should be declared in Compose,
 - assign the domain to the app service,
+- attach the public `app` service to both the default Compose network and the external
+  `coolify` network so Coolify's proxy can reach it,
 - if the app listens on container port `3000`, specify the domain with port `:3000` in the Coolify service domain field,
 - do not expose Postgres publicly,
-- do not define custom networks unless necessary; Coolify manages networking.
+- do not expose Postgres on the external `coolify` network.
 
 ## Environment variables
 

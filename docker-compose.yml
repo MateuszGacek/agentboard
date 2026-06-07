@@ -24,6 +24,9 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-info}
     expose:
       - "3000"
+    networks:
+      - default
+      - coolify
     healthcheck:
       test:
         [
@@ -56,3 +59,8 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  default:
+  coolify:
+    external: true

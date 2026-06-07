@@ -16,7 +16,10 @@ URL-reserved characters, so `scripts/wait-for-db.mjs` throws `ERR_INVALID_URL` b
 the API starts and `https://scalesoftware.matgac.pl/api/health` returns `HTTP 503 no
 available server`. The repo-side fix requires explicit `DATABASE_URL`, URL-encodes the
 password in the Coolify helper, and redacts invalid URL startup errors. Next required
-action is validation, push, Coolify env update, redeploy, and live smoke. See
+action is validation, push, Coolify env update, redeploy, and live smoke. A later
+Coolify host inspection showed the app became healthy but Traefik still returned `503`
+because the app container was not attached to the external `coolify` proxy network; the
+Compose app service now joins both `default` and `coolify`. See
 `DEPLOY_OPERATOR_REPORT.md`.
 
 Latest deployment fix validation:
@@ -25,6 +28,7 @@ Latest deployment fix validation:
 | ------------------------------------------- | ------ | ----------------------------------------------------------------- |
 | `DATABASE_URL` reserved-character check     | PASS   | Encoded `/`, `#`, `?`, `%`, `@`, and `:` password samples parsed. |
 | invalid `scripts/wait-for-db.mjs` URL smoke | PASS   | Failed with a redacted actionable error, not the raw URL.         |
+| `docker compose config` network check       | PASS   | `app` joins `default` and `coolify`; `postgres` stays private.    |
 | `pnpm typecheck`                            | PASS   | Workspace TypeScript checks passed.                               |
 | `pnpm lint`                                 | PASS   | ESLint passed with zero warnings.                                 |
 | `pnpm build`                                | PASS   | Workspace production build passed.                                |

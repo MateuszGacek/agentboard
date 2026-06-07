@@ -164,6 +164,9 @@ for the domain. Check these in order:
 - `DATABASE_URL` uses `postgres` as the host when using the Compose Postgres service.
 - `DATABASE_URL` URL-encodes the password segment. Use `encodeURIComponent(password)`
   before placing it between `agentboard:` and `@postgres`.
+- The public `app` service is attached to the external `coolify` network so the proxy
+  can reach container port `3000`; Postgres remains private on the default Compose
+  network.
 - `SESSION_SECRET` is set to at least 32 non-placeholder characters.
 - Migration/seed did not fail before the API server started.
 - Coolify proxy logs do not show a stale route or upstream service mismatch.

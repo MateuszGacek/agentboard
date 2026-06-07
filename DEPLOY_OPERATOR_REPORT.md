@@ -10,7 +10,9 @@ Current production blocker: the Docker build succeeds, but the Coolify applicati
 runtime is unavailable through Traefik with `HTTP 503 no available server`. Coolify UI
 runtime logs confirmed the app container restarts because `DATABASE_URL` was assembled
 with a raw Postgres password containing URL-reserved characters, causing
-`scripts/wait-for-db.mjs` to throw `ERR_INVALID_URL`.
+`scripts/wait-for-db.mjs` to throw `ERR_INVALID_URL`. After that was fixed, Coolify
+reported the app container healthy, but Traefik still returned `503` because the app was
+not attached to the external `coolify` network used by the proxy.
 
 Earlier in this session the production URL briefly returned healthy API and SPA
 responses, including a non-UI production smoke for demo login, board snapshot,
@@ -22,7 +24,8 @@ A low-risk Dockerfile hardening patch was made so the dependency and build stage
 install devDependencies even if the build environment exposes `NODE_ENV=production`.
 Runtime remains production-oriented. A follow-up deployment patch now requires explicit
 `DATABASE_URL`, generates it with URL-encoded credentials in the Coolify helper, and
-redacts invalid URL startup errors.
+redacts invalid URL startup errors. The Compose app service is also attached to the
+external `coolify` network so Traefik can reach port `3000`.
 
 ## Actions Taken
 
