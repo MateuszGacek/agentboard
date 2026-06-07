@@ -2,7 +2,23 @@
 
 ## Current Phase
 
-Nightly Product Delivery Mode Started + Coolify Deploy Blocked.
+AgentBoard Deploy Operator Mode: production smoke PASS, Docker build robustness patch
+pending push.
+
+Deploy operator date: June 7, 2026
+
+Deploy operator status: PASS_WITH_ACCESS_LIMITATIONS. Local validation passed
+(`pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm format:check`, and no-cache
+`docker build -t agentboard-local .`). Dockerfile was hardened so deps/build stages
+force development dependency installation even if Coolify exposes
+`NODE_ENV=production` during build, while runtime remains production-oriented. Public
+production smoke passed: `/api/health` returned HTTP 200 JSON, `/login` returned HTTP
+200 `text/html`, and API smoke passed for demo auth, board snapshot, dashboard metrics,
+and graceful AI unavailable. Coolify env verification was blocked because this shell did
+not expose `COOLIFY_URL`, `COOLIFY_TOKEN`, `COOLIFY_APP_UUID`,
+`AGENTBOARD_POSTGRES_PASSWORD`, or `AGENTBOARD_SESSION_SECRET`. Read-only SSH
+diagnostics to `deploy@198.100.155.183` timed out on port 22. No redeploy was triggered
+from this session. See `DEPLOY_OPERATOR_REPORT.md`.
 
 Implementation date: June 6, 2026
 
