@@ -121,6 +121,10 @@ OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-nano
 ```
 
+When using the Compose Postgres service, `DATABASE_URL` should use the `postgres`
+hostname and URL-encode the password segment:
+`postgres://agentboard:<url-encoded-password>@postgres:5432/agentboard`.
+
 Generate `SESSION_SECRET` with:
 
 ```bash

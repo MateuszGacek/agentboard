@@ -44,6 +44,7 @@ function normalizeCoolifyUrl(rawUrl) {
 function requiredVariables() {
   const postgresPassword = process.env.AGENTBOARD_POSTGRES_PASSWORD;
   const sessionSecret = process.env.AGENTBOARD_SESSION_SECRET;
+  const encodedPostgresPassword = encodeURIComponent(postgresPassword);
 
   return [
     ["NODE_ENV", "production", true],
@@ -53,7 +54,11 @@ function requiredVariables() {
     ["POSTGRES_DB", "agentboard", true],
     ["POSTGRES_USER", "agentboard", true],
     ["POSTGRES_PASSWORD", postgresPassword, true],
-    ["DATABASE_URL", `postgres://agentboard:${postgresPassword}@postgres:5432/agentboard`, true],
+    [
+      "DATABASE_URL",
+      `postgres://agentboard:${encodedPostgresPassword}@postgres:5432/agentboard`,
+      true
+    ],
     ["SESSION_SECRET", sessionSecret, true],
     ["SEED_DEMO_DATA", "true", true],
     ["OPENAI_API_KEY", "", false],

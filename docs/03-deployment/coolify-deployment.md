@@ -62,6 +62,10 @@ AI_FEATURE_ENABLED=true
 SEED_DEMO_DATA=true
 ```
 
+For the Compose Postgres service, set `DATABASE_URL` with the `postgres` hostname and a
+URL-encoded password segment:
+`postgres://agentboard:<url-encoded-password>@postgres:5432/agentboard`.
+
 Optional:
 
 ```txt

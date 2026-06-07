@@ -2,24 +2,34 @@
 
 ## Current Phase
 
-AgentBoard Deploy Operator Mode: production runtime blocked after successful build.
+AgentBoard Deploy Operator Mode: production runtime fix in progress.
 
 Deploy operator date: June 7, 2026
 
-Deploy operator status: RUNTIME_BLOCKED_NO_SSH. Local validation passed
+Deploy operator status: RUNTIME_FIX_IN_PROGRESS. Local validation previously passed
 (`pnpm predeploy:check` and `docker build -t agentboard-local .`). Dockerfile was
 hardened in commit `7988487` so deps/build stages force development dependency
 installation even if Coolify exposes `NODE_ENV=production` during build, while runtime
-remains production-oriented. Coolify deployment log shows the build for commit
-`7988487` completed and containers started, but the app container is restarting and
-`https://scalesoftware.matgac.pl/api/health` currently returns `HTTP 503 no available
-server`. Coolify env verification is blocked because this shell does not expose
-`COOLIFY_URL`, `COOLIFY_TOKEN`, `COOLIFY_APP_UUID`,
-`AGENTBOARD_POSTGRES_PASSWORD`, or `AGENTBOARD_SESSION_SECRET`. SSH diagnostics are
-unavailable because `deploy@198.100.155.183:22` times out from this environment. Next
-required action is Coolify UI runtime debugging: open Application -> Logs, not
-Deployment Log, and collect the first runtime error after the app container starts. See
+remains production-oriented. Coolify runtime logs later confirmed the current production
+blocker: `DATABASE_URL` was assembled with a raw Postgres password containing
+URL-reserved characters, so `scripts/wait-for-db.mjs` throws `ERR_INVALID_URL` before
+the API starts and `https://scalesoftware.matgac.pl/api/health` returns `HTTP 503 no
+available server`. The repo-side fix requires explicit `DATABASE_URL`, URL-encodes the
+password in the Coolify helper, and redacts invalid URL startup errors. Next required
+action is validation, push, Coolify env update, redeploy, and live smoke. See
 `DEPLOY_OPERATOR_REPORT.md`.
+
+Latest deployment fix validation:
+
+| Command                                     | Result | Notes                                                             |
+| ------------------------------------------- | ------ | ----------------------------------------------------------------- |
+| `DATABASE_URL` reserved-character check     | PASS   | Encoded `/`, `#`, `?`, `%`, `@`, and `:` password samples parsed. |
+| invalid `scripts/wait-for-db.mjs` URL smoke | PASS   | Failed with a redacted actionable error, not the raw URL.         |
+| `pnpm typecheck`                            | PASS   | Workspace TypeScript checks passed.                               |
+| `pnpm lint`                                 | PASS   | ESLint passed with zero warnings.                                 |
+| `pnpm build`                                | PASS   | Workspace production build passed.                                |
+| `pnpm format:check`                         | PASS   | Prettier check passed.                                            |
+| `docker build -t agentboard-local .`        | PASS   | Local Docker image build completed.                               |
 
 Implementation date: June 6, 2026
 

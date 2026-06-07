@@ -8,9 +8,9 @@ Mode: AgentBoard Deploy Operator Mode
 
 Current production blocker: the Docker build succeeds, but the Coolify application
 runtime is unavailable through Traefik with `HTTP 503 no available server`. Coolify UI
-reported the app container as restarting after deployment. SSH to the server is
-unavailable from this environment, so active debugging must use Coolify Application
-runtime logs or the Coolify Terminal.
+runtime logs confirmed the app container restarts because `DATABASE_URL` was assembled
+with a raw Postgres password containing URL-reserved characters, causing
+`scripts/wait-for-db.mjs` to throw `ERR_INVALID_URL`.
 
 Earlier in this session the production URL briefly returned healthy API and SPA
 responses, including a non-UI production smoke for demo login, board snapshot,
@@ -20,7 +20,9 @@ blocked.
 
 A low-risk Dockerfile hardening patch was made so the dependency and build stages
 install devDependencies even if the build environment exposes `NODE_ENV=production`.
-Runtime remains production-oriented.
+Runtime remains production-oriented. A follow-up deployment patch now requires explicit
+`DATABASE_URL`, generates it with URL-encoded credentials in the Coolify helper, and
+redacts invalid URL startup errors.
 
 ## Actions Taken
 
@@ -184,10 +186,16 @@ attempt 3 200 application/json
   can provide the same evidence without external SSH.
 - Browser/UI smoke is blocked until `/api/health` is back to HTTP 200.
 
+## Confirmed Runtime Root Cause
+
+The app container fails before the API starts because `DATABASE_URL` is not a valid URL.
+The Postgres password segment must be URL-encoded before it is inserted into
+`postgres://agentboard:<password>@postgres:5432/agentboard`.
+
 ## Exact Next Action
 
-Open Coolify -> Application -> Logs and copy the first 30-80 runtime log lines after
-the app container starts. Do not use Deployment Log for this step.
+Update the Coolify app `DATABASE_URL` with the existing database password encoded in the
+URL password segment, then redeploy a commit containing the repo-side fix.
 
 If Coolify Terminal is easier, run:
 
@@ -203,14 +211,5 @@ curl -i https://scalesoftware.matgac.pl/api/health
 curl -I https://scalesoftware.matgac.pl/login
 ```
 
-Likely runtime causes to identify from logs:
-
-- `SESSION_SECRET`: update only `SESSION_SECRET` to at least 32 random characters.
-- `DATABASE_URL`: fix the app `DATABASE_URL`.
-- `password authentication failed`: Postgres password and existing volume likely do not
-  match; do not delete the volume without explicit approval.
-- `WEB_DIST_DIR` or missing `index.html`: verify `/app/apps/web/dist`.
-- `Cannot find module`: fix runtime dependencies or Docker copy path.
-- app running but healthcheck failing: verify port `3000` and `/api/health`.
-- app healthy but Traefik 503: verify domain is attached to service `app` on port
-  `3000`.
+If the next deploy still fails, inspect app logs for the next runtime error. Do not
+delete the Postgres volume unless explicitly approved.

@@ -64,7 +64,7 @@ NODE_ENV=production
 PORT=3000
 APP_URL=https://scalesoftware.matgac.pl
 WEB_DIST_DIR=/app/apps/web/dist
-DATABASE_URL=postgres://agentboard:<password>@postgres:5432/agentboard
+DATABASE_URL=postgres://agentboard:<url-encoded-password>@postgres:5432/agentboard
 SESSION_SECRET=<at least 32 random characters>
 SEED_DEMO_DATA=true
 ```
@@ -162,6 +162,8 @@ for the domain. Check these in order:
 
 - The app healthcheck is configured for `/api/health`.
 - `DATABASE_URL` uses `postgres` as the host when using the Compose Postgres service.
+- `DATABASE_URL` URL-encodes the password segment. Use `encodeURIComponent(password)`
+  before placing it between `agentboard:` and `@postgres`.
 - `SESSION_SECRET` is set to at least 32 non-placeholder characters.
 - Migration/seed did not fail before the API server started.
 - Coolify proxy logs do not show a stale route or upstream service mismatch.
@@ -286,7 +288,7 @@ Before the next manual deploy attempt:
    - `PORT=3000`
    - `APP_URL=https://scalesoftware.matgac.pl`
    - `WEB_DIST_DIR=/app/apps/web/dist`
-   - `DATABASE_URL=postgres://agentboard:<password>@postgres:5432/agentboard`
+   - `DATABASE_URL=postgres://agentboard:<url-encoded-password>@postgres:5432/agentboard`
    - `SESSION_SECRET=<at least 32 random characters>`
    - `SEED_DEMO_DATA=true`
 4. Deploy manually in Coolify.

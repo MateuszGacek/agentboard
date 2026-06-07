@@ -9,7 +9,21 @@ if (!databaseUrl) {
   process.exit(1);
 }
 
-const parsed = new URL(databaseUrl);
+let parsed;
+
+try {
+  parsed = new URL(databaseUrl);
+} catch {
+  console.error(
+    [
+      "DATABASE_URL is not a valid PostgreSQL URL.",
+      "If the password contains reserved URL characters, encode the password segment.",
+      "Example: build DATABASE_URL with encodeURIComponent(POSTGRES_PASSWORD)."
+    ].join(" ")
+  );
+  process.exit(1);
+}
+
 const host = parsed.hostname;
 const port = Number(parsed.port || 5432);
 const deadline = Date.now() + timeoutMs;
