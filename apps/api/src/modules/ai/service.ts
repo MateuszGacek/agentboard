@@ -1,4 +1,4 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   aiSuggestions,
   boardColumns,
@@ -6,7 +6,7 @@ import {
   taskActivityEvents,
   taskChecklistItems,
   tasks
-} from "@agentboard/db";
+} from "@kanban/db";
 import {
   aiNextActionSuggestionSchema,
   aiTaskImprovementSchema,
@@ -16,7 +16,7 @@ import {
   type AiTaskImprovement,
   type ApplyAiSuggestionRequest,
   type TaskPriority
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 
 import type { ApiEnv } from "../../env";
@@ -307,7 +307,7 @@ async function callOpenAi(input: {
         text: {
           format: {
             type: "json_schema",
-            name: "agentboard_task_improvement",
+            name: "kanban_task_improvement",
             description: "Delivery-ready AI task improvement suggestion.",
             strict: true,
             schema: aiResponseJsonSchema
@@ -450,7 +450,7 @@ async function callOpenAiNextActions(input: {
         text: {
           format: {
             type: "json_schema",
-            name: "agentboard_next_actions",
+            name: "kanban_next_actions",
             description: "Next implementation tasks for a Kanban board.",
             strict: true,
             schema: aiNextActionsJsonSchema

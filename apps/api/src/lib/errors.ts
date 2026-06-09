@@ -1,4 +1,4 @@
-import type { ApiErrorCode } from "@agentboard/shared";
+import type { ApiErrorCode } from "@kanban/shared";
 import { ZodError } from "zod";
 
 import type { ContentfulStatusCode } from "hono/utils/http-status";

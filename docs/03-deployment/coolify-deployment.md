@@ -3,7 +3,7 @@
 ## Target
 
 ```txt
-https://scalesoftware.matgac.pl
+https://kanban.matgac.pl
 ```
 
 Infrastructure:
@@ -54,7 +54,7 @@ Production required:
 
 ```txt
 NODE_ENV=production
-APP_URL=https://scalesoftware.matgac.pl
+APP_URL=https://kanban.matgac.pl
 PORT=3000
 DATABASE_URL=
 SESSION_SECRET=
@@ -66,7 +66,7 @@ SEED_DEMO_DATA=true
 
 For the Compose Postgres service, set `DATABASE_URL` with the `postgres` hostname and a
 URL-encoded password segment:
-`postgres://agentboard:<url-encoded-password>@agentboard-postgres-db:5432/agentboard`.
+`postgres://kanban:<url-encoded-password>@kanban-postgres-db:5432/kanban`.
 
 For new disposable databases, prefer an alphanumeric `POSTGRES_PASSWORD` to avoid URL
 reserved-character mistakes. Still keep `DATABASE_URL` explicit so the app service and
@@ -120,8 +120,8 @@ the safe recovery path is:
    fixes,
 6. verify `/api/health` and `/login` return non-503 responses.
 
-The June 7, 2026 emergency recovery used manual containers named `agentboard-postgres`
-and `agentboard-app` from image
+The June 7, 2026 emergency recovery used manual containers named `kanban-postgres`
+and `kanban-app` from image
 `cnlemhsfin1p0malfvchgf25_app:f899a051633f6ea41dfb9817f65288aa703cb91d`. Before the
 next Coolify UI redeploy, sync or recreate the Coolify app configuration so it does not
 replace the recovered runtime with stale environment values.
@@ -162,7 +162,7 @@ Expected response:
 {
   "data": {
     "ok": true,
-    "service": "agentboard-api",
+    "service": "kanban-api",
     "version": "1.0.0",
     "timestamp": "2026-06-06T00:00:00.000Z",
     "database": "ok"
@@ -270,7 +270,7 @@ Frontend should display a graceful error and keep task unchanged.
 
 ## Acceptance criteria
 
-- Production app loads from `https://scalesoftware.matgac.pl`.
+- Production app loads from `https://kanban.matgac.pl`.
 - `/api/health` returns successful JSON.
 - Demo login works.
 - Board data persists after page refresh.

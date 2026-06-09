@@ -67,7 +67,7 @@ export type ApiSuccess<T> = {
 
 export const healthResponseSchema = z.object({
   ok: z.literal(true),
-  service: z.literal("agentboard-api"),
+  service: z.literal("kanban-api"),
   timestamp: z.string().datetime()
 });
 

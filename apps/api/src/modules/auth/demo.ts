@@ -1,4 +1,4 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   boardColumns,
   boards,
@@ -12,7 +12,7 @@ import {
   users,
   workspaceMembers,
   workspaces
-} from "@agentboard/db";
+} from "@kanban/db";
 import { randomUUID } from "node:crypto";
 
 function takeFirst<T>(rows: T[], entity: string): T {
@@ -45,7 +45,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
         .insert(users)
         .values({
           name: "Demo Lead",
-          email: `demo-${suffix}@agentboard.local`,
+          email: `demo-${suffix}@kanban.local`,
           passwordHash: null,
           avatarUrl: null,
           locale: "en",
@@ -61,8 +61,8 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
       await tx
         .insert(workspaces)
         .values({
-          name: "ScopePilot Demo",
-          slug: `scale-software-demo-${suffix}`,
+          name: "Kanban Demo",
+          slug: `kanban-demo-${suffix}`,
           createdBy: demoUser.id,
           isDemo: true,
           updatedAt: now
@@ -262,7 +262,7 @@ export async function createIsolatedDemoWorkspace(db: DatabaseClient) {
           projectId: demoProject.id,
           boardId: demoBoard.id,
           columnId: done.id,
-          title: "Ship first ScopePilot demo space",
+          title: "Ship first Kanban demo space",
           description: "Seeded workflow is ready for product review.",
           priority: "low",
           position: 1000,

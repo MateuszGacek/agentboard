@@ -9,8 +9,8 @@ product feature work was performed.
 
 ## Previous Live Failure
 
-- `https://scalesoftware.matgac.pl/api/health` presented `TRAEFIK DEFAULT CERT`.
-- `curl -k https://scalesoftware.matgac.pl/api/health` returned `HTTP 503` with
+- `https://kanban.matgac.pl/api/health` presented `TRAEFIK DEFAULT CERT`.
+- `curl -k https://kanban.matgac.pl/api/health` returned `HTTP 503` with
   `no available server`.
 
 ## Suspected Cause Categories
@@ -33,7 +33,7 @@ The live symptoms still point to one or more Coolify/proxy/runtime configuration
   - still uses `PORT`,
   - default remains `3000`.
 - Made startup log match container binding:
-  - `agentboard-api listening on http://0.0.0.0:3000/api`.
+  - `kanban-api listening on http://0.0.0.0:3000/api`.
 - Made Compose app healthcheck use `process.env.PORT || 3000` instead of a hardcoded
   port.
 - Changed Compose `SESSION_SECRET` interpolation to `${SESSION_SECRET:-}` so Compose can
@@ -74,7 +74,7 @@ Verified:
 
 Cloudflare DNS:
 
-- `A scalesoftware -> 198.100.155.183`
+- `A kanban -> 198.100.155.183`
 - Proxy status: DNS only for first deployment verification.
 
 Coolify resource:
@@ -89,19 +89,19 @@ Coolify resource:
 Coolify domain configuration:
 
 - If Coolify has separate domain and port fields:
-  - domain: `https://scalesoftware.matgac.pl`
+  - domain: `https://kanban.matgac.pl`
   - port: `3000`
 - If Coolify requires the port inline:
-  - domain: `https://scalesoftware.matgac.pl:3000`
+  - domain: `https://kanban.matgac.pl:3000`
 
 App environment:
 
 ```txt
 NODE_ENV=production
 PORT=3000
-APP_URL=https://scalesoftware.matgac.pl
+APP_URL=https://kanban.matgac.pl
 WEB_DIST_DIR=/app/apps/web/dist
-DATABASE_URL=postgres://agentboard:<password>@postgres:5432/agentboard
+DATABASE_URL=postgres://kanban:<password>@postgres:5432/kanban
 SESSION_SECRET=<at least 32 random characters>
 SEED_DEMO_DATA=true
 OPENAI_API_KEY=
@@ -111,8 +111,8 @@ OPENAI_MODEL=gpt-5-nano
 Postgres environment:
 
 ```txt
-POSTGRES_DB=agentboard
-POSTGRES_USER=agentboard
+POSTGRES_DB=kanban
+POSTGRES_USER=kanban
 POSTGRES_PASSWORD=<same password as DATABASE_URL>
 ```
 
@@ -158,13 +158,13 @@ docker exec -it <app-container> node -e "fetch('http://127.0.0.1:' + (process.en
 ## Next Deploy Attempt Checklist
 
 1. Confirm `pnpm predeploy:check` passes locally.
-2. Confirm `docker build -t agentboard-local .` passes locally.
+2. Confirm `docker build -t kanban-local .` passes locally.
 3. Confirm non-DB Docker smoke passes locally.
-4. In Cloudflare, set `A scalesoftware -> 198.100.155.183` and DNS only.
+4. In Cloudflare, set `A kanban -> 198.100.155.183` and DNS only.
 5. In Coolify, deploy Compose resource.
-6. Attach `https://scalesoftware.matgac.pl` to `app` service on port `3000`.
+6. Attach `https://kanban.matgac.pl` to `app` service on port `3000`.
 7. Verify app container health.
-8. Verify `https://scalesoftware.matgac.pl/api/health`.
+8. Verify `https://kanban.matgac.pl/api/health`.
 9. Verify `/login` and `/app` SPA refresh.
 10. Verify demo login, board, dashboard, and AI unavailable path.
 

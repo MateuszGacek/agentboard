@@ -1,4 +1,4 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   boardColumns,
   boards,
@@ -7,7 +7,7 @@ import {
   taskAssignees,
   tasks,
   workspaceMembers
-} from "@agentboard/db";
+} from "@kanban/db";
 import { and, eq } from "drizzle-orm";
 
 import { forbidden, notFound } from "../../lib/errors";

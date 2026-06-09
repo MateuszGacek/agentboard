@@ -1,15 +1,15 @@
-# ScopePilot
+# Kanban
 
 **Delivery clarity for AI software teams.**
 
-Live URL placeholder: [https://scalesoftware.matgac.pl](https://scalesoftware.matgac.pl)
+Live URL placeholder: [https://kanban.matgac.pl](https://kanban.matgac.pl)
 
 Production runtime has been recovered for the public URL. See [STATUS.md](STATUS.md)
 for the current source of truth and latest verification results.
 
 ## Product Summary
 
-ScopePilot is a full-stack product for AI/software teams that need to turn vague ideas
+Kanban is a full-stack product for AI/software teams that need to turn vague ideas
 into clear delivery tasks, keep work-in-progress under control, and see risk early. It
 is intentionally built as a real vertical slice with PostgreSQL persistence, typed API
 contracts, authenticated workspace boundaries, responsive UI, and server-side OpenAI
@@ -24,7 +24,7 @@ Delivery space -> Project -> Workflow -> Column -> Task -> Task detail -> AI cla
 ## Why This Exists
 
 AI delivery teams often start from vague task notes, unclear acceptance criteria, and
-too much work in progress. ScopePilot turns that into a reviewable workflow:
+too much work in progress. Kanban turns that into a reviewable workflow:
 
 - workflows show current delivery state,
 - task detail captures the implementation brief,
@@ -112,7 +112,7 @@ cp .env.example .env
 Edit `.env` for your local machine. At minimum, persisted-data routes need:
 
 ```txt
-DATABASE_URL=postgres://agentboard:agentboard@localhost:5432/agentboard
+DATABASE_URL=postgres://kanban:kanban@localhost:5432/kanban
 SESSION_SECRET=change-me-in-local-env
 ```
 
@@ -156,10 +156,10 @@ pnpm predeploy:check # typecheck, lint, build, format check, i18n parity
 Useful package-level checks:
 
 ```bash
-pnpm --filter @agentboard/web build
-pnpm --filter @agentboard/api build
-pnpm --filter @agentboard/shared build
-pnpm --filter @agentboard/db build
+pnpm --filter @kanban/web build
+pnpm --filter @kanban/api build
+pnpm --filter @kanban/shared build
+pnpm --filter @kanban/db build
 ```
 
 ## Local QA and Smoke
@@ -185,7 +185,7 @@ database URL:
 ```bash
 # terminal 1
 set -a; source .env.local; set +a
-pnpm --filter @agentboard/api start
+pnpm --filter @kanban/api start
 
 # terminal 2
 pnpm smoke:local
@@ -219,17 +219,17 @@ Environment requirements:
 Non-destructive local image build:
 
 ```bash
-docker build -t agentboard-local .
+docker build -t kanban-local .
 ```
 
 Coolify deployment model:
 
 1. Create a Docker Compose resource from this repository.
-2. Assign `https://scalesoftware.matgac.pl` to the `app` service.
+2. Assign `https://kanban.matgac.pl` to the `app` service.
 3. Use container port `3000`.
    - If the Coolify UI requires port in the domain value, use
-     `https://scalesoftware.matgac.pl:3000`.
-   - If the UI has a separate port field, use `https://scalesoftware.matgac.pl` and
+     `https://kanban.matgac.pl:3000`.
+   - If the UI has a separate port field, use `https://kanban.matgac.pl` and
      port `3000`.
 4. Keep the `postgres` service internal.
 5. Set production env vars in Coolify, especially `DATABASE_URL`,
@@ -237,7 +237,7 @@ Coolify deployment model:
 6. Deploy and verify `/api/health`, demo login, workflow, task detail, overview, and AI
    unavailable/working state.
 
-For first verification, Cloudflare should point `A scalesoftware` to `198.100.155.183`
+For first verification, Cloudflare should point `A kanban` to `198.100.155.183`
 with DNS-only proxy status. If Coolify returns `503 no available server`, check app
 health, target service, target port `3000`, app logs, proxy logs, and whether the domain
 is attached to the `app` service. If the browser shows `TRAEFIK DEFAULT CERT`, verify

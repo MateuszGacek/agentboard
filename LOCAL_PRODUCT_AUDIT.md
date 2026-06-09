@@ -1,4 +1,4 @@
-# AgentBoard Local Product Readiness Audit
+# Kanban Local Product Readiness Audit
 
 ## Summary
 
@@ -29,26 +29,26 @@ detail polish, not dashboard, AI, or deployment.
 
 Commands run on June 6, 2026:
 
-| Command                                      | Result | Notes                                               |
-| -------------------------------------------- | ------ | --------------------------------------------------- |
-| `pnpm typecheck`                             | PASS   | Workspace TypeScript checks passed.                 |
-| `pnpm lint`                                  | PASS   | ESLint passed with zero warnings.                   |
-| `pnpm build`                                 | PASS   | Workspace build passed; web Vite build completed.   |
-| `pnpm format:check`                          | PASS   | Initial pre-edit format check passed.               |
-| `pnpm --filter @agentboard/web typecheck`    | PASS   | Web package typecheck passed.                       |
-| `pnpm --filter @agentboard/web build`        | PASS   | Web package build passed.                           |
-| `pnpm --filter @agentboard/api typecheck`    | PASS   | API package typecheck passed.                       |
-| `pnpm --filter @agentboard/api build`        | PASS   | API package build passed.                           |
-| `pnpm --filter @agentboard/shared typecheck` | PASS   | Shared package typecheck passed.                    |
-| `pnpm --filter @agentboard/shared build`     | PASS   | Shared package build passed.                        |
-| `pnpm --filter @agentboard/db typecheck`     | PASS   | DB package typecheck passed.                        |
-| `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                            |
-| `pnpm format:check`                          | FAIL   | First post-edit run found markdown wrapping drift.  |
-| `pnpm format`                                | PASS   | Formatted `LOCAL_PRODUCT_AUDIT.md` and `STATUS.md`. |
-| `pnpm typecheck`                             | PASS   | Final post-edit workspace TypeScript checks passed. |
-| `pnpm lint`                                  | PASS   | Final post-edit ESLint check passed.                |
-| `pnpm build`                                 | PASS   | Final post-edit workspace build passed.             |
-| `pnpm format:check`                          | PASS   | Final post-edit format check passed.                |
+| Command                                  | Result | Notes                                               |
+| ---------------------------------------- | ------ | --------------------------------------------------- |
+| `pnpm typecheck`                         | PASS   | Workspace TypeScript checks passed.                 |
+| `pnpm lint`                              | PASS   | ESLint passed with zero warnings.                   |
+| `pnpm build`                             | PASS   | Workspace build passed; web Vite build completed.   |
+| `pnpm format:check`                      | PASS   | Initial pre-edit format check passed.               |
+| `pnpm --filter @kanban/web typecheck`    | PASS   | Web package typecheck passed.                       |
+| `pnpm --filter @kanban/web build`        | PASS   | Web package build passed.                           |
+| `pnpm --filter @kanban/api typecheck`    | PASS   | API package typecheck passed.                       |
+| `pnpm --filter @kanban/api build`        | PASS   | API package build passed.                           |
+| `pnpm --filter @kanban/shared typecheck` | PASS   | Shared package typecheck passed.                    |
+| `pnpm --filter @kanban/shared build`     | PASS   | Shared package build passed.                        |
+| `pnpm --filter @kanban/db typecheck`     | PASS   | DB package typecheck passed.                        |
+| `pnpm --filter @kanban/db build`         | PASS   | DB package build passed.                            |
+| `pnpm format:check`                      | FAIL   | First post-edit run found markdown wrapping drift.  |
+| `pnpm format`                            | PASS   | Formatted `LOCAL_PRODUCT_AUDIT.md` and `STATUS.md`. |
+| `pnpm typecheck`                         | PASS   | Final post-edit workspace TypeScript checks passed. |
+| `pnpm lint`                              | PASS   | Final post-edit ESLint check passed.                |
+| `pnpm build`                             | PASS   | Final post-edit workspace build passed.             |
+| `pnpm format:check`                      | PASS   | Final post-edit format check passed.                |
 
 Not run:
 
@@ -119,7 +119,7 @@ and deployment must wait.
 ## Exact next prompt
 
 ```txt
-Continue the AgentBoard project from the current repository state.
+Continue the Kanban project from the current repository state.
 
 Read AGENTS.md, STATUS.md, LOCAL_PRODUCT_AUDIT.md, docs/index.md, docs/02-implementation/implementation-plan.md, docs/02-implementation/acceptance-criteria.md, docs/01-architecture/api-contracts.md, and docs/01-architecture/frontend-ui-system.md.
 

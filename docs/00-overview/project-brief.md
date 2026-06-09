@@ -2,7 +2,7 @@
 
 ## Product name
 
-**AgentBoard**
+**Kanban**
 
 ## Tagline
 
@@ -10,7 +10,7 @@
 
 ## One-liner
 
-AgentBoard is a Kanban productivity platform for AI software agencies that helps teams clarify work, control WIP, prioritize delivery, and improve task quality with AI.
+Kanban is a Kanban productivity platform for AI software agencies that helps teams clarify work, control WIP, prioritize delivery, and improve task quality with AI.
 
 ## Recruitment goal
 
@@ -58,7 +58,7 @@ Generic Kanban boards track cards, but they do not help improve task quality or 
 
 ## Product promise
 
-AgentBoard helps teams answer:
+Kanban helps teams answer:
 
 1. What should we work on next?
 2. What is overloaded?
@@ -68,7 +68,7 @@ AgentBoard helps teams answer:
 
 ## Differentiators
 
-AgentBoard should not compete with Trello feature-by-feature. It should win as a focused, polished portfolio product.
+Kanban should not compete with Trello feature-by-feature. It should win as a focused, polished portfolio product.
 
 Key differentiators:
 

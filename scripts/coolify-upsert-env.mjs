@@ -49,14 +49,14 @@ function requiredVariables() {
   return [
     ["NODE_ENV", "production", true],
     ["PORT", "3000", true],
-    ["APP_URL", "https://scalesoftware.matgac.pl", true],
+    ["APP_URL", "https://kanban.matgac.pl", true],
     ["WEB_DIST_DIR", "/app/apps/web/dist", true],
-    ["POSTGRES_DB", "agentboard", true],
-    ["POSTGRES_USER", "agentboard", true],
+    ["POSTGRES_DB", "kanban", true],
+    ["POSTGRES_USER", "kanban", true],
     ["POSTGRES_PASSWORD", postgresPassword, true],
     [
       "DATABASE_URL",
-      `postgres://agentboard:${encodedPostgresPassword}@agentboard-postgres-db:5432/agentboard`,
+      `postgres://kanban:${encodedPostgresPassword}@kanban-postgres-db:5432/kanban`,
       true
     ],
     ["SESSION_SECRET", sessionSecret, true],

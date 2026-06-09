@@ -1,4 +1,4 @@
-# AgentBoard Phase 0-3 Audit
+# Kanban Phase 0-3 Audit
 
 Audit date: June 6, 2026
 
@@ -26,27 +26,27 @@ No Kanban board screen, dashboard, AI feature, Docker/deployment implementation,
 
 ## Command results
 
-| Command                                      | Result | Notes                                                                        |
-| -------------------------------------------- | -----: | ---------------------------------------------------------------------------- |
-| `pnpm typecheck`                             |   PASS | Workspace TypeScript checks pass                                             |
-| `pnpm lint`                                  |   PASS | ESLint passes with zero warnings                                             |
-| `pnpm build`                                 |   PASS | Workspace build passes; web dist is generated build output                   |
-| `pnpm format:check`                          |   PASS | All matched files use Prettier style after documentation update              |
-| `pnpm --filter @agentboard/api typecheck`    |   PASS | API package typechecks                                                       |
-| `pnpm --filter @agentboard/api build`        |   PASS | API package build script passes                                              |
-| `pnpm --filter @agentboard/shared typecheck` |   PASS | Shared package typechecks                                                    |
-| `pnpm --filter @agentboard/shared build`     |   PASS | Shared package build script passes                                           |
-| `pnpm --filter @agentboard/db typecheck`     |   PASS | DB package typechecks without live database                                  |
-| `pnpm --filter @agentboard/db build`         |   PASS | DB package build script passes                                               |
-| `pnpm --filter @agentboard/web typecheck`    |   PASS | Web package typechecks                                                       |
-| `pnpm --filter @agentboard/web build`        |   PASS | Web package build script passes                                              |
-| DB-less `GET /api/health` smoke              |   PASS | Normal API startup without `DATABASE_URL` returned expected `200` payload    |
-| DB-less `GET /api/auth/me` smoke             |   PASS | DB-backed route returned structured `503 SERVICE_UNAVAILABLE` error envelope |
+| Command                                  | Result | Notes                                                                        |
+| ---------------------------------------- | -----: | ---------------------------------------------------------------------------- |
+| `pnpm typecheck`                         |   PASS | Workspace TypeScript checks pass                                             |
+| `pnpm lint`                              |   PASS | ESLint passes with zero warnings                                             |
+| `pnpm build`                             |   PASS | Workspace build passes; web dist is generated build output                   |
+| `pnpm format:check`                      |   PASS | All matched files use Prettier style after documentation update              |
+| `pnpm --filter @kanban/api typecheck`    |   PASS | API package typechecks                                                       |
+| `pnpm --filter @kanban/api build`        |   PASS | API package build script passes                                              |
+| `pnpm --filter @kanban/shared typecheck` |   PASS | Shared package typechecks                                                    |
+| `pnpm --filter @kanban/shared build`     |   PASS | Shared package build script passes                                           |
+| `pnpm --filter @kanban/db typecheck`     |   PASS | DB package typechecks without live database                                  |
+| `pnpm --filter @kanban/db build`         |   PASS | DB package build script passes                                               |
+| `pnpm --filter @kanban/web typecheck`    |   PASS | Web package typechecks                                                       |
+| `pnpm --filter @kanban/web build`        |   PASS | Web package build script passes                                              |
+| DB-less `GET /api/health` smoke          |   PASS | Normal API startup without `DATABASE_URL` returned expected `200` payload    |
+| DB-less `GET /api/auth/me` smoke         |   PASS | DB-backed route returned structured `503 SERVICE_UNAVAILABLE` error envelope |
 
 Commands intentionally not run:
 
-- `pnpm --filter @agentboard/db db:migrate` - not run because `DATABASE_URL` was not explicitly configured and verified as a safe local PostgreSQL database.
-- `pnpm --filter @agentboard/db db:seed` - not run because `DATABASE_URL` was not explicitly configured and verified as a safe local PostgreSQL database.
+- `pnpm --filter @kanban/db db:migrate` - not run because `DATABASE_URL` was not explicitly configured and verified as a safe local PostgreSQL database.
+- `pnpm --filter @kanban/db db:seed` - not run because `DATABASE_URL` was not explicitly configured and verified as a safe local PostgreSQL database.
 - Live PostgreSQL API smoke tests - not run because runtime DB configuration was not explicitly verified as safe.
 
 ## Repaired blockers
@@ -124,7 +124,7 @@ Phase 0 passes and Phase 1 passes as code. Phase 2 now passes after repairing pa
 ## Exact next prompt
 
 ```txt
-Continue the AgentBoard project from the current repository state.
+Continue the Kanban project from the current repository state.
 
 Start Phase 3 — Frontend app shell only.
 

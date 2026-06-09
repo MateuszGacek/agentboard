@@ -1,4 +1,4 @@
-# AgentBoard Task Detail Polish Audit
+# Kanban Task Detail Polish Audit
 
 ## Summary
 
@@ -18,24 +18,24 @@ PASS
 
 ## Command results
 
-| Command                                      | Result  | Notes                                      |
-| -------------------------------------------- | ------- | ------------------------------------------ |
-| `pnpm typecheck`                             | PASS    | Workspace TypeScript checks passed.        |
-| `pnpm lint`                                  | PASS    | ESLint passed with zero warnings.          |
-| `pnpm build`                                 | PASS    | Workspace build passed; Vite build passed. |
-| `pnpm format:check`                          | PASS    | Prettier check passed.                     |
-| `pnpm --filter @agentboard/web typecheck`    | PASS    | Web package typecheck passed.              |
-| `pnpm --filter @agentboard/web build`        | PASS    | Web package build passed.                  |
-| `pnpm --filter @agentboard/api typecheck`    | PASS    | API package typecheck passed.              |
-| `pnpm --filter @agentboard/api build`        | PASS    | API package build passed.                  |
-| `pnpm --filter @agentboard/shared typecheck` | PASS    | Shared package typecheck passed.           |
-| `pnpm --filter @agentboard/shared build`     | PASS    | Shared package build passed.               |
-| `pnpm --filter @agentboard/db typecheck`     | PASS    | DB package typecheck passed.               |
-| `pnpm --filter @agentboard/db build`         | PASS    | DB package build passed.                   |
-| `pnpm format`                                | PASS    | Formatted audit/status markdown updates.   |
-| `pnpm format:check`                          | PASS    | Final Prettier check passed after docs.    |
-| `pnpm db:migrate`                            | NOT_RUN | No explicitly confirmed safe local DB URL. |
-| `pnpm db:seed`                               | NOT_RUN | No explicitly confirmed safe local DB URL. |
+| Command                                  | Result  | Notes                                      |
+| ---------------------------------------- | ------- | ------------------------------------------ |
+| `pnpm typecheck`                         | PASS    | Workspace TypeScript checks passed.        |
+| `pnpm lint`                              | PASS    | ESLint passed with zero warnings.          |
+| `pnpm build`                             | PASS    | Workspace build passed; Vite build passed. |
+| `pnpm format:check`                      | PASS    | Prettier check passed.                     |
+| `pnpm --filter @kanban/web typecheck`    | PASS    | Web package typecheck passed.              |
+| `pnpm --filter @kanban/web build`        | PASS    | Web package build passed.                  |
+| `pnpm --filter @kanban/api typecheck`    | PASS    | API package typecheck passed.              |
+| `pnpm --filter @kanban/api build`        | PASS    | API package build passed.                  |
+| `pnpm --filter @kanban/shared typecheck` | PASS    | Shared package typecheck passed.           |
+| `pnpm --filter @kanban/shared build`     | PASS    | Shared package build passed.               |
+| `pnpm --filter @kanban/db typecheck`     | PASS    | DB package typecheck passed.               |
+| `pnpm --filter @kanban/db build`         | PASS    | DB package build passed.                   |
+| `pnpm format`                            | PASS    | Formatted audit/status markdown updates.   |
+| `pnpm format:check`                      | PASS    | Final Prettier check passed after docs.    |
+| `pnpm db:migrate`                        | NOT_RUN | No explicitly confirmed safe local DB URL. |
+| `pnpm db:seed`                           | NOT_RUN | No explicitly confirmed safe local DB URL. |
 
 ## UI audit
 
@@ -124,7 +124,7 @@ None.
 ## Exact next prompt
 
 ```txt
-Continue the AgentBoard project from the current repository state.
+Continue the Kanban project from the current repository state.
 
 Read AGENTS.md, STATUS.md, TASK_DETAIL_AUDIT.md, LOCAL_PRODUCT_AUDIT.md, docs/index.md, docs/02-implementation/implementation-plan.md, docs/02-implementation/acceptance-criteria.md, docs/01-architecture/api-contracts.md, and docs/01-architecture/frontend-ui-system.md.
 

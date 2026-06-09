@@ -1,4 +1,4 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   sessions,
   users,
@@ -6,8 +6,8 @@ import {
   workspaces,
   type User,
   type WorkspaceMember
-} from "@agentboard/db";
-import type { CurrentUser, CurrentWorkspace, SessionResponse } from "@agentboard/shared";
+} from "@kanban/db";
+import type { CurrentUser, CurrentWorkspace, SessionResponse } from "@kanban/shared";
 import { and, eq, gt } from "drizzle-orm";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { Context, MiddlewareHandler } from "hono";

@@ -1,4 +1,4 @@
-import type { ApiError, ApiSuccess } from "@agentboard/shared";
+import type { ApiError, ApiSuccess } from "@kanban/shared";
 import type { Context } from "hono";
 
 import type { AppBindings } from "../types";

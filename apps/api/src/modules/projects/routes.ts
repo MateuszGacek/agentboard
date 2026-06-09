@@ -1,5 +1,5 @@
-import type { DatabaseClient } from "@agentboard/db";
-import { idSchema, updateProjectRequestSchema } from "@agentboard/shared";
+import type { DatabaseClient } from "@kanban/db";
+import { idSchema, updateProjectRequestSchema } from "@kanban/shared";
 import { Hono } from "hono";
 
 import { parseJsonBody } from "../../lib/body";

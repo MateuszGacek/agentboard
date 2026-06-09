@@ -1,5 +1,5 @@
 {
-  "name": "agentboard",
+  "name": "kanban",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -19,10 +19,10 @@
     "coolify:env:verify": "node scripts/coolify-upsert-env.mjs --verify",
     "smoke:local": "node scripts/local-smoke.mjs",
     "predeploy:check": "pnpm typecheck && pnpm lint && pnpm build && pnpm format:check && pnpm check:i18n",
-    "db:generate": "pnpm --filter @agentboard/db db:generate",
-    "db:migrate": "pnpm --filter @agentboard/db db:migrate",
-    "db:seed": "pnpm --filter @agentboard/db db:seed",
-    "start": "pnpm --filter @agentboard/api start"
+    "db:generate": "pnpm --filter @kanban/db db:generate",
+    "db:migrate": "pnpm --filter @kanban/db db:migrate",
+    "db:seed": "pnpm --filter @kanban/db db:seed",
+    "start": "pnpm --filter @kanban/api start"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

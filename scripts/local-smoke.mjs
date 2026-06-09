@@ -78,7 +78,7 @@ const registered = await request("/auth/register", {
   method: "POST",
   body: {
     name: `Smoke User ${smokeRunId}`,
-    email: `smoke-${smokeRunId}@agentboard.local`,
+    email: `smoke-${smokeRunId}@kanban.local`,
     password: "SmokePass123!"
   }
 });
@@ -352,7 +352,7 @@ const weeklyReport = await request(
 
 if (
   typeof weeklyReport.summaryMarkdown !== "string" ||
-  !weeklyReport.summaryMarkdown.includes("AgentBoard weekly report")
+  !weeklyReport.summaryMarkdown.includes("Kanban weekly report")
 ) {
   throw new Error("Weekly report did not return copy-ready markdown.");
 }

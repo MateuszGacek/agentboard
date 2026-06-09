@@ -9,7 +9,7 @@
 Production:
 
 ```txt
-https://scalesoftware.matgac.pl/api
+https://kanban.matgac.pl/api
 ```
 
 ## Response format
@@ -1000,7 +1000,7 @@ Response:
 ```ts
 type HealthResponse = ApiSuccess<{
   ok: true;
-  service: "agentboard-api";
+  service: "kanban-api";
   version: string;
   timestamp: string;
   database: "ok" | "degraded";

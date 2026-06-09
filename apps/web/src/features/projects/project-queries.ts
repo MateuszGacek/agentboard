@@ -1,8 +1,4 @@
-import type {
-  CreateProjectRequest,
-  UpdateProjectRequest,
-  WorkspaceProject
-} from "@agentboard/shared";
+import type { CreateProjectRequest, UpdateProjectRequest, WorkspaceProject } from "@kanban/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { projectApi } from "../../lib/api-client";

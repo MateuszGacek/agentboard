@@ -1,4 +1,4 @@
-import type { LoginRequest, RegisterRequest, SessionResponse } from "@agentboard/shared";
+import type { LoginRequest, RegisterRequest, SessionResponse } from "@kanban/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ApiClientError, authApi } from "../../lib/api-client";

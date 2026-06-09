@@ -1,10 +1,10 @@
-import type { DatabaseClient } from "@agentboard/db";
-import { boardColumns, boards } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
+import { boardColumns, boards } from "@kanban/db";
 import {
   aiNextActionsRequestSchema,
   idSchema,
   updateBoardColumnRequestSchema
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 

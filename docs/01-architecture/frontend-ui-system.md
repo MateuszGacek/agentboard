@@ -222,7 +222,7 @@ Use overlays intentionally:
 
 Avoid nested modals where possible. If unavoidable, close child before parent action.
 
-Saved board views are browser-local, scoped to `agentboard.boardViews.${boardId}`, and
+Saved board views are browser-local, scoped to `kanban.boardViews.${boardId}`, and
 must only store the existing URL filter state. Shared DB-backed saved views are outside
 the current scope.
 

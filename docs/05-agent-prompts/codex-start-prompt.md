@@ -4,7 +4,7 @@ Paste this prompt into Codex after placing this documentation pack at the reposi
 
 ---
 
-You are building **AgentBoard**, a full-stack recruitment project and public GitHub portfolio application.
+You are building **Kanban**, a full-stack recruitment project and public GitHub portfolio application.
 
 Before writing code, read these files in order:
 

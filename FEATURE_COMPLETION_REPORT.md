@@ -77,24 +77,24 @@ or DB architecture changes were performed.
 
 ## Validation Results
 
-| Command                                      | Result | Notes                                                   |
-| -------------------------------------------- | ------ | ------------------------------------------------------- |
-| `pnpm --filter @agentboard/web typecheck`    | PASS   | Initial focused web check after ref fix.                |
-| `pnpm typecheck`                             | PASS   | Workspace TypeScript checks passed.                     |
-| `pnpm lint`                                  | PASS   | ESLint passed with zero warnings.                       |
-| `pnpm build`                                 | PASS   | Workspace build passed; Vite production build passed.   |
-| `pnpm format`                                | PASS   | Formatted updated frontend and documentation files.     |
-| `pnpm format:check`                          | PASS   | Prettier check passed.                                  |
-| `pnpm --filter @agentboard/web typecheck`    | PASS   | Web package typecheck passed.                           |
-| `pnpm --filter @agentboard/web build`        | PASS   | Web package production build passed.                    |
-| `pnpm --filter @agentboard/api typecheck`    | PASS   | API package typecheck passed.                           |
-| `pnpm --filter @agentboard/api build`        | PASS   | API package build passed.                               |
-| `pnpm --filter @agentboard/shared typecheck` | PASS   | Shared package typecheck passed.                        |
-| `pnpm --filter @agentboard/shared build`     | PASS   | Shared package build passed.                            |
-| `pnpm --filter @agentboard/db typecheck`     | PASS   | DB package typecheck passed.                            |
-| `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                                |
-| Focused local runtime smoke                  | PASS   | Health, demo auth, board snapshot/filter logic, task    |
-|                                              |        | create, task move, dashboard, and web board route pass. |
+| Command                                  | Result | Notes                                                   |
+| ---------------------------------------- | ------ | ------------------------------------------------------- |
+| `pnpm --filter @kanban/web typecheck`    | PASS   | Initial focused web check after ref fix.                |
+| `pnpm typecheck`                         | PASS   | Workspace TypeScript checks passed.                     |
+| `pnpm lint`                              | PASS   | ESLint passed with zero warnings.                       |
+| `pnpm build`                             | PASS   | Workspace build passed; Vite production build passed.   |
+| `pnpm format`                            | PASS   | Formatted updated frontend and documentation files.     |
+| `pnpm format:check`                      | PASS   | Prettier check passed.                                  |
+| `pnpm --filter @kanban/web typecheck`    | PASS   | Web package typecheck passed.                           |
+| `pnpm --filter @kanban/web build`        | PASS   | Web package production build passed.                    |
+| `pnpm --filter @kanban/api typecheck`    | PASS   | API package typecheck passed.                           |
+| `pnpm --filter @kanban/api build`        | PASS   | API package build passed.                               |
+| `pnpm --filter @kanban/shared typecheck` | PASS   | Shared package typecheck passed.                        |
+| `pnpm --filter @kanban/shared build`     | PASS   | Shared package build passed.                            |
+| `pnpm --filter @kanban/db typecheck`     | PASS   | DB package typecheck passed.                            |
+| `pnpm --filter @kanban/db build`         | PASS   | DB package build passed.                                |
+| Focused local runtime smoke              | PASS   | Health, demo auth, board snapshot/filter logic, task    |
+|                                          |        | create, task move, dashboard, and web board route pass. |
 
 ## Runtime Smoke
 

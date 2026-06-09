@@ -1,4 +1,4 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   aiSuggestions,
   boardColumns,
@@ -7,14 +7,14 @@ import {
   taskActivityEvents,
   tasks,
   users
-} from "@agentboard/db";
+} from "@kanban/db";
 import {
   taskPriorityValues,
   type ActivityEventType,
   type DashboardMetrics,
   type TaskPriority,
   type WeeklyReportResponse
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { and, asc, desc, eq, gte, isNull, lt } from "drizzle-orm";
 
 import { assertProjectInWorkspace, assertWorkspaceMember } from "./ownership";
@@ -362,7 +362,7 @@ function markdownReport(input: {
       : "No due-soon tasks";
 
   return [
-    `## AgentBoard weekly report (${input.weekStart} - ${input.weekEnd})`,
+    `## Kanban weekly report (${input.weekStart} - ${input.weekEnd})`,
     "",
     `- New tasks: ${input.newTasksCount}`,
     `- Completed tasks: ${input.completedTasksCount}`,

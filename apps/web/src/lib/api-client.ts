@@ -41,7 +41,7 @@ import type {
   UpdateTaskRequest,
   UpdateTaskResponseData,
   WeeklyReportResponse
-} from "@agentboard/shared";
+} from "@kanban/shared";
 
 export class ApiClientError extends Error {
   readonly code: ApiError["error"]["code"];

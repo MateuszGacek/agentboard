@@ -2,7 +2,7 @@
 
 Date: June 7, 2026
 
-Mode: AgentBoard Deploy Operator Mode
+Mode: Kanban Deploy Operator Mode
 
 ## Summary
 
@@ -21,7 +21,7 @@ the app was started from image
 `cnlemhsfin1p0malfvchgf25_app:f899a051633f6ea41dfb9817f65288aa703cb91d`. The app is
 attached to a private DB network and the external `coolify` proxy network. Runtime
 secrets were generated on the server and stored only at
-`/root/agentboard-runtime-secrets.txt` with `600` permissions.
+`/root/kanban-runtime-secrets.txt` with `600` permissions.
 
 A low-risk Dockerfile hardening patch was made so the dependency and build stages
 install devDependencies even if the build environment exposes `NODE_ENV=production`.
@@ -32,8 +32,8 @@ external `coolify` network so Traefik can reach port `3000`.
 
 Current live checks pass:
 
-- `curl -i https://scalesoftware.matgac.pl/api/health`: `HTTP/2 200`
-- `curl -I https://scalesoftware.matgac.pl/login`: `HTTP/2 200`
+- `curl -i https://kanban.matgac.pl/api/health`: `HTTP/2 200`
+- `curl -I https://kanban.matgac.pl/login`: `HTTP/2 200`
 
 ## Actions Taken
 
@@ -51,8 +51,8 @@ Current live checks pass:
 - Earlier confirmed production `/api/health` returned `HTTP 503 no available server`.
 - Recovered production on the host with disposable fresh Postgres and an alphanumeric DB
   password.
-- Started `agentboard-app` from commit image `f899a051633f6ea41dfb9817f65288aa703cb91d`.
-- Attached the app to `agentboard_internal` for Postgres and `coolify` for Traefik.
+- Started `kanban-app` from commit image `f899a051633f6ea41dfb9817f65288aa703cb91d`.
+- Attached the app to `kanban_internal` for Postgres and `coolify` for Traefik.
 - Verified production `/api/health` and `/login` now return `HTTP/2 200`.
 
 ## Commands Run
@@ -63,11 +63,11 @@ pnpm typecheck
 pnpm lint
 pnpm build
 pnpm format:check
-docker build -t agentboard-local .
-docker build --no-cache -t agentboard-local .
+docker build -t kanban-local .
+docker build --no-cache -t kanban-local .
 pnpm predeploy:check
-curl -i --max-time 30 https://scalesoftware.matgac.pl/api/health
-curl -I --max-time 30 https://scalesoftware.matgac.pl/login
+curl -i --max-time 30 https://kanban.matgac.pl/api/health
+curl -I --max-time 30 https://kanban.matgac.pl/login
 ```
 
 Production recovery commands were executed through the authenticated Coolify host
@@ -92,8 +92,8 @@ PASS.
 - `pnpm format:check`: PASS
 - `pnpm check:i18n`: PASS
 - `pnpm predeploy:check`: PASS
-- `docker build -t agentboard-local .`: PASS
-- `docker build --no-cache -t agentboard-local .`: PASS
+- `docker build -t kanban-local .`: PASS
+- `docker build --no-cache -t kanban-local .`: PASS
 
 The no-cache Docker build log confirmed:
 
@@ -161,27 +161,27 @@ LATEST RESULT: PASS AFTER CLEAN RUNTIME RECOVERY.
 Current live checks:
 
 ```txt
-curl -i https://scalesoftware.matgac.pl/api/health
+curl -i https://kanban.matgac.pl/api/health
 HTTP/2 200
 content-type: application/json
-{"ok":true,"service":"agentboard-api",...}
+{"ok":true,"service":"kanban-api",...}
 
-curl -I https://scalesoftware.matgac.pl/login
+curl -I https://kanban.matgac.pl/login
 HTTP/2 200
 content-type: text/html; charset=UTF-8
 ```
 
 Historical earlier check before the later restart loop also passed:
 
-`curl -i https://scalesoftware.matgac.pl/api/health` returned:
+`curl -i https://kanban.matgac.pl/api/health` returned:
 
 ```txt
 HTTP/2 200
 content-type: application/json
-{"ok":true,"service":"agentboard-api",...}
+{"ok":true,"service":"kanban-api",...}
 ```
 
-`curl -I https://scalesoftware.matgac.pl/login` returned:
+`curl -I https://kanban.matgac.pl/login` returned:
 
 ```txt
 HTTP/2 200
@@ -207,7 +207,7 @@ attempt 3 200 application/json
 - Coolify environment verification could not be performed from this local shell.
 - SSH diagnostics could not be performed because port 22 timed out.
 - The live runtime is currently manual Docker containers:
-  `agentboard-app` and `agentboard-postgres`.
+  `kanban-app` and `kanban-postgres`.
 - The manual app container is routed by Traefik labels and is attached to the external
   `coolify` network.
 - Before the next Coolify UI redeploy, sync or recreate the Coolify app envs so
@@ -220,7 +220,7 @@ attempt 3 200 application/json
 The Coolify-managed app container failed before the API started because `DATABASE_URL`
 was not a valid URL. The Postgres password segment must be URL-encoded before it is
 inserted into
-`postgres://agentboard:<password>@postgres:5432/agentboard`.
+`postgres://kanban:<password>@postgres:5432/kanban`.
 
 ## Exact Next Action
 
@@ -238,8 +238,8 @@ docker logs <app-container-name> --tail=200 2>&1
 Then rerun:
 
 ```bash
-curl -i https://scalesoftware.matgac.pl/api/health
-curl -I https://scalesoftware.matgac.pl/login
+curl -i https://kanban.matgac.pl/api/health
+curl -I https://kanban.matgac.pl/login
 ```
 
 If the next deploy still fails, inspect app logs for the next runtime error. The June 7,

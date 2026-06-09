@@ -1,4 +1,4 @@
-import { createDatabaseClient } from "@agentboard/db";
+import { createDatabaseClient } from "@kanban/db";
 import { serve } from "@hono/node-server";
 
 import { createApp } from "./app";
@@ -16,12 +16,12 @@ const server = serve(
     port: env.PORT
   },
   (info) => {
-    console.info(`agentboard-api listening on http://0.0.0.0:${info.port}/api`);
+    console.info(`kanban-api listening on http://0.0.0.0:${info.port}/api`);
   }
 );
 
 function shutdown(signal: NodeJS.Signals) {
-  console.info(`Received ${signal}; shutting down agentboard-api.`);
+  console.info(`Received ${signal}; shutting down kanban-api.`);
   server.close(() => {
     if (!database) {
       process.exit(0);

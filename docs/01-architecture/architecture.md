@@ -48,7 +48,7 @@ SEO is not a project goal. A Vite SPA plus Hono API is faster to reason about, e
 ## Monorepo structure
 
 ```txt
-agentboard/
+kanban/
   apps/
     web/
       src/
@@ -121,8 +121,8 @@ The frontend can proxy `/api` to the backend in Vite dev config.
 One Node container serves both:
 
 ```txt
-https://scalesoftware.matgac.pl/api/* -> Hono API
-https://scalesoftware.matgac.pl/*      -> Vite SPA fallback
+https://kanban.matgac.pl/api/* -> Hono API
+https://kanban.matgac.pl/*      -> Vite SPA fallback
 ```
 
 Production static serving requirements:

@@ -1,6 +1,6 @@
-# AGENTS.md - AgentBoard Working Rules
+# AGENTS.md - Kanban Working Rules
 
-AgentBoard is a recruitment-grade full-stack product: an AI-assisted Kanban platform
+Kanban is a recruitment-grade full-stack product: an AI-assisted Kanban platform
 for AI software agencies. Build real, deployable vertical slices with TypeScript,
 PostgreSQL persistence, secure defaults, responsive UX, and recruiter-ready quality.
 

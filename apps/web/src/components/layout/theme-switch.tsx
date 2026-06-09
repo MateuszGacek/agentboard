@@ -1,4 +1,4 @@
-import type { ThemeMode } from "@agentboard/shared";
+import type { ThemeMode } from "@kanban/shared";
 import { Moon, Monitor, Sun } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

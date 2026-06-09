@@ -1,4 +1,4 @@
-import type { DashboardMetrics, TaskPriority } from "@agentboard/shared";
+import type { DashboardMetrics, TaskPriority } from "@kanban/shared";
 import { Link } from "@tanstack/react-router";
 import {
   Activity,

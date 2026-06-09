@@ -1,4 +1,4 @@
-# AgentBoard Nightly Product Delivery Plan
+# Kanban Nightly Product Delivery Plan
 
 Date: June 6, 2026
 
@@ -14,7 +14,7 @@ Mode: `NIGHTLY_PRODUCT_DELIVERY`
   cookies, demo login, DB-backed board, task detail, dashboard, backend-only AI Improve
   path, i18n, theme support, responsive structure, and Docker/Coolify baseline.
 - The live deployment is blocked outside the codebase:
-  `https://scalesoftware.matgac.pl/api/health` presents the Traefik default
+  `https://kanban.matgac.pl/api/health` presents the Traefik default
   certificate, and `curl -k` returns `HTTP 503 no available server`.
 - Deployment work remains parked overnight. Product quality work may continue locally.
 
@@ -182,7 +182,7 @@ against an explicitly safe local `DATABASE_URL`.
 ## Next Prompt Recommendation
 
 ```txt
-Continue NIGHTLY PRODUCT DELIVERY MODE for AgentBoard.
+Continue NIGHTLY PRODUCT DELIVERY MODE for Kanban.
 
 Do not deploy, do not SSH, do not touch live server settings, do not commit secrets,
 and keep OpenAI keys backend-only.

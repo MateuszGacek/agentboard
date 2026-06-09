@@ -1,4 +1,4 @@
-import type { SessionResponse } from "@agentboard/shared";
+import type { SessionResponse } from "@kanban/shared";
 import { LogOut } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

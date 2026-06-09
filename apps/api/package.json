@@ -1,5 +1,5 @@
 {
-  "name": "@agentboard/api",
+  "name": "@kanban/api",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "@agentboard/db": "workspace:^",
-    "@agentboard/shared": "workspace:^",
+    "@kanban/db": "workspace:^",
+    "@kanban/shared": "workspace:^",
     "@hono/node-server": "^2.0.4",
     "bcrypt": "^6.0.0",
     "drizzle-orm": "^0.36.0",

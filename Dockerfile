@@ -43,14 +43,14 @@ RUN pnpm install --prod --frozen-lockfile
 
 COPY --from=build /app/apps ./apps
 COPY --from=build /app/packages ./packages
-COPY docker/entrypoint.sh /usr/local/bin/agentboard-entrypoint
+COPY docker/entrypoint.sh /usr/local/bin/kanban-entrypoint
 COPY scripts/wait-for-db.mjs scripts/wait-for-db.mjs
 
-RUN chmod +x /usr/local/bin/agentboard-entrypoint
+RUN chmod +x /usr/local/bin/kanban-entrypoint
 
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 CMD node -e "fetch('http://127.0.0.1:' + (process.env.PORT || 3000) + '/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
 
-ENTRYPOINT ["agentboard-entrypoint"]
+ENTRYPOINT ["kanban-entrypoint"]
 CMD ["pnpm", "start"]

@@ -1,10 +1,10 @@
-# AgentBoard Final Recruiter Audit
+# Kanban Final Recruiter Audit
 
 Audit date: June 6, 2026
 
 ## Readiness Summary
 
-AgentBoard is ready for a first Coolify deployment attempt and final deployed smoke
+Kanban is ready for a first Coolify deployment attempt and final deployed smoke
 test. The repository presents a coherent full-stack portfolio product with a real
 PostgreSQL-backed Kanban vertical slice, task detail depth, dashboard metrics,
 backend-only AI Improve flow, i18n/theme support, and Docker/Coolify deployment
@@ -24,7 +24,7 @@ Rationale:
 - Strong: no real secrets or frontend OpenAI key exposure found.
 - Pending: no safe local `DATABASE_URL` or backend-only `OPENAI_API_KEY` was available
   in this shell, so DB-backed runtime and real AI smoke tests remain pending.
-- Pending: live deployment at `https://scalesoftware.matgac.pl` has not been verified.
+- Pending: live deployment at `https://kanban.matgac.pl` has not been verified.
 
 ## Completed Surfaces
 
@@ -50,7 +50,7 @@ Rationale:
 
 ## Missing Or Runtime Pending Items
 
-- Production deployment at `https://scalesoftware.matgac.pl` is not verified yet.
+- Production deployment at `https://kanban.matgac.pl` is not verified yet.
 - DB-backed runtime smoke was not run because `DATABASE_URL` is not set in this shell.
 - Real AI endpoint smoke was not run because `OPENAI_API_KEY` is not set in this shell.
 - Dashboard runtime smoke still needs a safe DB-backed app session.
@@ -73,7 +73,7 @@ Rationale:
 | Markdown links practical check      | PASS   | README/STATUS/docs local links resolved.                   |
 | Translation key coverage            | PASS   | EN/PL/CS app-source key scan passed.                       |
 | Dockerfile/Compose present          | PASS   | Deployment baseline exists.                                |
-| Docker build run                    | PASS   | `docker build -t agentboard-local .` completed.            |
+| Docker build run                    | PASS   | `docker build -t kanban-local .` completed.                |
 
 ## Recruiter Review Path
 
@@ -93,7 +93,7 @@ Before deployment:
 
 - Confirm target DNS/proxy route in Coolify.
 - Set `NODE_ENV=production`.
-- Set `APP_URL=https://scalesoftware.matgac.pl`.
+- Set `APP_URL=https://kanban.matgac.pl`.
 - Set a strong `SESSION_SECRET` with at least 32 characters.
 - Set `DATABASE_URL` to the intended Coolify/Postgres service.
 - Set matching `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD`.

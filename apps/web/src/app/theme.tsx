@@ -1,7 +1,7 @@
-import type { ThemeMode } from "@agentboard/shared";
+import type { ThemeMode } from "@kanban/shared";
 import * as React from "react";
 
-const themeStorageKey = "agentboard.theme";
+const themeStorageKey = "kanban.theme";
 
 type ThemeContextValue = {
   theme: ThemeMode;

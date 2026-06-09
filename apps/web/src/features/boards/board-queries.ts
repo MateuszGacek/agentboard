@@ -12,7 +12,7 @@ import type {
   UpdateChecklistItemRequest,
   UpdateCommentRequest,
   UpdateTaskRequest
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { boardApi, taskApi } from "../../lib/api-client";
@@ -166,7 +166,7 @@ function updateTaskDetailCaches(
   queryClient: ReturnType<typeof useQueryClient>,
   boardId: string,
   taskId: string,
-  result: { task: import("@agentboard/shared").TaskDetail; board?: BoardSnapshot }
+  result: { task: import("@kanban/shared").TaskDetail; board?: BoardSnapshot }
 ) {
   queryClient.setQueryData(taskDetailQueryKey(taskId), result.task);
 

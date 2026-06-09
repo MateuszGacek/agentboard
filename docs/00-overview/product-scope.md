@@ -2,7 +2,7 @@
 
 ## Product
 
-**AgentBoard** — AI Kanban for software teams shipping with agents.
+**Kanban** — AI Kanban for software teams shipping with agents.
 
 ## MVP objective
 

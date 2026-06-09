@@ -76,7 +76,7 @@ Final README should include:
 - demo behavior explanation,
 - short flow checklist.
 
-### 3. Why AgentBoard
+### 3. Why Kanban
 
 Explain business problem:
 

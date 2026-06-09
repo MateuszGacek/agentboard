@@ -30,10 +30,10 @@ Expected non-secret values:
 ```txt
 NODE_ENV=production
 PORT=3000
-APP_URL=https://scalesoftware.matgac.pl
+APP_URL=https://kanban.matgac.pl
 WEB_DIST_DIR=/app/apps/web/dist
-POSTGRES_DB=agentboard
-POSTGRES_USER=agentboard
+POSTGRES_DB=kanban
+POSTGRES_USER=kanban
 SEED_DEMO_DATA=true
 AI_FEATURE_ENABLED=true
 OPENAI_API_KEY=
@@ -123,7 +123,7 @@ Confirm these settings in Coolify before clicking Deploy:
 Pre-deployment: empty
 Post-deployment: empty
 Compose path: /docker-compose.yml
-Domain: https://scalesoftware.matgac.pl
+Domain: https://kanban.matgac.pl
 Public service: app
 Public service port: 3000
 Healthcheck path: /api/health
@@ -135,8 +135,8 @@ The expected internal database service is `postgres`.
 After deployment, verify:
 
 ```txt
-https://scalesoftware.matgac.pl/api/health
-https://scalesoftware.matgac.pl/login
+https://kanban.matgac.pl/api/health
+https://kanban.matgac.pl/login
 Demo login
 Board load
 Dashboard load

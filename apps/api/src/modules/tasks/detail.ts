@@ -1,6 +1,6 @@
-import type { DatabaseClient } from "@agentboard/db";
-import { taskActivityEvents, taskChecklistItems, taskComments, tasks, users } from "@agentboard/db";
-import type { BoardTaskCard, TaskDetail } from "@agentboard/shared";
+import type { DatabaseClient } from "@kanban/db";
+import { taskActivityEvents, taskChecklistItems, taskComments, tasks, users } from "@kanban/db";
+import type { BoardTaskCard, TaskDetail } from "@kanban/shared";
 import { and, asc, desc, eq, isNull } from "drizzle-orm";
 
 import { notFound } from "../../lib/errors";

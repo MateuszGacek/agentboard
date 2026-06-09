@@ -1,8 +1,8 @@
 {
   "app": {
-    "name": "ScopePilot",
+    "name": "Kanban",
     "tagline": "Delivery clarity for AI software teams",
-    "loading": "Loading ScopePilot"
+    "loading": "Loading Kanban"
   },
   "auth": {
     "login": {
@@ -70,7 +70,7 @@
   "pages": {
     "home": {
       "kicker": "Plan less guessing. Ship clearer AI work.",
-      "title": "ScopePilot",
+      "title": "Kanban",
       "description": "Give AI delivery teams one place to shape rough ideas into scoped tasks, see risk before it slips, and keep every project moving from real saved data.",
       "primaryAction": "Sign in",
       "secondaryAction": "Create space",
@@ -219,7 +219,7 @@
       },
       "ai": {
         "title": "AI suggestions stay review-first",
-        "body": "ScopePilot can draft clearer briefs, but the team chooses what gets applied."
+        "body": "Kanban can draft clearer briefs, but the team chooses what gets applied."
       }
     },
     "shortcuts": {
@@ -452,7 +452,7 @@
     "subtitle": "Tune the interface for this browser and confirm the active delivery space.",
     "preferences": {
       "title": "Preferences",
-      "description": "Browser-level settings for this ScopePilot session.",
+      "description": "Browser-level settings for this Kanban session.",
       "theme": "Theme",
       "themeHelp": "Stored locally and applied immediately.",
       "language": "Language",

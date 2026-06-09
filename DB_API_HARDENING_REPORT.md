@@ -85,19 +85,19 @@ suggestion sample while remaining idempotent.
 
 ### Static Validation
 
-| Command                                      | Result | Notes                                                         |
-| -------------------------------------------- | ------ | ------------------------------------------------------------- |
-| `pnpm typecheck`                             | PASS   | Workspace TypeScript checks passed.                           |
-| `pnpm lint`                                  | PASS   | ESLint passed with zero warnings.                             |
-| `pnpm build`                                 | PASS   | Workspace build passed; Vite production build passed.         |
-| `pnpm format:check`                          | PASS   | Prettier check passed after formatting changed files.         |
-| `pnpm --filter @agentboard/db typecheck`     | PASS   | DB package typecheck passed.                                  |
-| `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                                      |
-| `pnpm --filter @agentboard/shared typecheck` | PASS   | Shared package typecheck passed.                              |
-| `pnpm --filter @agentboard/shared build`     | PASS   | Shared package build passed.                                  |
-| `pnpm --filter @agentboard/api typecheck`    | PASS   | API package typecheck passed.                                 |
-| `pnpm --filter @agentboard/api build`        | PASS   | API package build passed.                                     |
-| `pnpm db:generate`                           | PASS   | Generated index-only migration `0001_skinny_war_machine.sql`. |
+| Command                                  | Result | Notes                                                         |
+| ---------------------------------------- | ------ | ------------------------------------------------------------- |
+| `pnpm typecheck`                         | PASS   | Workspace TypeScript checks passed.                           |
+| `pnpm lint`                              | PASS   | ESLint passed with zero warnings.                             |
+| `pnpm build`                             | PASS   | Workspace build passed; Vite production build passed.         |
+| `pnpm format:check`                      | PASS   | Prettier check passed after formatting changed files.         |
+| `pnpm --filter @kanban/db typecheck`     | PASS   | DB package typecheck passed.                                  |
+| `pnpm --filter @kanban/db build`         | PASS   | DB package build passed.                                      |
+| `pnpm --filter @kanban/shared typecheck` | PASS   | Shared package typecheck passed.                              |
+| `pnpm --filter @kanban/shared build`     | PASS   | Shared package build passed.                                  |
+| `pnpm --filter @kanban/api typecheck`    | PASS   | API package typecheck passed.                                 |
+| `pnpm --filter @kanban/api build`        | PASS   | API package build passed.                                     |
+| `pnpm db:generate`                       | PASS   | Generated index-only migration `0001_skinny_war_machine.sql`. |
 
 ### Local Runtime Checks
 
@@ -107,7 +107,7 @@ loading `.env.local`.
 
 | Command/check                       | Result | Notes                                                                          |
 | ----------------------------------- | ------ | ------------------------------------------------------------------------------ |
-| Local Postgres container health     | PASS   | `scalesoftware-postgres-1` was healthy on `127.0.0.1:5432`.                    |
+| Local Postgres container health     | PASS   | `kanban-postgres-1` was healthy on `127.0.0.1:5432`.                           |
 | `pnpm db:migrate`                   | PASS   | Applied the new index migration against the local database.                    |
 | `pnpm db:seed`                      | PASS   | Demo seed completed.                                                           |
 | `pnpm db:seed` second pass          | PASS   | Demo seed completed again.                                                     |

@@ -80,10 +80,10 @@ rewrite, or new product features were performed.
 
 ## Validation Results
 
-| Command                                   | Result | Notes                                                 |
-| ----------------------------------------- | ------ | ----------------------------------------------------- |
-| i18n key parity script                    | PASS   | EN/PL/CS share 287 keys.                              |
-| React visible literal scan                | PASS   | No obvious visible hardcoded English component text.  |
-| `pnpm --filter @agentboard/web typecheck` | PASS   | Focused web check passed after accessibility changes. |
-| Local API health smoke                    | PASS   | `GET /api/health` returned `ok: true`.                |
-| Local SPA route smoke                     | PASS   | Key routes served `200 text/html` with root element.  |
+| Command                               | Result | Notes                                                 |
+| ------------------------------------- | ------ | ----------------------------------------------------- |
+| i18n key parity script                | PASS   | EN/PL/CS share 287 keys.                              |
+| React visible literal scan            | PASS   | No obvious visible hardcoded English component text.  |
+| `pnpm --filter @kanban/web typecheck` | PASS   | Focused web check passed after accessibility changes. |
+| Local API health smoke                | PASS   | `GET /api/health` returned `ok: true`.                |
+| Local SPA route smoke                 | PASS   | Key routes served `200 text/html` with root element.  |

@@ -88,7 +88,7 @@ If a safe local database is available, run local smoke:
 
 ```bash
 set -a; source .env.local; set +a
-pnpm --filter @agentboard/api start
+pnpm --filter @kanban/api start
 pnpm smoke:local
 ```
 

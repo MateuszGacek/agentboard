@@ -1,5 +1,5 @@
-import type { DatabaseClient } from "@agentboard/db";
-import { applyAiSuggestionRequestSchema, idSchema } from "@agentboard/shared";
+import type { DatabaseClient } from "@kanban/db";
+import { applyAiSuggestionRequestSchema, idSchema } from "@kanban/shared";
 import { Hono } from "hono";
 
 import { parseOptionalJsonBody } from "../../lib/body";

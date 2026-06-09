@@ -85,17 +85,17 @@ Updated EN/PL/CS locale files for:
 
 ## Validation Results
 
-| Command                                   | Result | Notes                                                       |
-| ----------------------------------------- | ------ | ----------------------------------------------------------- |
-| `pnpm typecheck`                          | PASS   | Workspace TypeScript checks passed.                         |
-| `pnpm lint`                               | PASS   | ESLint passed with zero warnings.                           |
-| `pnpm build`                              | PASS   | Workspace build passed; Vite production build passed.       |
-| `pnpm format`                             | PASS   | Formatted changed frontend/docs files.                      |
-| `pnpm format:check`                       | PASS   | Prettier check passed.                                      |
-| `pnpm --filter @agentboard/web typecheck` | PASS   | Web package typecheck passed.                               |
-| `pnpm --filter @agentboard/web build`     | PASS   | Web package production build passed.                        |
-| Local frontend HTTP smoke                 | PASS   | Vite served `http://localhost:5173/` with `200 text/html`.  |
-| Local API health smoke                    | PASS   | `GET http://localhost:3000/api/health` returned `ok: true`. |
+| Command                               | Result | Notes                                                       |
+| ------------------------------------- | ------ | ----------------------------------------------------------- |
+| `pnpm typecheck`                      | PASS   | Workspace TypeScript checks passed.                         |
+| `pnpm lint`                           | PASS   | ESLint passed with zero warnings.                           |
+| `pnpm build`                          | PASS   | Workspace build passed; Vite production build passed.       |
+| `pnpm format`                         | PASS   | Formatted changed frontend/docs files.                      |
+| `pnpm format:check`                   | PASS   | Prettier check passed.                                      |
+| `pnpm --filter @kanban/web typecheck` | PASS   | Web package typecheck passed.                               |
+| `pnpm --filter @kanban/web build`     | PASS   | Web package production build passed.                        |
+| Local frontend HTTP smoke             | PASS   | Vite served `http://localhost:5173/` with `200 text/html`.  |
+| Local API health smoke                | PASS   | `GET http://localhost:3000/api/health` returned `ok: true`. |
 
 The first static HTML check raced because it was run in parallel before the curl output
 file existed. It was rerun sequentially and passed.

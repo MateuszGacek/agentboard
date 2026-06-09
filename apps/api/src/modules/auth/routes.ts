@@ -1,10 +1,6 @@
-import type { DatabaseClient } from "@agentboard/db";
-import { sessions, users, workspaceMembers, workspaces } from "@agentboard/db";
-import {
-  demoLoginRequestSchema,
-  loginRequestSchema,
-  registerRequestSchema
-} from "@agentboard/shared";
+import type { DatabaseClient } from "@kanban/db";
+import { sessions, users, workspaceMembers, workspaces } from "@kanban/db";
+import { demoLoginRequestSchema, loginRequestSchema, registerRequestSchema } from "@kanban/shared";
 import { and, eq } from "drizzle-orm";
 import { getCookie } from "hono/cookie";
 import { Hono } from "hono";

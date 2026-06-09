@@ -1,15 +1,17 @@
+name: kanban
+
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      agentboard-postgres-db:
+      kanban-postgres-db:
         condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 3000
-      APP_URL: https://scalesoftware.matgac.pl
+      APP_URL: https://kanban.matgac.pl
       WEB_DIST_DIR: /app/apps/web/dist
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL must be set with URL-encoded credentials}
       SESSION_SECRET: ${SESSION_SECRET:-}
@@ -42,12 +44,12 @@ services:
       start_period: 30s
     restart: unless-stopped
 
-  agentboard-postgres-db:
+  kanban-postgres-db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-agentboard}
-      POSTGRES_USER: ${POSTGRES_USER:-agentboard}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agentboard}
+      POSTGRES_DB: ${POSTGRES_DB:-kanban}
+      POSTGRES_USER: ${POSTGRES_USER:-kanban}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kanban}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

@@ -7,8 +7,8 @@ import type {
   ColumnSystemKey,
   TaskDetail,
   TaskPriority
-} from "@agentboard/shared";
-import { columnSystemKeyValues } from "@agentboard/shared";
+} from "@kanban/shared";
+import { columnSystemKeyValues } from "@kanban/shared";
 import {
   closestCorners,
   DndContext,
@@ -128,7 +128,7 @@ const defaultBoardFilters: BoardFiltersState = {
 };
 
 function savedViewsStorageKey(boardId: string) {
-  return `agentboard.boardViews.${boardId}`;
+  return `kanban.boardViews.${boardId}`;
 }
 
 function readSavedBoardViews(boardId: string): SavedBoardView[] {
@@ -207,9 +207,9 @@ const initialTaskForm: TaskFormState = {
 };
 
 const boardCommandEvents = {
-  createTask: "agentboard:board-create-task",
-  focusSearch: "agentboard:board-focus-search",
-  clearFilters: "agentboard:board-clear-filters"
+  createTask: "kanban:board-create-task",
+  focusSearch: "kanban:board-focus-search",
+  clearFilters: "kanban:board-clear-filters"
 } as const;
 
 function getTaskLocation(board: BoardSnapshot, taskId: string) {
@@ -462,7 +462,7 @@ function getFilteredTasksByColumn(board: BoardSnapshot, filters: BoardFiltersSta
 }
 
 function useDismissedTip(tipId: string) {
-  const storageKey = `agentboard.tip.${tipId}`;
+  const storageKey = `kanban.tip.${tipId}`;
   const [dismissed, setDismissed] = React.useState(() => {
     if (typeof window === "undefined") {
       return false;

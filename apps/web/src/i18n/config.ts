@@ -1,7 +1,7 @@
-import type { Locale } from "@agentboard/shared";
+import type { Locale } from "@kanban/shared";
 
 export const supportedLocales: Locale[] = ["en", "pl", "cs"];
-export const languageStorageKey = "agentboard.language";
+export const languageStorageKey = "kanban.language";
 
 export function normalizeLocale(value: string | null | undefined): Locale | null {
   const prefix = value?.toLowerCase().split("-")[0];

@@ -1,5 +1,5 @@
-import type { DatabaseClient } from "@agentboard/db";
-import type { CurrentUser } from "@agentboard/shared";
+import type { DatabaseClient } from "@kanban/db";
+import type { CurrentUser } from "@kanban/shared";
 
 export type AuthenticatedUser = CurrentUser;
 

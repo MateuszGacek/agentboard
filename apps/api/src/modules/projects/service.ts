@@ -1,4 +1,4 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   boardColumns,
   boards,
@@ -8,14 +8,14 @@ import {
   taskChecklistItems,
   taskLabels,
   tasks
-} from "@agentboard/db";
+} from "@kanban/db";
 import type {
   CreateProjectRequest,
   ProjectTemplateKey,
   ProjectTemplateSummary,
   UpdateProjectRequest,
   WorkspaceProject
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { and, asc, desc, eq, isNull } from "drizzle-orm";
 
 import { conflict, notFound } from "../../lib/errors";

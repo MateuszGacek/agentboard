@@ -1,5 +1,5 @@
-import type { DatabaseClient } from "@agentboard/db";
-import type { HealthResponse } from "@agentboard/shared";
+import type { DatabaseClient } from "@kanban/db";
+import type { HealthResponse } from "@kanban/shared";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { cors } from "hono/cors";
 import { Hono } from "hono";
@@ -52,7 +52,7 @@ export function createApp(options: CreateAppOptions = {}) {
   api.get("/health", (c) => {
     const payload: HealthResponse = {
       ok: true,
-      service: "agentboard-api",
+      service: "kanban-api",
       timestamp: new Date().toISOString()
     };
 

@@ -6,7 +6,7 @@ deployment, change infrastructure, or add new product behavior.
 ## 1. Target Production URL
 
 ```txt
-https://scalesoftware.matgac.pl
+https://kanban.matgac.pl
 ```
 
 ## 2. Current Infrastructure
@@ -18,7 +18,7 @@ https://scalesoftware.matgac.pl
 - IPv6: available, but IPv4 is enough for the initial deployment
 - App target port: `3000`
 - Domain: `matgac.pl`
-- Subdomain: `scalesoftware.matgac.pl`
+- Subdomain: `kanban.matgac.pl`
 
 The VPS IP address is not a secret. Real credentials, SSH keys, passwords, tokens, API
 keys, database URLs, and private infrastructure details must never be committed.
@@ -43,7 +43,7 @@ Recommended Cloudflare DNS record:
 
 ```txt
 Type: A
-Name: scalesoftware
+Name: kanban
 Target: 198.100.155.183
 Proxy status: DNS only for initial setup
 TTL: Auto
@@ -65,7 +65,7 @@ Alternative path:
 The OVH DNS zone currently contains this record:
 
 ```txt
-scalesoftware.matgac.pl A 198.100.155.183
+kanban.matgac.pl A 198.100.155.183
 ```
 
 That record may be inactive publicly while Cloudflare nameservers are authoritative. Do
@@ -80,14 +80,14 @@ dig NS matgac.pl
 
 ```bash
 dig NS matgac.pl
-dig A scalesoftware.matgac.pl +short
-nslookup scalesoftware.matgac.pl
+dig A kanban.matgac.pl +short
+nslookup kanban.matgac.pl
 ```
 
 Expected results:
 
 - `dig NS matgac.pl` should currently show Cloudflare nameservers.
-- After adding the record in Cloudflare, `dig A scalesoftware.matgac.pl +short` should
+- After adding the record in Cloudflare, `dig A kanban.matgac.pl +short` should
   return `198.100.155.183` if the record is `DNS only`.
 - If Cloudflare proxy is enabled, the result may show Cloudflare IPs instead of the VPS
   IP.
@@ -96,10 +96,10 @@ Expected results:
 
 Prepare Coolify with these target values:
 
-- Project: `scalesoftware-agentboard`
+- Project: `kanban-kanban`
 - Environment: `production`
 - Future app type: Docker Compose
-- Domain: `https://scalesoftware.matgac.pl`
+- Domain: `https://kanban.matgac.pl`
 - App container port: `3000`
 - Healthcheck path: `/api/health`
 
@@ -113,7 +113,7 @@ Set production values in Coolify, not in committed files:
 ```env
 NODE_ENV=production
 PORT=3000
-APP_URL=https://scalesoftware.matgac.pl
+APP_URL=https://kanban.matgac.pl
 DATABASE_URL=
 SESSION_SECRET=
 SEED_DEMO_DATA=true
@@ -123,7 +123,7 @@ OPENAI_MODEL=gpt-5-nano
 
 When using the Compose Postgres service, `DATABASE_URL` should use the `postgres`
 hostname and URL-encode the password segment:
-`postgres://agentboard:<url-encoded-password>@agentboard-postgres-db:5432/agentboard`.
+`postgres://kanban:<url-encoded-password>@kanban-postgres-db:5432/kanban`.
 
 Generate `SESSION_SECRET` with:
 
@@ -168,7 +168,7 @@ Before production deployment starts, confirm the repo has deployable versions of
 
 ### DNS Not Resolving
 
-Check that the `scalesoftware` `A` record exists in Cloudflare DNS and points to
+Check that the `kanban` `A` record exists in Cloudflare DNS and points to
 `198.100.155.183`. Confirm there is no typo in the record name or domain.
 
 ### OVH Record Exists but Public DNS Still Does Not Work
@@ -199,7 +199,7 @@ whether migrations can connect without using any fallback database URL.
 
 ### Cookies Not Working
 
-Check `APP_URL=https://scalesoftware.matgac.pl`, HTTPS access, session secret, secure
+Check `APP_URL=https://kanban.matgac.pl`, HTTPS access, session secret, secure
 cookie behavior, same-site settings, and whether browser requests use the same public
 domain.
 

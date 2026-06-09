@@ -1,4 +1,4 @@
-import type { SessionResponse } from "@agentboard/shared";
+import type { SessionResponse } from "@kanban/shared";
 import { Link, Outlet, useNavigate } from "@tanstack/react-router";
 import {
   BriefcaseBusiness,
@@ -35,9 +35,9 @@ const navItems = [
 ] as const;
 
 const boardCommandEvents = {
-  createTask: "agentboard:board-create-task",
-  focusSearch: "agentboard:board-focus-search",
-  clearFilters: "agentboard:board-clear-filters"
+  createTask: "kanban:board-create-task",
+  focusSearch: "kanban:board-focus-search",
+  clearFilters: "kanban:board-clear-filters"
 } as const;
 
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {

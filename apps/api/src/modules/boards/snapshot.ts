@@ -1,4 +1,4 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   boardColumns,
   boards,
@@ -12,8 +12,8 @@ import {
   users,
   workspaceMembers,
   workspaces
-} from "@agentboard/db";
-import type { BoardSnapshot, BoardTaskCard } from "@agentboard/shared";
+} from "@kanban/db";
+import type { BoardSnapshot, BoardTaskCard } from "@kanban/shared";
 import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 
 import { notFound } from "../../lib/errors";

@@ -1,4 +1,4 @@
-# AgentBoard Phase Audit
+# Kanban Phase Audit
 
 ## Current detected phase
 
@@ -47,9 +47,9 @@ Evidence from files:
 - Database client exists at `packages/db/src/client.ts`.
 - `getRequiredDatabaseUrl()` throws a developer-friendly error when runtime database commands are run without `DATABASE_URL`.
 - Seed script exists at `packages/db/src/seed.ts`.
-- `pnpm --filter @agentboard/db db:migrate` uses the package migration runner and therefore requires explicit `DATABASE_URL`.
-- `pnpm --filter @agentboard/db db:seed` uses the guarded database client and therefore requires explicit `DATABASE_URL`.
-- `pnpm --filter @agentboard/db db:generate` remains usable without a live database connection.
+- `pnpm --filter @kanban/db db:migrate` uses the package migration runner and therefore requires explicit `DATABASE_URL`.
+- `pnpm --filter @kanban/db db:seed` uses the guarded database client and therefore requires explicit `DATABASE_URL`.
+- `pnpm --filter @kanban/db db:generate` remains usable without a live database connection.
 - Shared enum/domain values exist at `packages/shared/src/domain.ts`.
 - Stable column semantics exist through `board_columns.system_key` and `board_columns.behavior`.
 - Required tables exist in schema and migration:
@@ -57,7 +57,7 @@ Evidence from files:
 - Required indexes are present for sessions, workspace membership, projects, boards, columns, tasks, labels, comments, checklist items, activity events, and AI suggestions.
 - Foreign keys exist and support workspace/project/board ownership validation.
 - Select/insert types are exported from `packages/db/src/schema.ts`.
-- `pnpm typecheck` and `pnpm --filter @agentboard/db typecheck` pass without a live database.
+- `pnpm typecheck` and `pnpm --filter @kanban/db typecheck` pass without a live database.
 
 Missing items:
 
@@ -69,17 +69,17 @@ Risk level: Low
 
 ## Command results
 
-| Command                                    |  Result | Notes                                                      |
-| ------------------------------------------ | ------: | ---------------------------------------------------------- |
-| `pnpm typecheck`                           |    Pass | All current workspace package TypeScript checks pass       |
-| `pnpm lint`                                |    Pass | ESLint passes                                              |
-| `pnpm build`                               |    Pass | Workspace build passes; web build produces `apps/web/dist` |
-| `pnpm format:check`                        |    Pass | All matched files use Prettier style                       |
-| `pnpm --filter @agentboard/db typecheck`   |    Pass | DB package typechecks without live database                |
-| `pnpm --filter @agentboard/db build`       |    Pass | DB package build script passes                             |
-| `pnpm --filter @agentboard/db db:generate` |    Pass | Works without `DATABASE_URL`; no schema changes            |
-| `pnpm --filter @agentboard/db db:migrate`  | Not run | `DATABASE_URL` is unset; command is now explicitly guarded |
-| `pnpm --filter @agentboard/db db:seed`     | Not run | `DATABASE_URL` is unset; command is now explicitly guarded |
+| Command                                |  Result | Notes                                                      |
+| -------------------------------------- | ------: | ---------------------------------------------------------- |
+| `pnpm typecheck`                       |    Pass | All current workspace package TypeScript checks pass       |
+| `pnpm lint`                            |    Pass | ESLint passes                                              |
+| `pnpm build`                           |    Pass | Workspace build passes; web build produces `apps/web/dist` |
+| `pnpm format:check`                    |    Pass | All matched files use Prettier style                       |
+| `pnpm --filter @kanban/db typecheck`   |    Pass | DB package typechecks without live database                |
+| `pnpm --filter @kanban/db build`       |    Pass | DB package build script passes                             |
+| `pnpm --filter @kanban/db db:generate` |    Pass | Works without `DATABASE_URL`; no schema changes            |
+| `pnpm --filter @kanban/db db:migrate`  | Not run | `DATABASE_URL` is unset; command is now explicitly guarded |
+| `pnpm --filter @kanban/db db:seed`     | Not run | `DATABASE_URL` is unset; command is now explicitly guarded |
 
 ## Critical issues
 
@@ -103,8 +103,8 @@ Fixed.
 
 - Removed fallback URL usage from `packages/db/drizzle.config.ts`.
 - Added `getRequiredDatabaseUrl()` with a clear setup error.
-- Changed `pnpm --filter @agentboard/db db:migrate` to run `tsx src/migrate.ts`, which uses the guarded database client.
-- Confirmed `pnpm --filter @agentboard/db db:generate` still works without `DATABASE_URL`.
+- Changed `pnpm --filter @kanban/db db:migrate` to run `tsx src/migrate.ts`, which uses the guarded database client.
+- Confirmed `pnpm --filter @kanban/db db:generate` still works without `DATABASE_URL`.
 
 Exact file(s):
 
@@ -140,7 +140,7 @@ Phase 0 passes and Phase 1 database foundation is complete as code. The database
 ## Exact next prompt
 
 ```txt
-Continue the AgentBoard project from the current repository state.
+Continue the Kanban project from the current repository state.
 
 Start Phase 2 API foundation only.
 

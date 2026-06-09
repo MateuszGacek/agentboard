@@ -1,8 +1,8 @@
 {
   "app": {
-    "name": "ScopePilot",
+    "name": "Kanban",
     "tagline": "Klarowna dostawa dla zespołów AI software",
-    "loading": "Ładowanie ScopePilot"
+    "loading": "Ładowanie Kanban"
   },
   "auth": {
     "login": {
@@ -70,7 +70,7 @@
   "pages": {
     "home": {
       "kicker": "Mniej zgadywania. Jaśniejsza praca nad AI.",
-      "title": "ScopePilot",
+      "title": "Kanban",
       "description": "Jedno miejsce, w którym zespół AI zamienia luźne pomysły w konkretne zadania, widzi ryzyko zanim urośnie i prowadzi projekty na podstawie realnie zapisanych danych.",
       "primaryAction": "Zaloguj się",
       "secondaryAction": "Utwórz przestrzeń",
@@ -219,7 +219,7 @@
       },
       "ai": {
         "title": "Sugestie AI zostają do decyzji zespołu",
-        "body": "ScopePilot może przygotować jaśniejszy brief, ale to zespół wybiera, co zostanie zastosowane."
+        "body": "Kanban może przygotować jaśniejszy brief, ale to zespół wybiera, co zostanie zastosowane."
       }
     },
     "shortcuts": {
@@ -452,7 +452,7 @@
     "subtitle": "Dopasuj interfejs w tej przeglądarce i sprawdź aktywną przestrzeń dostaw.",
     "preferences": {
       "title": "Preferencje",
-      "description": "Ustawienia przeglądarki dla tej sesji ScopePilot.",
+      "description": "Ustawienia przeglądarki dla tej sesji Kanban.",
       "theme": "Motyw",
       "themeHelp": "Zapisywany lokalnie i stosowany od razu.",
       "language": "Jezyk",

@@ -2,7 +2,7 @@
 
 ## Product narrative
 
-AgentBoard is designed around a simple business insight:
+Kanban is designed around a simple business insight:
 
 > AI development teams do not only need to move cards. They need clearer tasks, lower WIP, and visibility into delivery risk.
 
@@ -21,7 +21,7 @@ Goal: communicate value quickly.
 Primary copy:
 
 ```txt
-AgentBoard
+Kanban
 AI Kanban for software teams shipping with agents.
 ```
 

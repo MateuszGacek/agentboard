@@ -1,4 +1,4 @@
-import type { Locale } from "@agentboard/shared";
+import type { Locale } from "@kanban/shared";
 import { Languages } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

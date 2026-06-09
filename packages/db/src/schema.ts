@@ -9,7 +9,7 @@ import {
   taskPriorityValues,
   themeModeValues,
   workspaceRoleValues
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { sql } from "drizzle-orm";
 import {
   boolean,

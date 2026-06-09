@@ -1,4 +1,4 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   boardColumns,
   boards,
@@ -10,7 +10,7 @@ import {
   taskLabels,
   tasks,
   workspaceMembers
-} from "@agentboard/db";
+} from "@kanban/db";
 import {
   createChecklistItemRequestSchema,
   createCommentRequestSchema,
@@ -20,8 +20,8 @@ import {
   updateChecklistItemRequestSchema,
   updateCommentRequestSchema,
   updateTaskRequestSchema
-} from "@agentboard/shared";
-import type { MoveTaskRequest, TaskPriority } from "@agentboard/shared";
+} from "@kanban/shared";
+import type { MoveTaskRequest, TaskPriority } from "@kanban/shared";
 import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { Hono } from "hono";
 

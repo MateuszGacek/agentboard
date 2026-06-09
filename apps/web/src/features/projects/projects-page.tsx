@@ -4,7 +4,7 @@ import type {
   ProjectTemplateKey,
   ProjectTemplateSummary,
   WorkspaceProject
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Archive,

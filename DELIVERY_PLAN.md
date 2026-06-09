@@ -1,8 +1,8 @@
-# AgentBoard Delivery Plan
+# Kanban Delivery Plan
 
 ## Summary
 
-AgentBoard is static-complete for the intended local recruiter slice: auth/demo login,
+Kanban is static-complete for the intended local recruiter slice: auth/demo login,
 app shell, DB-backed board, task detail, dashboard, AI Improve integration path, i18n,
 theme, responsive UI structure, and Docker/Coolify baseline are implemented as code.
 
@@ -25,7 +25,7 @@ stay parked until a local DB-backed smoke test verifies the full product flow.
 | i18n EN/PL/CS                   | DONE_STATIC | Locale files exist and visible product areas use translation keys. Prior key coverage audit passed.                                                                      | No                | Low. Needs visual/mobile spot check for long strings.                                                         |
 | Theme light/dark/system         | DONE_STATIC | Theme provider, localStorage preference, system mode, shell/auth controls.                                                                                               | No                | Low. Needs browser spot check.                                                                                |
 | Responsive/mobile flow          | DONE_STATIC | Mobile shell drawer, responsive dashboard, full-height task sheet, mobile move fallback, responsive board layout classes.                                                | No                | Medium. Needs browser smoke at 360/768/1024/1440 widths.                                                      |
-| Docker/Coolify baseline         | DONE_STATIC | `Dockerfile`, `docker-compose.yml`, `docker/entrypoint.sh`, healthcheck, production SPA serving, deployment docs. `docker build -t agentboard-local .` passes.           | No                | Medium. Compose runtime and Coolify live smoke not run.                                                       |
+| Docker/Coolify baseline         | DONE_STATIC | `Dockerfile`, `docker-compose.yml`, `docker/entrypoint.sh`, healthcheck, production SPA serving, deployment docs. `docker build -t kanban-local .` passes.               | No                | Medium. Compose runtime and Coolify live smoke not run.                                                       |
 | README/GitHub readiness         | DONE_STATIC | README is recruiter-facing; STATUS/final audit/docs describe scope and pending runtime gaps; no `.env` tracked; no real secret found in reviewed files.                  | No                | Low. README should get final status polish after local smoke.                                                 |
 | Runtime smoke readiness         | BLOCKED     | Smoke plan is clear, but shell has `DATABASE_URL=UNSET` and `OPENAI_API_KEY=UNSET`.                                                                                      | No                | High until a safe local Postgres/database URL is configured.                                                  |
 
@@ -48,7 +48,7 @@ stay parked until a local DB-backed smoke test verifies the full product flow.
 - Optional real AI smoke with a backend-only `OPENAI_API_KEY`.
 - Browser responsive smoke at 360px, 768px, 1024px, and 1440px.
 - Final README/STATUS polish after runtime results.
-- Public Coolify deployment and live smoke at `https://scalesoftware.matgac.pl`.
+- Public Coolify deployment and live smoke at `https://kanban.matgac.pl`.
 
 Future refinements that are documented but not blockers for the current slice:
 checklist delete/reorder, comment edit/delete, search/filter, realtime, file uploads,
@@ -65,7 +65,7 @@ Needed for local DB-backed smoke:
 2. A safe local URL such as:
 
    ```txt
-   DATABASE_URL=postgres://agentboard:agentboard@localhost:5432/agentboard
+   DATABASE_URL=postgres://kanban:kanban@localhost:5432/kanban
    SESSION_SECRET=change-me-in-local-env
    APP_URL=http://localhost:5173
    ```
@@ -106,7 +106,7 @@ Coolify is available manually on the VPS, and the deployment baseline exists. Th
 future production URL remains:
 
 ```txt
-https://scalesoftware.matgac.pl
+https://kanban.matgac.pl
 ```
 
 Deployment should happen only after local DB-backed smoke passes and docs are updated
@@ -119,7 +119,7 @@ with the runtime result. Do not deploy from the current state.
 3. Browser-check the full local flow at desktop and mobile widths.
 4. Update README/STATUS with runtime smoke results.
 5. Deploy to Coolify with Docker Compose.
-6. Run live smoke at `https://scalesoftware.matgac.pl`.
+6. Run live smoke at `https://kanban.matgac.pl`.
 
 ## Decision
 
@@ -131,7 +131,7 @@ gap is that DB-backed runtime smoke was not done.
 ## Exact next prompt
 
 ```txt
-Continue the AgentBoard project from the current repository state.
+Continue the Kanban project from the current repository state.
 
 Decision from DELIVERY_PLAN.md: START_LOCAL_RUNTIME_SMOKE.
 

@@ -1,10 +1,10 @@
-import type { DatabaseClient } from "@agentboard/db";
+import type { DatabaseClient } from "@kanban/db";
 import {
   createProjectRequestSchema,
   dashboardQuerySchema,
   idSchema,
   weeklyReportQuerySchema
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { Hono } from "hono";
 
 import { parseJsonBody } from "../../lib/body";

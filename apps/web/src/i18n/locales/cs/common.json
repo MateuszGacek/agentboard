@@ -1,8 +1,8 @@
 {
   "app": {
-    "name": "ScopePilot",
+    "name": "Kanban",
     "tagline": "Jasnejsi dodavka pro AI software tymy",
-    "loading": "Nacitani ScopePilotu"
+    "loading": "Nacitani Kanbanu"
   },
   "auth": {
     "login": {
@@ -70,7 +70,7 @@
   "pages": {
     "home": {
       "kicker": "Mene hadani. Jasnejsi AI prace.",
-      "title": "ScopePilot",
+      "title": "Kanban",
       "description": "Jedno misto, kde AI delivery tym meni volne napady na konkretni ukoly, vidi rizika driv, nez narostou, a vede projekty podle skutecne ulozenych dat.",
       "primaryAction": "Prihlasit se",
       "secondaryAction": "Vytvorit prostor",
@@ -219,7 +219,7 @@
       },
       "ai": {
         "title": "AI navrhy zustavaji ke kontrole",
-        "body": "ScopePilot muze pripravit jasnejsi zadani, ale tym rozhoduje, co se opravdu pouzije."
+        "body": "Kanban muze pripravit jasnejsi zadani, ale tym rozhoduje, co se opravdu pouzije."
       }
     },
     "shortcuts": {
@@ -452,7 +452,7 @@
     "subtitle": "Upravte rozhrani v tomto prohlizeci a zkontrolujte aktivni delivery prostor.",
     "preferences": {
       "title": "Preference",
-      "description": "Nastaveni prohlizece pro tuto relaci ScopePilot.",
+      "description": "Nastaveni prohlizece pro tuto relaci Kanban.",
       "theme": "Motiv",
       "themeHelp": "Uklada se lokalne a plati okamzite.",
       "language": "Jazyk",

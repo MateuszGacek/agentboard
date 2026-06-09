@@ -1,8 +1,8 @@
-# AgentBoard Implementation Start Plan
+# Kanban Implementation Start Plan
 
 ## 1. Current Repository State
 
-The repository currently contains the AgentBoard documentation pack and the beginning of the implementation foundation.
+The repository currently contains the Kanban documentation pack and the beginning of the implementation foundation.
 
 Present before implementation:
 

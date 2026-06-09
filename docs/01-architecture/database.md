@@ -461,7 +461,7 @@ Seed data must demonstrate:
 
 Recommended behavior:
 
-- create user `demo_<random>@agentboard.local`,
+- create user `demo_<random>@kanban.local`,
 - create one workspace/project/board from template,
 - create session with shorter TTL,
 - mark user/workspace `is_demo = true`,

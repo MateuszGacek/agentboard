@@ -83,18 +83,18 @@
 
 @layer utilities {
   .animate-enter {
-    animation: agentboard-enter 180ms ease-out both;
+    animation: kanban-enter 180ms ease-out both;
   }
 
   .animate-dialog-in {
-    animation: agentboard-dialog-in 180ms ease-out both;
+    animation: kanban-dialog-in 180ms ease-out both;
   }
 
   .animate-sheet-in {
-    animation: agentboard-sheet-in 220ms ease-out both;
+    animation: kanban-sheet-in 220ms ease-out both;
   }
 
-  @keyframes agentboard-enter {
+  @keyframes kanban-enter {
     from {
       opacity: 0;
       transform: translateY(6px);
@@ -105,7 +105,7 @@
     }
   }
 
-  @keyframes agentboard-dialog-in {
+  @keyframes kanban-dialog-in {
     from {
       opacity: 0;
       transform: translateY(8px) scale(0.98);
@@ -116,7 +116,7 @@
     }
   }
 
-  @keyframes agentboard-sheet-in {
+  @keyframes kanban-sheet-in {
     from {
       opacity: 0;
       transform: translateX(16px);

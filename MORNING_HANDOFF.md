@@ -1,8 +1,8 @@
-# AgentBoard Morning Handoff
+# Kanban Morning Handoff
 
 ## Executive summary
 
-AgentBoard is locally deploy-ready as a repository. Overnight work improved DB/API
+Kanban is locally deploy-ready as a repository. Overnight work improved DB/API
 ownership safety, product polish, board interactions, accessibility/responsive/i18n,
 repeatable QA scripts, and Coolify-facing deployment configuration/docs.
 
@@ -45,15 +45,15 @@ deployment/configuration check.
 
 Final validation on June 7, 2026:
 
-| Command                              | Result | Notes                                                     |
-| ------------------------------------ | ------ | --------------------------------------------------------- |
-| `pnpm typecheck`                     | PASS   | Workspace TypeScript checks passed.                       |
-| `pnpm lint`                          | PASS   | ESLint passed with zero warnings.                         |
-| `pnpm build`                         | PASS   | Workspace build and Vite production build passed.         |
-| `pnpm format:check`                  | PASS   | Prettier check passed.                                    |
-| `pnpm predeploy:check`               | PASS   | Typecheck, lint, build, format check, i18n parity passed. |
-| `docker build -t agentboard-local .` | PASS   | Production image built locally.                           |
-| `pnpm smoke:local`                   | PASS   | Local API/DB smoke passed with AI unavailable path.       |
+| Command                          | Result | Notes                                                     |
+| -------------------------------- | ------ | --------------------------------------------------------- |
+| `pnpm typecheck`                 | PASS   | Workspace TypeScript checks passed.                       |
+| `pnpm lint`                      | PASS   | ESLint passed with zero warnings.                         |
+| `pnpm build`                     | PASS   | Workspace build and Vite production build passed.         |
+| `pnpm format:check`              | PASS   | Prettier check passed.                                    |
+| `pnpm predeploy:check`           | PASS   | Typecheck, lint, build, format check, i18n parity passed. |
+| `docker build -t kanban-local .` | PASS   | Production image built locally.                           |
+| `pnpm smoke:local`               | PASS   | Local API/DB smoke passed with AI unavailable path.       |
 
 ## Local runtime result
 
@@ -79,8 +79,8 @@ call OpenAI.
 
 Previous live symptoms:
 
-- `https://scalesoftware.matgac.pl/api/health` served `TRAEFIK DEFAULT CERT`.
-- `curl -k https://scalesoftware.matgac.pl/api/health` returned
+- `https://kanban.matgac.pl/api/health` served `TRAEFIK DEFAULT CERT`.
+- `curl -k https://kanban.matgac.pl/api/health` returned
   `HTTP 503 no available server`.
 
 Repository-side deployment state:
@@ -101,7 +101,7 @@ Remaining blocker is manual Coolify/Traefik/Cloudflare state.
 ## Exact manual Coolify checklist
 
 1. Cloudflare DNS check
-   - Confirm `A scalesoftware -> 198.100.155.183`.
+   - Confirm `A kanban -> 198.100.155.183`.
    - Set proxy status to DNS only for first deployment verification.
 
 2. Coolify project/resource check
@@ -114,20 +114,20 @@ Remaining blocker is manual Coolify/Traefik/Cloudflare state.
 3. Domain/service/port check
    - Attach the domain to `app`, not `postgres`.
    - Target container port is `3000`.
-   - If Coolify has separate fields: domain `https://scalesoftware.matgac.pl`, port `3000`.
-   - If Coolify requires inline port: `https://scalesoftware.matgac.pl:3000`.
+   - If Coolify has separate fields: domain `https://kanban.matgac.pl`, port `3000`.
+   - If Coolify requires inline port: `https://kanban.matgac.pl:3000`.
    - Healthcheck path is `/api/health`.
 
 4. Env vars check
    - `NODE_ENV=production`
    - `PORT=3000`
-   - `APP_URL=https://scalesoftware.matgac.pl`
+   - `APP_URL=https://kanban.matgac.pl`
    - `WEB_DIST_DIR=/app/apps/web/dist`
-   - `DATABASE_URL=postgres://agentboard:<password>@postgres:5432/agentboard`
+   - `DATABASE_URL=postgres://kanban:<password>@postgres:5432/kanban`
    - `SESSION_SECRET=<at least 32 random characters>`
    - `SEED_DEMO_DATA=true`
-   - `POSTGRES_DB=agentboard`
-   - `POSTGRES_USER=agentboard`
+   - `POSTGRES_DB=kanban`
+   - `POSTGRES_USER=kanban`
    - `POSTGRES_PASSWORD=<same password used in DATABASE_URL>`
    - `OPENAI_API_KEY=` can stay empty for AI unavailable smoke.
 
@@ -136,15 +136,15 @@ Remaining blocker is manual Coolify/Traefik/Cloudflare state.
    - Watch app logs for DB wait, migration, optional seed, then:
 
      ```txt
-     agentboard-api listening on http://0.0.0.0:3000/api
+     kanban-api listening on http://0.0.0.0:3000/api
      ```
 
 6. `/api/health`
-   - Verify `https://scalesoftware.matgac.pl/api/health`.
+   - Verify `https://kanban.matgac.pl/api/health`.
    - Expected: `200` JSON with `ok: true`.
 
 7. `/login`
-   - Verify `https://scalesoftware.matgac.pl/login`.
+   - Verify `https://kanban.matgac.pl/login`.
    - Refresh should return SPA HTML, not 404.
 
 8. Demo login
@@ -193,7 +193,7 @@ Remaining blocker is manual Coolify/Traefik/Cloudflare state.
 
 Manual Coolify deployment/configuration attempt:
 
-1. Confirm Cloudflare DNS-only `A scalesoftware -> 198.100.155.183`.
+1. Confirm Cloudflare DNS-only `A kanban -> 198.100.155.183`.
 2. Confirm Coolify domain is attached to `app` on container port `3000`.
 3. Confirm production env vars, especially `DATABASE_URL` and `SESSION_SECRET`.
 4. Deploy manually.

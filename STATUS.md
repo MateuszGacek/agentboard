@@ -2,20 +2,30 @@
 
 ## Current Phase
 
-AgentBoard Deploy Operator Mode: production runtime fix in progress.
+Kanban Deploy Operator Mode: full production rebrand and domain migration in progress.
 
-ScopePilot brand and content polish status: PASS as code on June 7, 2026. User-facing
-product branding was changed from AgentBoard to ScopePilot across the app shell, auth,
-home, workflow, project, settings, delivery overview, AI suggestion, HTML title, README,
-and docs index surfaces. EN/PL/CS application copy was rewritten to use more human,
-professional product language around delivery spaces, workflows, scope clarity, WIP
-pressure, and AI-assisted task clarification. Demo and seed content now uses the
-ScopePilot scenario and more realistic client-intake delivery wording. Internal package
-names, storage keys, API service identifiers, and deployment container names still keep
-their existing `agentboard` technical identifiers to avoid an unnecessary infrastructure
-rename.
+Full Kanban rebrand status: PASS locally on June 9, 2026. Public product branding,
+technical package names, workspace imports, browser storage keys, API health service
+identifier, OpenAI tool identifiers, demo/seed data, deployment defaults, and production
+domain references were renamed from the previous product identifiers to `Kanban` /
+`kanban`. The production target is now `https://kanban.matgac.pl`; legacy production
+hostnames are intentionally no longer treated as supported application URLs after the
+Coolify domain switch.
 
-Latest ScopePilot brand/content validation:
+Latest full Kanban rebrand validation:
+
+| Command                                        | Result | Notes                                                                           |
+| ---------------------------------------------- | ------ | ------------------------------------------------------------------------------- |
+| `pnpm typecheck`                               | PASS   | Workspace TypeScript checks passed with `@kanban/*` package imports.            |
+| `pnpm lint`                                    | PASS   | ESLint passed with zero warnings.                                               |
+| `pnpm build`                                   | PASS   | Workspace build passed; Vite kept the existing chunk-size warning.              |
+| `pnpm format:check`                            | PASS   | Prettier check passed after formatting the rename.                              |
+| `pnpm check:i18n`                              | PASS   | EN/PL/CS key parity passed with 405 shared keys.                                |
+| `docker compose config` with dummy DB URL      | PASS   | Compose renders `name: kanban`, `kanban-postgres-db`, and the production URL.   |
+| `pnpm coolify:env:dry-run` with dummy env      | PASS   | Dry-run listed expected Coolify env names without making an API call.           |
+| legacy identifier scan outside ignored folders | PASS   | No previous product, package, service, domain, or demo-slug identifiers remain. |
+
+Latest Kanban brand/content validation:
 
 | Command             | Result | Notes                                                                 |
 | ------------------- | ------ | --------------------------------------------------------------------- |
@@ -29,13 +39,13 @@ Latest ScopePilot brand/content validation:
 Deploy operator date: June 7, 2026
 
 Deploy operator status: PRODUCTION_RECOVERED_MANUAL_RUNTIME. Local validation previously
-passed (`pnpm predeploy:check` and `docker build -t agentboard-local .`). Dockerfile was
+passed (`pnpm predeploy:check` and `docker build -t kanban-local .`). Dockerfile was
 hardened in commit `7988487` so deps/build stages force development dependency
 installation even if Coolify exposes `NODE_ENV=production` during build, while runtime
 remains production-oriented. Coolify runtime logs later confirmed the first production
 blocker: `DATABASE_URL` was assembled with a raw Postgres password containing
 URL-reserved characters, so `scripts/wait-for-db.mjs` threw `ERR_INVALID_URL` before the
-API started and `https://scalesoftware.matgac.pl/api/health` returned `HTTP 503 no
+API started and `https://kanban.matgac.pl/api/health` returned `HTTP 503 no
 available server`. The repo-side fix requires explicit `DATABASE_URL`, URL-encodes the
 password in the Coolify helper, and redacts invalid URL startup errors. A later Coolify
 host inspection showed the app became healthy but Traefik still returned `503` because
@@ -44,12 +54,12 @@ app service now joins both `default` and `coolify`.
 
 Production recovery completed on June 7, 2026 at 11:08 UTC. Because preserving the
 database was not required, the old Coolify app/Postgres containers and disposable
-Postgres volume were removed on the host, a fresh `agentboard-postgres` container was
-started with a new alphanumeric password, and `agentboard-app` was started from image
+Postgres volume were removed on the host, a fresh `kanban-postgres` container was
+started with a new alphanumeric password, and `kanban-app` was started from image
 `cnlemhsfin1p0malfvchgf25_app:f899a051633f6ea41dfb9817f65288aa703cb91d`. The app joins
-the private `agentboard_internal` network for Postgres and the external `coolify`
+the private `kanban_internal` network for Postgres and the external `coolify`
 network for Traefik. Runtime secrets were generated on the server and stored only in
-`/root/agentboard-runtime-secrets.txt` with `600` permissions. Live verification from
+`/root/kanban-runtime-secrets.txt` with `600` permissions. Live verification from
 both the server and local shell returned `HTTP/2 200` for `/api/health` and `/login`.
 See `DEPLOY_OPERATOR_REPORT.md`.
 
@@ -64,7 +74,7 @@ Latest deployment fix validation:
 | `pnpm lint`                                 | PASS   | ESLint passed with zero warnings.                                 |
 | `pnpm build`                                | PASS   | Workspace production build passed.                                |
 | `pnpm format:check`                         | PASS   | Prettier check passed.                                            |
-| `docker build -t agentboard-local .`        | PASS   | Local Docker image build completed.                               |
+| `docker build -t kanban-local .`            | PASS   | Local Docker image build completed.                               |
 
 Latest local AI/deploy wiring audit on June 8, 2026:
 
@@ -81,9 +91,9 @@ Latest local AI/deploy wiring audit on June 8, 2026:
 | AI deploy env forwarding                        | FIXED  | Compose and the Coolify env helper now pass `AI_FEATURE_ENABLED` so AI can be disabled at runtime.                                   |
 | `set -a; . ./.env.local; docker compose config` | PASS   | Rendered app/postgres services, app on `default` and external `coolify`, and `AI_FEATURE_ENABLED=true` in app runtime env.           |
 | `pnpm coolify:env:dry-run` with dummy locals    | PASS   | Dry-run listed expected Coolify env names including `AI_FEATURE_ENABLED`; no API call was made.                                      |
-| `docker build -t agentboard-local .`            | PASS   | Production image build completed after the AI env forwarding fix.                                                                    |
-| Public `/api/health` curl                       | PASS   | `https://scalesoftware.matgac.pl/api/health` returned `HTTP/2 200` and JSON health payload.                                          |
-| Public `/login` curl                            | PASS   | `https://scalesoftware.matgac.pl/login` returned `HTTP/2 200` and SPA HTML headers.                                                  |
+| `docker build -t kanban-local .`                | PASS   | Production image build completed after the AI env forwarding fix.                                                                    |
+| Public `/api/health` curl                       | PASS   | `https://kanban.matgac.pl/api/health` returned `HTTP/2 200` and JSON health payload.                                                 |
+| Public `/login` curl                            | PASS   | `https://kanban.matgac.pl/login` returned `HTTP/2 200` and SPA HTML headers.                                                         |
 
 Real OpenAI provider smoke remains pending until a backend-only `OPENAI_API_KEY` is
 available in the target environment. Local validation confirms both the unavailable
@@ -91,14 +101,14 @@ path and the provider-success integration shape with a mocked OpenAI response.
 
 Latest production runtime verification:
 
-| Check                                                | Result | Notes                                                              |
-| ---------------------------------------------------- | ------ | ------------------------------------------------------------------ |
-| Fresh disposable Postgres                            | PASS   | New `agentboard-postgres` container became healthy.                |
-| App startup, migrations, seed                        | PASS   | `agentboard-api listening on http://0.0.0.0:3000/api` in app logs. |
-| App container health                                 | PASS   | Manual `agentboard-app` container reached `running/healthy`.       |
-| In-container `/api/health`                           | PASS   | Returned `200 {"ok":true,"service":"agentboard-api",...}`.         |
-| `curl -i https://scalesoftware.matgac.pl/api/health` | PASS   | Returned `HTTP/2 200` and JSON health payload.                     |
-| `curl -I https://scalesoftware.matgac.pl/login`      | PASS   | Returned `HTTP/2 200` and `text/html; charset=UTF-8`.              |
+| Check                                         | Result | Notes                                                          |
+| --------------------------------------------- | ------ | -------------------------------------------------------------- |
+| Fresh disposable Postgres                     | PASS   | New `kanban-postgres` container became healthy.                |
+| App startup, migrations, seed                 | PASS   | `kanban-api listening on http://0.0.0.0:3000/api` in app logs. |
+| App container health                          | PASS   | Manual `kanban-app` container reached `running/healthy`.       |
+| In-container `/api/health`                    | PASS   | Returned `200 {"ok":true,"service":"kanban-api",...}`.         |
+| `curl -i https://kanban.matgac.pl/api/health` | PASS   | Returned `HTTP/2 200` and JSON health payload.                 |
+| `curl -I https://kanban.matgac.pl/login`      | PASS   | Returned `HTTP/2 200` and `text/html; charset=UTF-8`.          |
 
 Implementation date: June 6, 2026
 
@@ -191,7 +201,7 @@ Current product status: the local foundation, API, frontend shell, DB-backed boa
 vertical slice, task detail polish, DB-backed dashboard, backend-only AI Improve flow,
 recruiter-facing README, and Docker/Coolify baseline are implemented as code, pass
 static validation, and now pass local DB-backed runtime smoke. Production is currently
-live at `https://scalesoftware.matgac.pl` through the recovered manual Docker runtime;
+live at `https://kanban.matgac.pl` through the recovered manual Docker runtime;
 `/api/health` and `/login` both return `HTTP/2 200`.
 
 Core CRUD and premium Kanban pass status: PASS as code on June 7, 2026. Normal
@@ -221,7 +231,7 @@ Latest core CRUD and premium Kanban validation:
 | `set -a; . ./.env.local; pnpm smoke:local` | PASS         | Expanded smoke covers project CRUD, default board, task CRUD, checklist/comment edit-delete, dashboard, demo, AI unavailable.                                |
 | Browser viewport check                     | BLOCKED_TOOL | In-app Browser returned `ERR_BLOCKED_BY_CLIENT` for localhost, 127.0.0.1, ::1, and localtest.me; standalone Playwright/Puppeteer/Chromium are not installed. |
 
-AgentBoard v1.1 polish/mobile status: PASS as code on June 7, 2026. Added task-level
+Kanban v1.1 polish/mobile status: PASS as code on June 7, 2026. Added task-level
 AI suggestion history, `GET /api/tasks/:taskId/ai-suggestions`,
 `PATCH /api/board-columns/:columnId`, column name/WIP settings in the board UI,
 checklist reorder controls, delete confirmations for checklist items/comments, command
@@ -249,7 +259,7 @@ Latest v1.1 polish/mobile validation:
 | Browser 360px mobile QA                    | PASS         | Verified board tabs/filter toggle/no overflow, task detail sheet/no overflow/AI history/checklist reorder/comment actions, command menu.                                   |
 | Browser 768/1024/1440 route loop           | BLOCKED_TOOL | Browser policy rejected one malformed loop URL; viewport was reset and local dev servers were stopped.                                                                     |
 
-AgentBoard next value slice status: PASS as code on June 7, 2026. Added static
+Kanban next value slice status: PASS as code on June 7, 2026. Added static
 backend project templates with `GET /api/project-templates`, optional
 `CreateProjectRequest.templateKey`, transactionally seeded template tasks/checklists/labels,
 browser-local saved board views, board-level AI next actions via
@@ -295,21 +305,21 @@ Local runtime smoke: PASS. See `LOCAL_RUNTIME_SMOKE.md`.
 
 Latest command results from the delivery state check:
 
-| Command                                      | Result | Notes                                                 |
-| -------------------------------------------- | ------ | ----------------------------------------------------- |
-| `pnpm typecheck`                             | PASS   | Workspace TypeScript checks passed.                   |
-| `pnpm lint`                                  | PASS   | ESLint passed with zero warnings.                     |
-| `pnpm build`                                 | PASS   | Workspace build passed; Vite production build passed. |
-| `pnpm format:check`                          | PASS   | Prettier check passed.                                |
-| `pnpm --filter @agentboard/web typecheck`    | PASS   | Web package typecheck passed.                         |
-| `pnpm --filter @agentboard/web build`        | PASS   | Web package build passed.                             |
-| `pnpm --filter @agentboard/api typecheck`    | PASS   | API package typecheck passed.                         |
-| `pnpm --filter @agentboard/api build`        | PASS   | API package build passed.                             |
-| `pnpm --filter @agentboard/shared typecheck` | PASS   | Shared package typecheck passed.                      |
-| `pnpm --filter @agentboard/shared build`     | PASS   | Shared package build passed.                          |
-| `pnpm --filter @agentboard/db typecheck`     | PASS   | DB package typecheck passed.                          |
-| `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                              |
-| `docker build -t agentboard-local .`         | PASS   | Non-destructive local Docker image build completed.   |
+| Command                                  | Result | Notes                                                 |
+| ---------------------------------------- | ------ | ----------------------------------------------------- |
+| `pnpm typecheck`                         | PASS   | Workspace TypeScript checks passed.                   |
+| `pnpm lint`                              | PASS   | ESLint passed with zero warnings.                     |
+| `pnpm build`                             | PASS   | Workspace build passed; Vite production build passed. |
+| `pnpm format:check`                      | PASS   | Prettier check passed.                                |
+| `pnpm --filter @kanban/web typecheck`    | PASS   | Web package typecheck passed.                         |
+| `pnpm --filter @kanban/web build`        | PASS   | Web package build passed.                             |
+| `pnpm --filter @kanban/api typecheck`    | PASS   | API package typecheck passed.                         |
+| `pnpm --filter @kanban/api build`        | PASS   | API package build passed.                             |
+| `pnpm --filter @kanban/shared typecheck` | PASS   | Shared package typecheck passed.                      |
+| `pnpm --filter @kanban/shared build`     | PASS   | Shared package build passed.                          |
+| `pnpm --filter @kanban/db typecheck`     | PASS   | DB package typecheck passed.                          |
+| `pnpm --filter @kanban/db build`         | PASS   | DB package build passed.                              |
+| `docker build -t kanban-local .`         | PASS   | Non-destructive local Docker image build completed.   |
 
 Latest command results after local runtime smoke documentation updates:
 
@@ -337,25 +347,25 @@ Current decision: `PRODUCTION_RECOVERED_MANUAL_RUNTIME`.
 
 Latest command results after DB/API hardening:
 
-| Command                                      | Result | Notes                                                                          |
-| -------------------------------------------- | ------ | ------------------------------------------------------------------------------ |
-| `pnpm db:generate`                           | PASS   | Generated index-only migration `0001_skinny_war_machine.sql`.                  |
-| `pnpm typecheck`                             | PASS   | Workspace TypeScript checks passed.                                            |
-| `pnpm lint`                                  | PASS   | ESLint passed with zero warnings.                                              |
-| `pnpm build`                                 | PASS   | Workspace build passed; Vite production build passed.                          |
-| `pnpm format`                                | PASS   | Formatted updated code/docs/Drizzle metadata.                                  |
-| `pnpm format:check`                          | PASS   | Prettier check passed.                                                         |
-| `pnpm --filter @agentboard/db typecheck`     | PASS   | DB package typecheck passed.                                                   |
-| `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                                                       |
-| `pnpm --filter @agentboard/shared typecheck` | PASS   | Shared package typecheck passed.                                               |
-| `pnpm --filter @agentboard/shared build`     | PASS   | Shared package build passed.                                                   |
-| `pnpm --filter @agentboard/api typecheck`    | PASS   | API package typecheck passed.                                                  |
-| `pnpm --filter @agentboard/api build`        | PASS   | API package build passed.                                                      |
-| `pnpm db:migrate`                            | PASS   | Ran against explicit local `.env.local` database.                              |
-| `pnpm db:seed`                               | PASS   | Demo seed completed.                                                           |
-| `pnpm db:seed` second pass                   | PASS   | Demo seed completed again.                                                     |
-| Seed idempotency count check                 | PASS   | Shared demo seed retained 1 workspace, 1 project, 1 board, 13 tasks, 5 labels. |
-| Minimal local API smoke                      | PASS   | Health, demo auth, board snapshot, and dashboard passed.                       |
+| Command                                  | Result | Notes                                                                          |
+| ---------------------------------------- | ------ | ------------------------------------------------------------------------------ |
+| `pnpm db:generate`                       | PASS   | Generated index-only migration `0001_skinny_war_machine.sql`.                  |
+| `pnpm typecheck`                         | PASS   | Workspace TypeScript checks passed.                                            |
+| `pnpm lint`                              | PASS   | ESLint passed with zero warnings.                                              |
+| `pnpm build`                             | PASS   | Workspace build passed; Vite production build passed.                          |
+| `pnpm format`                            | PASS   | Formatted updated code/docs/Drizzle metadata.                                  |
+| `pnpm format:check`                      | PASS   | Prettier check passed.                                                         |
+| `pnpm --filter @kanban/db typecheck`     | PASS   | DB package typecheck passed.                                                   |
+| `pnpm --filter @kanban/db build`         | PASS   | DB package build passed.                                                       |
+| `pnpm --filter @kanban/shared typecheck` | PASS   | Shared package typecheck passed.                                               |
+| `pnpm --filter @kanban/shared build`     | PASS   | Shared package build passed.                                                   |
+| `pnpm --filter @kanban/api typecheck`    | PASS   | API package typecheck passed.                                                  |
+| `pnpm --filter @kanban/api build`        | PASS   | API package build passed.                                                      |
+| `pnpm db:migrate`                        | PASS   | Ran against explicit local `.env.local` database.                              |
+| `pnpm db:seed`                           | PASS   | Demo seed completed.                                                           |
+| `pnpm db:seed` second pass               | PASS   | Demo seed completed again.                                                     |
+| Seed idempotency count check             | PASS   | Shared demo seed retained 1 workspace, 1 project, 1 board, 13 tasks, 5 labels. |
+| Minimal local API smoke                  | PASS   | Health, demo auth, board snapshot, and dashboard passed.                       |
 
 Dashboard audit was intentionally skipped by prior instruction to move faster. Do not
 rewrite dashboard. Local DB-backed runtime smoke passes, but live Coolify verification
@@ -363,17 +373,17 @@ is blocked by proxy/certificate/service availability outside the repository code
 
 Latest command results after Product UX/UI polish:
 
-| Command                                   | Result | Notes                                                      |
-| ----------------------------------------- | ------ | ---------------------------------------------------------- |
-| `pnpm typecheck`                          | PASS   | Workspace TypeScript checks passed.                        |
-| `pnpm lint`                               | PASS   | ESLint passed with zero warnings.                          |
-| `pnpm build`                              | PASS   | Workspace build passed; Vite production build passed.      |
-| `pnpm format`                             | PASS   | Formatted changed frontend/docs files.                     |
-| `pnpm format:check`                       | PASS   | Prettier check passed.                                     |
-| `pnpm --filter @agentboard/web typecheck` | PASS   | Web package typecheck passed.                              |
-| `pnpm --filter @agentboard/web build`     | PASS   | Web package production build passed.                       |
-| Local frontend HTTP smoke                 | PASS   | Vite served `http://localhost:5173/` with `200 text/html`. |
-| Local API health smoke                    | PASS   | `GET /api/health` returned `ok: true`.                     |
+| Command                               | Result | Notes                                                      |
+| ------------------------------------- | ------ | ---------------------------------------------------------- |
+| `pnpm typecheck`                      | PASS   | Workspace TypeScript checks passed.                        |
+| `pnpm lint`                           | PASS   | ESLint passed with zero warnings.                          |
+| `pnpm build`                          | PASS   | Workspace build passed; Vite production build passed.      |
+| `pnpm format`                         | PASS   | Formatted changed frontend/docs files.                     |
+| `pnpm format:check`                   | PASS   | Prettier check passed.                                     |
+| `pnpm --filter @kanban/web typecheck` | PASS   | Web package typecheck passed.                              |
+| `pnpm --filter @kanban/web build`     | PASS   | Web package production build passed.                       |
+| Local frontend HTTP smoke             | PASS   | Vite served `http://localhost:5173/` with `200 text/html`. |
+| Local API health smoke                | PASS   | `GET /api/health` returned `ok: true`.                     |
 
 Browser automation note: Browser plugin navigation/screenshot tools were not exposed in
 this session, and Playwright was not installed in the available `node_repl` runtime, so
@@ -383,36 +393,36 @@ Previous recommended action in nightly mode: Product feature completion pass.
 
 Latest command results after Product feature completion pass:
 
-| Command                                      | Result | Notes                                                   |
-| -------------------------------------------- | ------ | ------------------------------------------------------- |
-| `pnpm --filter @agentboard/web typecheck`    | PASS   | Focused web check passed after ref type fix.            |
-| `pnpm typecheck`                             | PASS   | Workspace TypeScript checks passed.                     |
-| `pnpm lint`                                  | PASS   | ESLint passed with zero warnings.                       |
-| `pnpm build`                                 | PASS   | Workspace build passed; Vite production build passed.   |
-| `pnpm format`                                | PASS   | Formatted updated frontend and documentation files.     |
-| `pnpm format:check`                          | PASS   | Prettier check passed.                                  |
-| `pnpm --filter @agentboard/web typecheck`    | PASS   | Web package typecheck passed.                           |
-| `pnpm --filter @agentboard/web build`        | PASS   | Web package production build passed.                    |
-| `pnpm --filter @agentboard/api typecheck`    | PASS   | API package typecheck passed.                           |
-| `pnpm --filter @agentboard/api build`        | PASS   | API package build passed.                               |
-| `pnpm --filter @agentboard/shared typecheck` | PASS   | Shared package typecheck passed.                        |
-| `pnpm --filter @agentboard/shared build`     | PASS   | Shared package build passed.                            |
-| `pnpm --filter @agentboard/db typecheck`     | PASS   | DB package typecheck passed.                            |
-| `pnpm --filter @agentboard/db build`         | PASS   | DB package build passed.                                |
-| Focused local runtime smoke                  | PASS   | Health, demo auth, board snapshot/filter logic, task    |
-|                                              |        | create, task move, dashboard, and web board route pass. |
+| Command                                  | Result | Notes                                                   |
+| ---------------------------------------- | ------ | ------------------------------------------------------- |
+| `pnpm --filter @kanban/web typecheck`    | PASS   | Focused web check passed after ref type fix.            |
+| `pnpm typecheck`                         | PASS   | Workspace TypeScript checks passed.                     |
+| `pnpm lint`                              | PASS   | ESLint passed with zero warnings.                       |
+| `pnpm build`                             | PASS   | Workspace build passed; Vite production build passed.   |
+| `pnpm format`                            | PASS   | Formatted updated frontend and documentation files.     |
+| `pnpm format:check`                      | PASS   | Prettier check passed.                                  |
+| `pnpm --filter @kanban/web typecheck`    | PASS   | Web package typecheck passed.                           |
+| `pnpm --filter @kanban/web build`        | PASS   | Web package production build passed.                    |
+| `pnpm --filter @kanban/api typecheck`    | PASS   | API package typecheck passed.                           |
+| `pnpm --filter @kanban/api build`        | PASS   | API package build passed.                               |
+| `pnpm --filter @kanban/shared typecheck` | PASS   | Shared package typecheck passed.                        |
+| `pnpm --filter @kanban/shared build`     | PASS   | Shared package build passed.                            |
+| `pnpm --filter @kanban/db typecheck`     | PASS   | DB package typecheck passed.                            |
+| `pnpm --filter @kanban/db build`         | PASS   | DB package build passed.                                |
+| Focused local runtime smoke              | PASS   | Health, demo auth, board snapshot/filter logic, task    |
+|                                          |        | create, task move, dashboard, and web board route pass. |
 
 Previous recommended action in nightly mode: Accessibility responsive i18n QA pass.
 
 Latest command results after Accessibility responsive i18n QA pass:
 
-| Command                                   | Result | Notes                                                 |
-| ----------------------------------------- | ------ | ----------------------------------------------------- |
-| i18n key parity script                    | PASS   | EN/PL/CS share 287 keys.                              |
-| React visible literal scan                | PASS   | No obvious visible hardcoded English component text.  |
-| `pnpm --filter @agentboard/web typecheck` | PASS   | Focused web check passed after accessibility changes. |
-| Local API health smoke                    | PASS   | `GET /api/health` returned `ok: true`.                |
-| Local SPA route smoke                     | PASS   | Key routes served `200 text/html` with root element.  |
+| Command                               | Result | Notes                                                 |
+| ------------------------------------- | ------ | ----------------------------------------------------- |
+| i18n key parity script                | PASS   | EN/PL/CS share 287 keys.                              |
+| React visible literal scan            | PASS   | No obvious visible hardcoded English component text.  |
+| `pnpm --filter @kanban/web typecheck` | PASS   | Focused web check passed after accessibility changes. |
+| Local API health smoke                | PASS   | `GET /api/health` returned `ok: true`.                |
+| Local SPA route smoke                 | PASS   | Key routes served `200 text/html` with root element.  |
 
 Previous recommended action in nightly mode: Automated QA and local smoke scripts.
 
@@ -439,7 +449,7 @@ Latest command results after Coolify deployment blocker local repair:
 | `pnpm lint`                              | PASS   | ESLint passed with zero warnings.                   |
 | `pnpm build`                             | PASS   | Workspace build passed.                             |
 | `pnpm format:check`                      | PASS   | Prettier check passed before report/status updates. |
-| `docker build -t agentboard-local .`     | PASS   | Production image built locally.                     |
+| `docker build -t kanban-local .`         | PASS   | Production image built locally.                     |
 | Non-DB Docker smoke: `/api/health`       | PASS   | Returned `200` JSON from production image.          |
 | Non-DB Docker smoke: `/login`            | PASS   | Returned SPA HTML from production image.            |
 | Non-DB Docker smoke: DB-backed API route | PASS   | Returned structured `503 SERVICE_UNAVAILABLE` JSON. |
@@ -449,15 +459,15 @@ readiness.
 
 Latest command results after final overnight summary and deploy readiness:
 
-| Command                              | Result | Notes                                                |
-| ------------------------------------ | ------ | ---------------------------------------------------- |
-| `pnpm typecheck`                     | PASS   | Workspace TypeScript checks passed.                  |
-| `pnpm lint`                          | PASS   | ESLint passed with zero warnings.                    |
-| `pnpm build`                         | PASS   | Workspace build and Vite production build passed.    |
-| `pnpm format:check`                  | PASS   | Prettier check passed.                               |
-| `pnpm predeploy:check`               | PASS   | Static predeploy checks and i18n parity passed.      |
-| `docker build -t agentboard-local .` | PASS   | Production image built locally.                      |
-| `pnpm smoke:local`                   | PASS   | Local API/DB smoke passed with AI unavailable state. |
+| Command                          | Result | Notes                                                |
+| -------------------------------- | ------ | ---------------------------------------------------- |
+| `pnpm typecheck`                 | PASS   | Workspace TypeScript checks passed.                  |
+| `pnpm lint`                      | PASS   | ESLint passed with zero warnings.                    |
+| `pnpm build`                     | PASS   | Workspace build and Vite production build passed.    |
+| `pnpm format:check`              | PASS   | Prettier check passed.                               |
+| `pnpm predeploy:check`           | PASS   | Static predeploy checks and i18n parity passed.      |
+| `docker build -t kanban-local .` | PASS   | Production image built locally.                      |
+| `pnpm smoke:local`               | PASS   | Local API/DB smoke passed with AI unavailable state. |
 
 Exact next recommended action: push the final documentation commit, then run the manual
 Coolify deployment checklist in `MORNING_HANDOFF.md`. Do not mark production live until
@@ -496,7 +506,7 @@ not add dashboard, AI, or new product UI scope and must remain parked.
 - Existing useful audit and planning history is preserved in the docs tree.
 - Docker/Coolify baseline files exist.
 - `docs/03-deployment/ovh-cloudflare-coolify-prep.md` documents the
-  `https://scalesoftware.matgac.pl` deployment preparation path, including Cloudflare as
+  `https://kanban.matgac.pl` deployment preparation path, including Cloudflare as
   the currently authoritative DNS provider.
 - Static validation passes for format, lint, typecheck, and build checks.
 - Local product readiness audit is documented in `LOCAL_PRODUCT_AUDIT.md`.
@@ -541,8 +551,8 @@ not add dashboard, AI, or new product UI scope and must remain parked.
 
 ## Incomplete
 
-- Production is live through manual recovery containers (`agentboard-app` and
-  `agentboard-postgres`), but Coolify's saved app env/config should be synchronized or
+- Production is live through manual recovery containers (`kanban-app` and
+  `kanban-postgres`), but Coolify's saved app env/config should be synchronized or
   recreated before the next Coolify UI redeploy.
 - Checklist deletion/reordering and comment edit/delete remain future task-detail
   refinements.
@@ -753,7 +763,7 @@ Final recruiter polish validation completed on June 6, 2026.
 | `pnpm build`                           |    PASS | Workspace build passed; Vite production build completed.                                               |
 | `pnpm format:check`                    |    PASS | Prettier check passed.                                                                                 |
 | `docker --version`                     |    PASS | Docker 27.3.1 is available in this environment.                                                        |
-| `docker build -t agentboard-local .`   |    PASS | Docker image build completed successfully.                                                             |
+| `docker build -t kanban-local .`       |    PASS | Docker image build completed successfully.                                                             |
 | `printenv DATABASE_URL OPENAI_API_KEY` | NOT_SET | `DATABASE_URL` and `OPENAI_API_KEY` are not set in this shell.                                         |
 | Translation key coverage script        |    PASS | EN/PL/CS app-source translation key coverage passed.                                                   |
 | Markdown local link check              |    PASS | README, STATUS, final audit, and docs local links resolved.                                            |
@@ -787,11 +797,11 @@ Final recruiter polish validation completed on June 6, 2026.
 Sync Coolify config with the recovered runtime and run browser-level live smoke:
 
 ```txt
-Continue the AgentBoard project from the current repository state.
+Continue the Kanban project from the current repository state.
 
 Decision from STATUS.md and DEPLOY_OPERATOR_REPORT.md: PRODUCTION_RECOVERED_MANUAL_RUNTIME.
 
-Local DB-backed runtime smoke passed on June 6, 2026. main was pushed to origin. Production recovery on June 7, 2026 started fresh manual containers with disposable Postgres and https://scalesoftware.matgac.pl/api/health plus /login now return HTTP/2 200. Do not add new features. Do not rewrite dashboard. Keep OPENAI_API_KEY backend-only.
+Local DB-backed runtime smoke passed on June 6, 2026. main was pushed to origin. Production recovery on June 7, 2026 started fresh manual containers with disposable Postgres and https://kanban.matgac.pl/api/health plus /login now return HTTP/2 200. Do not add new features. Do not rewrite dashboard. Keep OPENAI_API_KEY backend-only.
 
 First read AGENTS.md, STATUS.md, LOCAL_RUNTIME_SMOKE.md, README.md, docs/index.md, docs/03-deployment/deployment-notes.md, docs/03-deployment/coolify-deployment.md, and docs/03-deployment/ovh-cloudflare-coolify-prep.md.
 
@@ -800,7 +810,7 @@ Stabilize the deployment path:
 - Sync or recreate Coolify app envs before the next Coolify UI redeploy.
 - Keep POSTGRES_PASSWORD alphanumeric or ensure DATABASE_URL uses URL-encoded credentials.
 - Confirm the app service target port is 3000 and the app service joins the external coolify network.
-- Verify https://scalesoftware.matgac.pl/api/health returns the AgentBoard health JSON.
+- Verify https://kanban.matgac.pl/api/health returns the Kanban health JSON.
 - Verify app root, demo login, board load, task create/edit/move, task detail checklist/comment, dashboard metrics, and AI unavailable or backend-only AI behavior.
 
 Validation:

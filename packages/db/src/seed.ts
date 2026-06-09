@@ -4,7 +4,7 @@ import type {
   ColumnSystemKey,
   LabelColor,
   TaskPriority
-} from "@agentboard/shared";
+} from "@kanban/shared";
 import { and, eq } from "drizzle-orm";
 
 import { createDatabaseClient } from "./client";
@@ -83,27 +83,27 @@ async function main() {
 
       const owner = await upsertUser({
         name: "Maya Kowalska",
-        email: "demo_owner@agentboard.local"
+        email: "demo_owner@kanban.local"
       });
       const engineer = await upsertUser({
         name: "Leo Novak",
-        email: "demo_engineer@agentboard.local"
+        email: "demo_engineer@kanban.local"
       });
       const reviewer = await upsertUser({
         name: "Nina Carter",
-        email: "demo_reviewer@agentboard.local"
+        email: "demo_reviewer@kanban.local"
       });
       const strategist = await upsertUser({
         name: "Oskar Zielinski",
-        email: "demo_strategist@agentboard.local"
+        email: "demo_strategist@kanban.local"
       });
 
       const workspace = takeFirst(
         await tx
           .insert(workspaces)
           .values({
-            name: "ScopePilot Demo",
-            slug: "scale-software-demo",
+            name: "Kanban Demo",
+            slug: "kanban-demo",
             createdBy: owner.id,
             isDemo: true,
             updatedAt: now
@@ -111,7 +111,7 @@ async function main() {
           .onConflictDoUpdate({
             target: workspaces.slug,
             set: {
-              name: "ScopePilot Demo",
+              name: "Kanban Demo",
               createdBy: owner.id,
               isDemo: true,
               updatedAt: now
@@ -532,7 +532,7 @@ async function main() {
           completedAt: daysFromNow(-2)
         }),
         upsertTask({
-          title: "Create initial ScopePilot demo data",
+          title: "Create initial Kanban demo data",
           description:
             "Prepare baseline data that shows overload, blocked work, overdue risk, and completed delivery.",
           columnKey: "done",
@@ -772,7 +772,7 @@ async function main() {
           message: "Task marked blocked while waiting for quota confirmation."
         }),
         upsertActivityEvent({
-          taskTitle: "Create initial ScopePilot demo data",
+          taskTitle: "Create initial Kanban demo data",
           actorId: engineer.id,
           type: "task.completed",
           message: "Task completed after seed data was prepared."
@@ -837,7 +837,7 @@ async function main() {
 
 main()
   .then(() => {
-    console.log("ScopePilot demo seed completed.");
+    console.log("Kanban demo seed completed.");
   })
   .catch((error: unknown) => {
     console.error(error);

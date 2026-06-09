@@ -1,4 +1,4 @@
-# AgentBoard Phase 3-4 Audit
+# Kanban Phase 3-4 Audit
 
 Audit date: June 6, 2026
 
@@ -37,34 +37,34 @@ Repair check result: no repair needed. The audit decision is
 | `pnpm lint`                                                               |   PASS | ESLint passed with zero warnings.                                   |
 | `pnpm build`                                                              |   PASS | Workspace build passed.                                             |
 | `pnpm format:check`                                                       |   PASS | Prettier check passed.                                              |
-| `pnpm --filter @agentboard/api typecheck`                                 |   PASS | API package typecheck passed.                                       |
-| `pnpm --filter @agentboard/api build`                                     |   PASS | API package build passed.                                           |
-| `pnpm --filter @agentboard/web typecheck`                                 |   PASS | Web package typecheck passed.                                       |
-| `pnpm --filter @agentboard/web build`                                     |   PASS | Web package build passed.                                           |
-| `pnpm --filter @agentboard/shared typecheck`                              |   PASS | Shared package typecheck passed.                                    |
-| `pnpm --filter @agentboard/shared build`                                  |   PASS | Shared package build passed.                                        |
-| `pnpm --filter @agentboard/db typecheck`                                  |   PASS | DB package typecheck passed.                                        |
-| `pnpm --filter @agentboard/db build`                                      |   PASS | DB package build passed.                                            |
+| `pnpm --filter @kanban/api typecheck`                                     |   PASS | API package typecheck passed.                                       |
+| `pnpm --filter @kanban/api build`                                         |   PASS | API package build passed.                                           |
+| `pnpm --filter @kanban/web typecheck`                                     |   PASS | Web package typecheck passed.                                       |
+| `pnpm --filter @kanban/web build`                                         |   PASS | Web package build passed.                                           |
+| `pnpm --filter @kanban/shared typecheck`                                  |   PASS | Shared package typecheck passed.                                    |
+| `pnpm --filter @kanban/shared build`                                      |   PASS | Shared package build passed.                                        |
+| `pnpm --filter @kanban/db typecheck`                                      |   PASS | DB package typecheck passed.                                        |
+| `pnpm --filter @kanban/db build`                                          |   PASS | DB package build passed.                                            |
 | EN/PL/CS translation key parity check                                     |   PASS | `pl` and `cs` have no missing or extra keys compared with `en`.     |
 | `DATABASE_URL` environment check                                          |   INFO | `DATABASE_URL_NOT_SET`.                                             |
 | `pnpm exec prettier --write docs/04-reviews/phase-3-4-audit.md STATUS.md` |   PASS | Formatted audit/status docs after a post-edit format check failure. |
 
 Repair-check validation on June 6, 2026 reran the required static command suite:
 
-| Command                                      | Result | Notes                            |
-| -------------------------------------------- | -----: | -------------------------------- |
-| `pnpm typecheck`                             |   PASS | Workspace TypeScript checks pass |
-| `pnpm lint`                                  |   PASS | ESLint passes with zero warnings |
-| `pnpm build`                                 |   PASS | Workspace build passes           |
-| `pnpm format:check`                          |   PASS | Prettier check passes            |
-| `pnpm --filter @agentboard/api typecheck`    |   PASS | API package typechecks           |
-| `pnpm --filter @agentboard/api build`        |   PASS | API package builds               |
-| `pnpm --filter @agentboard/web typecheck`    |   PASS | Web package typechecks           |
-| `pnpm --filter @agentboard/web build`        |   PASS | Web package builds               |
-| `pnpm --filter @agentboard/shared typecheck` |   PASS | Shared package typechecks        |
-| `pnpm --filter @agentboard/shared build`     |   PASS | Shared package builds            |
-| `pnpm --filter @agentboard/db typecheck`     |   PASS | DB package typechecks            |
-| `pnpm --filter @agentboard/db build`         |   PASS | DB package builds                |
+| Command                                  | Result | Notes                            |
+| ---------------------------------------- | -----: | -------------------------------- |
+| `pnpm typecheck`                         |   PASS | Workspace TypeScript checks pass |
+| `pnpm lint`                              |   PASS | ESLint passes with zero warnings |
+| `pnpm build`                             |   PASS | Workspace build passes           |
+| `pnpm format:check`                      |   PASS | Prettier check passes            |
+| `pnpm --filter @kanban/api typecheck`    |   PASS | API package typechecks           |
+| `pnpm --filter @kanban/api build`        |   PASS | API package builds               |
+| `pnpm --filter @kanban/web typecheck`    |   PASS | Web package typechecks           |
+| `pnpm --filter @kanban/web build`        |   PASS | Web package builds               |
+| `pnpm --filter @kanban/shared typecheck` |   PASS | Shared package typechecks        |
+| `pnpm --filter @kanban/shared build`     |   PASS | Shared package builds            |
+| `pnpm --filter @kanban/db typecheck`     |   PASS | DB package typechecks            |
+| `pnpm --filter @kanban/db build`         |   PASS | DB package builds                |
 
 Post-edit note: `pnpm format:check` failed once after creating the audit/status markdown
 files, reporting only `docs/04-reviews/phase-3-4-audit.md` and `STATUS.md`. Those docs were formatted
@@ -116,7 +116,7 @@ START_DEPLOYMENT_BASELINE
 ## Exact next prompt
 
 ```txt
-Continue the AgentBoard project from the current repository state.
+Continue the Kanban project from the current repository state.
 
 Start the deployment baseline only.
 
@@ -157,14 +157,14 @@ Run:
 - `pnpm lint`
 - `pnpm build`
 - `pnpm format:check`
-- `pnpm --filter @agentboard/api typecheck`
-- `pnpm --filter @agentboard/api build`
-- `pnpm --filter @agentboard/web typecheck`
-- `pnpm --filter @agentboard/web build`
-- `pnpm --filter @agentboard/shared typecheck`
-- `pnpm --filter @agentboard/shared build`
-- `pnpm --filter @agentboard/db typecheck`
-- `pnpm --filter @agentboard/db build`
+- `pnpm --filter @kanban/api typecheck`
+- `pnpm --filter @kanban/api build`
+- `pnpm --filter @kanban/web typecheck`
+- `pnpm --filter @kanban/web build`
+- `pnpm --filter @kanban/shared typecheck`
+- `pnpm --filter @kanban/shared build`
+- `pnpm --filter @kanban/db typecheck`
+- `pnpm --filter @kanban/db build`
 
 If `DATABASE_URL` is configured and safe, run migrations, seed, and smoke-test auth/demo,
 board snapshot, and task create/edit/delete/move.
