@@ -29,6 +29,15 @@ Coolify deployment follow-up: the Compose Postgres volume is now named
 `kanban_postgres_data` so Coolify creates a fresh Kanban database volume during the
 technical rebrand instead of reusing the pre-rebrand Postgres storage.
 
+Production Kanban rebrand deployment status: PASS on June 9, 2026. Coolify built commit
+`29469e1` with the fresh `kanban_postgres_data` storage, started
+`kanban-postgres-db` and `app`, and the public domain `https://kanban.matgac.pl`
+returned `HTTP 200` for `/api/health`, `/login`, and `/app`. The health payload now
+reports `service:"kanban-api"`. Demo login created a `Kanban Demo` workspace, board
+fetch passed, AI task improvement passed with `gpt-5-nano`, and AI next-actions
+returned two suggestions. The legacy hostname returned `503 no available server`, as
+intended after detaching it from Coolify.
+
 Latest Kanban brand/content validation:
 
 | Command             | Result | Notes                                                                 |
