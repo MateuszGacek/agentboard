@@ -51,7 +51,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-kanban}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kanban}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - kanban_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  kanban_postgres_data:
 
 networks:
   default:

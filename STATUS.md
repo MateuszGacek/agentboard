@@ -25,6 +25,10 @@ Latest full Kanban rebrand validation:
 | `pnpm coolify:env:dry-run` with dummy env      | PASS   | Dry-run listed expected Coolify env names without making an API call.           |
 | legacy identifier scan outside ignored folders | PASS   | No previous product, package, service, domain, or demo-slug identifiers remain. |
 
+Coolify deployment follow-up: the Compose Postgres volume is now named
+`kanban_postgres_data` so Coolify creates a fresh Kanban database volume during the
+technical rebrand instead of reusing the pre-rebrand Postgres storage.
+
 Latest Kanban brand/content validation:
 
 | Command             | Result | Notes                                                                 |
